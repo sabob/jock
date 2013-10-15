@@ -13,7 +13,7 @@ define(function(require) {
     var Home = require("./views/home/Home");
 
     //$.address.strict(true);
-    //$.address.state("/koevoet-examples/js/spa.html");
+    //$.address.state("/bou-examples/js/spa.html");
 
     var options = {};
     options.routes = {
