@@ -10,21 +10,21 @@
             </properties>
             <folders>
                 <source-folder>
-                    <label>koevoet</label>
+                    <label>bou</label>
                     <type>java</type>
                     <location>.</location>
                 </source-folder>
                 <source-folder>
-                    <label>koevoet</label>
+                    <label>bou</label>
                     <location>.</location>
                 </source-folder>
                 <source-folder>
-                    <label>koevoet</label>
+                    <label>bou</label>
                     <type>doc_root</type>
                     <location>.</location>
                 </source-folder>
                 <source-folder>
-                    <label>koevoet</label>
+                    <label>bou</label>
                     <type>web_inf</type>
                     <location>.</location>
                 </source-folder>
@@ -63,7 +63,7 @@
                         <location>.</location>
                     </source-folder>
                     <source-folder style="packages">
-                        <label>koevoet</label>
+                        <label>bou</label>
                         <location>.</location>
                     </source-folder>
                     <source-file>
