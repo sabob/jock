@@ -1,0 +1,12 @@
+{"clients": [
+        {
+            "id": "1",
+            "name": "Big Bakery",
+            "city": "Pretoria"
+        },
+        {
+            "id": "2",
+            "name": "Momentum",
+            "city": "Centurion"
+        }
+    ]}
