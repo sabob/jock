@@ -64,6 +64,7 @@
                         digits: " should be digits.",
                         dateIso: " is not a valid date. Date format is yyyy-mm-dd.",
                         alphanum: " should be alphanumeric.",
+                        alpha: " should contain alphabetical letters only.",
                         phone: " should be a valid phone number."
                     },
                     notnull: " should not be null.",
@@ -88,8 +89,6 @@
                         throw new Error("options.name is required");
 
                     var validatorFn = options.validatorFn;
-                    if (!validatorFn)
-                        throw new Error("options.validatorFn function is required");
 
                     var publicFn = options.publicFn;
                     if (!utils.exist(publicFn)) {
@@ -101,10 +100,13 @@
 
                     var isType = options.isType;
 
-                    if (utils.exist(isType) && true === isType) {
-                        this.validators.types[ name ] = validatorFn;
-                    } else {
-                        this.validators[ name ] = validatorFn;
+                    if (validatorFn) {
+                        if (utils.exist(isType) && true === isType) {
+                            this.validators.types[ name ] = validatorFn;
+                        } else {
+                            this.validators[ name ] = validatorFn;
+                        }
+
                     }
                     if (publicFn) {
                         this[name] = publicFn;

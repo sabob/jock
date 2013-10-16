@@ -84,6 +84,9 @@ define(function(require) {
                 //$(this).off(currentAction.on);
                 var node = $(this);
                 node.on(currentAction.on, function(e) {
+                    if (currentAction.on === "click") {
+                        //e.preventDefault();
+                    }
                    currentAction.action(e, currentAction.objectRef, currentAction.options); 
                  /*
                     var tagName = node.prop("tagName").toLowerCase();

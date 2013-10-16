@@ -25,8 +25,9 @@ define(function(require) {
     options.params = {p1: ["val1", "val2"], p2: "pok"};
     
     viewManager.init(options);
-    //console.log("Routes set!");
-
+    viewManager.setGlobalOnAttached(function(options) {
+        console.log("current options:", options);
+    });
 
     $("#homeInd").click(function(e) {
         e.preventDefault();

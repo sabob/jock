@@ -36,8 +36,12 @@ define(function(require) {
 
         this.init = function(options) {
             if (initialized) {
-                return;
+                // If no options are specified, and view-manager has been initialized before, we can skip initialization
+                if (!options) {
+                    return;
+                }
             }
+
             initialized = true;
 
             var defaultView;
@@ -116,7 +120,12 @@ define(function(require) {
 
             //var onViewReady = options.onViewReady;
             var target = options.target || "#container";
-            options.target = target;
+
+            // Make copy
+            var defaults = {};
+            defaults = $.extend({}, defaults, options);
+            defaults.target = target;
+            defaults._options = options;
 
             // TODO setup window.error
             var curr = window.onerror;
@@ -150,19 +159,21 @@ define(function(require) {
 
             if (typeof view === 'string') {
                 var View = require(view);
-                options.view = new View();
+                defaults.view = new View();
 
             } else if (view instanceof Function) {
-                options.view = new view();
+                defaults.view = new view();
             }
-            
+
+            options.viewInstance = defaults.view;
+
             var mainDeferred = $.Deferred();
-            options.mainDeferred = mainDeferred;
-            
+            defaults.mainDeferred = mainDeferred;
+
             //setTimeout(function() {
-                that.showViewInstance(options);
+            that.showViewInstance(defaults);
             //});
-            
+
             return mainDeferred.promise();
         };
 
@@ -250,9 +261,12 @@ define(function(require) {
         };
 
         this.showHTML = function(options) {
+            this.init();
             var target = options.target || "#container";
             var defaults = {anim: true};
             defaults = $.extend({}, defaults, options);
+            defaults._options = options;
+            defaults.target = target;
 
             // TODO setup window.error
             var curr = window.onerror;
@@ -320,6 +334,7 @@ define(function(require) {
 
         this.attachView = function(html, options) {
             var target = options.target;
+            console.log("T:", target);
             $(target).empty();
 
             $(target).html(html);
@@ -333,7 +348,8 @@ define(function(require) {
             var onAttached = options.onAttached;
 
             if (globalOnAttached) {
-                globalOnAttached();
+                var origOptions = options._options;
+                globalOnAttached(origOptions);
             }
 
             if (onAttached) {
@@ -364,6 +380,7 @@ define(function(require) {
         this.attachViewWithAnim = function(html, options) {
 
             var target = options.target;
+            console.log("T:", target);
 
             $(target).fadeOut('fast', function() {
 
