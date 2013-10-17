@@ -1,4 +1,4 @@
-Bou
-=======
+SPAMD
+=====
 
-Javascript library for writing single page apps
+Single Page application toolbox for AMD
