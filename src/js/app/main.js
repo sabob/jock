@@ -88,7 +88,7 @@ define(function(require) {
     }
 
     function getActiveMenuLocation(li) {
-        var offsetTop = 50;
+        var offsetTop = 57;
         var offsetLeft = $(li).offset().left - $('#navbar').offset().left;
         var location = {
             top: offsetTop,

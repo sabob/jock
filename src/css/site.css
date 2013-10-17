@@ -89,7 +89,7 @@ h3{
 #nav-ind {
     background-color: #FFED38;
     position: absolute;
-    top: 50px;
+    top: 57px;
     left: 0;
     
     /*bottom: 80px;*/
@@ -133,7 +133,7 @@ h2 {
 }
 
 .title h2 {
-    color: #E5053A;    
+    color: #fff;    
     margin: 0px;
 }
 .slogan {
@@ -322,4 +322,10 @@ a:visited {
 }
 .version {
     font-size: small;
+}
+.highlight {
+    color: #E5053A;
+}
+.off-color {
+    color: #888;
 }
