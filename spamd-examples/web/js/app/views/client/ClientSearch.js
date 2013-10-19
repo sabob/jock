@@ -58,6 +58,7 @@ define(function(require) {
         }
 
         function onAttached(data) {
+            $('#table').dataTable({"sPaginationType": "full_numbers"});
         }
     }
 

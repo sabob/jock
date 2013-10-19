@@ -4,6 +4,7 @@ define(function(require) {
     var utils = require("kv/utils/utils");
     var viewManager = require("kv/view/view-manager");
     var errorUtils = require("kv/utils/error-utils");
+    var select2 = require("select2");
 
     require("domReady!");
 
@@ -22,6 +23,8 @@ define(function(require) {
         };
 
         function onAttached() {
+            $("#selecta").select2();
+            $("#selectb").select2();
             $("#save").click(function(e) {
                 // Require here to stop circular ref between ClientSearch and ClientEdit
                 var ClientSearch = require("./ClientSearch");

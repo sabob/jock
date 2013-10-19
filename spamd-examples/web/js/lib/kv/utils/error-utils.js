@@ -21,7 +21,8 @@
         target.open();
         target.write('<!doctype html><html><head></head><body></body></html>');
         target.close();
-        $('#dialogFrame').contents().find('body').empty().append(text);
+        $('#dialogFrame').contents().find('body').empty().html(text);
+        prettyPrint(null, $('#dialogFrame')[0].contentDocument.body);
 
         applyStyling();
 
@@ -60,7 +61,7 @@
             var h = ($(window).height());
             var w = ($(window).width());
             h = h / 150 * 100;
-            w = w / 150 * 100;
+            w = w / 120 * 100;
             element.css("height", Math.max(0, h) + "px");
             element.css("width", Math.max(0, w) + "px");
         }
@@ -71,10 +72,11 @@
             var ow = element.outerWidth();
             var wh = $(window).height();
             var ww = $(window).width();
-            var st = $(window).scrollTop();
-            var sl = $(window).scrollLeft();
             var t = ((wh - oh) / 2);
             var l = ((ww - ow) / 2);
+            t+= $(document).scrollTop();
+            l+= $(document).scrollLeft();
+
             element.css("top", Math.max(0, t) + "px");
             element.css("left", Math.max(0, l) + "px");
         }
@@ -113,7 +115,7 @@
                 'border-radius': '10px',
                 border: '1px solid #ccc',
                 'border-color': '#9ecaed',
-                'box-shadow': '0 0 10px 10px #333'
+                'box-shadow': '0 0 5px 5px #ddd'
             });
 
             $('#dialogFrame').css({

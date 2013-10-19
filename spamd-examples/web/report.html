@@ -45,89 +45,76 @@
                 text-align: left;
                 vertical-align: top;
             }
-            
+
             .flat-table {
                 width: 100%;
-		margin-bottom: 20px;
-		border-collapse:collapse;
-		font-family: 'Lato', Calibri, Arial, sans-serif;
-		border: none;
+                margin-bottom: 20px;
+                border-collapse:collapse;
+                font-family: 'Lato', Calibri, Arial, sans-serif;
+                border: none;
                 border-radius: 3px;
-               -webkit-border-radius: 3px;
-               -moz-border-radius: 3px;
-	}
-	.flat-table th, .flat-table td {
-		box-shadow: inset 0 -1px rgba(0,0,0,0.25), 
-			inset 0 1px rgba(0,0,0,0.25);
-	}
-  .flat-table th.header {
-      color: #fff;
-      font-weight: bolder;
-      background: rgba(0,0,0,0.38);
-		
-  }
-  
-	.flat-table th {
-		font-weight: normal;
-		-webkit-font-smoothing: antialiased;
-		padding: 1em;
-		color: rgba(255,255,255,0.65);
-    
-		text-shadow: 0 0 1px rgba(0,0,0,0.1);
-		font-size: 1.5em;
-	}
-	.flat-table td {
-		color: #f7f7f7;
-    
-		padding: 0.7em 1em 0.7em 1.15em;
-		text-shadow: 0 0 1px rgba(255,255,255,0.1);
-		/*font-size: 1.4em;*/
-	}
-  .flat-table td.pre {
-      padding: 0;
-  }
-	.flat-table tr {
-		-webkit-transition: background 0.3s, box-shadow 0.3s;
-		-moz-transition: background 0.3s, box-shadow 0.3s;
-		transition: background 0.3s, box-shadow 0.3s;
-	}
-	.flat-table-1 {
-		background: #005B99;
-	}
-	.flat-table-1 tr:hover {
-		background: rgba(0,0,0,0.19);
-	}
-	.flat-table-2 tr:hover {
-		background: rgba(0,0,0,0.1);
-	}
-	.flat-table-2 {
-		background: #f06060;
-	}
-	.flat-table-3 {
-		background: #52be7f;
-	}
-	.flat-table-3 tr:hover {
-		background: rgba(0,0,0,0.1);
-	}
-  
-  pre {
-      background-color: #fff;
-      color: #000;
-      padding:20px;
-      margin:0;
-      border: 1px solid #999;
-  }
-  td pre.code {
-      border-top: none;
-      padding:20px;
-      margin:0;
-      
-  }
-  
-  a{ 
-  color: #C4D8E2;
-  }
+                -webkit-border-radius: 3px;
+                -moz-border-radius: 3px;
+            }
+            .flat-table th, .flat-table td {
+                box-shadow: inset 0 -1px rgba(0,0,0,0.25), 
+                    inset 0 1px rgba(0,0,0,0.25);
+            }
+            .flat-table th.header {
+                color: #fff;
+                font-weight: bolder;
+                background: rgba(0,0,0,0.38);
 
+            }
+
+            .flat-table th {
+                font-weight: normal;
+                -webkit-font-smoothing: antialiased;
+                padding: 1em;
+                color: rgba(255,255,255,0.65);
+
+                text-shadow: 0 0 1px rgba(0,0,0,0.1);
+                font-size: 1.5em;
+            }
+            .flat-table td {
+                color: #f7f7f7;
+
+                padding: 0.7em 1em 0.7em 1.15em;
+                text-shadow: 0 0 1px rgba(255,255,255,0.1);
+                /*font-size: 1.4em;*/
+            }
+            .flat-table td.pre {
+                padding: 0;
+            }
+            .flat-table tr {
+                -webkit-transition: background 0.3s, box-shadow 0.3s;
+                -moz-transition: background 0.3s, box-shadow 0.3s;
+                transition: background 0.3s, box-shadow 0.3s;
+            }
+            .flat-table-1 {
+                background: #005B99;
+            }
+            .flat-table-1 tr:hover {
+                background: rgba(0,0,0,0.19);
+            }
+
+            pre {
+                background-color: #fff;
+                color: #000;
+                padding:20px;
+                margin:0;
+                border: 1px solid #999;
+            }
+            td pre.code {
+                border-top: none;
+                padding:20px;
+                margin:0;
+
+            }
+
+            a{
+                color: #C4D8E2;
+            }
 
         </style>
 
@@ -141,7 +128,7 @@
         <p></p>
         <div id='errorReport' class='errorReport'>
             <table class="flat-table flat-table-1">
-            <!--<table class="flat-table flat-table-1">-->
+                <!--<table class="flat-table flat-table-1">-->
                 <tbody>
                     <tr>
                         <th colspan='2' class='header'>Exception</th>
@@ -191,51 +178,51 @@
 
             <table class="flat-table flat-table-1"><tbody>
                     <tr><th colspan='2' class='header'>Service</th></tr>
-                    
+
                     <tr>
                         <th width='12%'><b>Service</b></th>
                         <td>co.za.mom.tests.PersonService.getExceptionWithArgs(String)</td>
                     </tr>
-                    
+
                     <tr><th width='12%'>Path</th>
                         <td>/tests/PersonService/getExceptionWithArgs</td></tr>
                 </tbody>
             </table>
-  
-  <br/>
+
+            <br/>
 
             <table class="flat-table flat-table-1">
                 <tr>
                     <th colspan='2' class='header'>Request</th>
                 </tr>
                 <tr><th width='12%' valign='top'>Attributes</th>
-                    
+
                     <td>&#160;</td></tr>
-                
+
                 <tr><th width='12%'>Auth Type</th>
                     <td>null</td></tr>
-                
+
                 <tr><th width='12%'>Context Path</th>
                     <td><a href='/ratel-examples'>/ratel-examples</a></td></tr>
-                
+
                 <tr><th width='12%' valign='top'>Headers</th>
                     <td>accept=*/*<br/>accept-encoding=gzip, deflate<br/>accept-language=en-za,en;q=0.5<br/>connection=keep-alive<br/>host=localhost:8080<br/>referer=http://localhost:8080/ratel-examples/<br/>user-agent=Mozilla/5.0 (Windows NT 6.1; WOW64; rv:24.0) Gecko/20100101 Firefox/24.0<br/>x-requested-with=XMLHttpRequest<br/></td></tr>
-                
+
                 <tr>
                     <th width='12%'>Query</th><td>null</td></tr>
-                
+
                 <tr><th width='12%'Method</th><td>GET</td></tr>
-                
+
                 <tr><th width='12%' valign='top'>Parameters</th><td>&#160;</td></tr>
-                
+
                 <tr><th width='12%'>Remote User</th><td>null</td></tr>
-                
+
                 <tr><th width='12%' valign='top'>URI</th>
                     <td><a href='/ratel-examples/tests/PersonService/getExceptionWithArgs'>/ratel-examples/tests/PersonService/getExceptionWithArgs</a></td></tr>
-                
+
                 <tr><th width='12%'>URL</th>
                     <td><a href='http://localhost:8080/ratel-examples/tests/PersonService/getExceptionWithArgs'>http://localhost:8080/ratel-examples/tests/PersonService/getExceptionWithArgs</a></td></tr>
-                
+
                 <tr><th width='12%' valign='top'>Session</th><td>&#160;</td>
                 </tr>
             </table>

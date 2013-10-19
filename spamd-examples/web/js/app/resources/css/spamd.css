@@ -3,6 +3,7 @@
 @import url("coolmenu.css");
 /*@import url("jquery.dataTables.css");*/
 @import url("demo_table.css");
+@import url("select2.css");
 
 table {
     table-layout: fixed;
