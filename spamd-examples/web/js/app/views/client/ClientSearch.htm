@@ -6,19 +6,22 @@
         </div>
 
         <table id="table" class="table">
-            <tr>
-                <th>
-                    Name
-                </th>
+            <thead>
+                <tr>
+                    <th>
+                        Name
+                    </th>
 
-                <th>
-                    City
-                </th>
+                    <th>
+                        City
+                    </th>
 
-                <th>
-                    Action
-                </th>
-            </tr>
+                    <th>
+                        Action
+                    </th>
+                </tr>
+
+            </thead>
 
             <tbody>
                 {{#each clients}}
@@ -28,7 +31,7 @@
                     <td>
                         <a href="clientedit?id={{id}}" {{action @onEdit}} >Edit</a> |
                         <a href="" {{action @onDelete}} >Delete</a>
-                        
+
                     </td>
                 </tr>
                 {{/each}}

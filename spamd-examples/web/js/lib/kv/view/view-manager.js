@@ -8,6 +8,10 @@ define(function(require) {
     function ViewManager() {
 
         var that = this;
+        var currentView = {
+            view: null,
+            options: null
+        };
 
         var processHashChange = true;
 
@@ -139,7 +143,7 @@ define(function(require) {
                 return false;
             };
 
-            if (typeof(callStack[target]) === 'undefined') {
+            if (typeof (callStack[target]) === 'undefined') {
                 callStack[target] = [];
             }
 
@@ -179,6 +183,7 @@ define(function(require) {
 
         this.showViewInstance = function(options) {
             var view = options.view;
+            setCurrentView(view, options);
             var viewPath = view.id;
             var args = options.args;
             var params = options.params;
@@ -224,6 +229,7 @@ define(function(require) {
                             // In case user forgot to bind. TODO this call could be slow if DOM is large, so make autobind configurable
                             if (templateEngine.hasActions()) {
                                 console.info("autobinding template actions since templateEngine has unbounded actions!");
+                                // TODO shoulld we auto bind at all?? Simply warn the user?
                                 templateEngine.bind(options.target);
                             }
                         };
@@ -279,7 +285,7 @@ define(function(require) {
                 return false;
             };
 
-            if (typeof(callStack[target]) === 'undefined') {
+            if (typeof (callStack[target]) === 'undefined') {
                 callStack[target] = [];
             }
 
@@ -304,7 +310,7 @@ define(function(require) {
                     deferred.resolve();
                     // In case user forgot to bind. TODO this call could be slow if DOM is large, so make autobind configurable
                     if (templateEngine.hasActions()) {
-                        console.info("autobinding template actions since templateEngine has unbounded actions!");
+                        //console.info("autobinding template actions since templateEngine has unbounded actions!");
                         //templateEngine.bind(target);
                     }
                 };
@@ -334,7 +340,6 @@ define(function(require) {
 
         this.attachView = function(html, options) {
             var target = options.target;
-            console.log("T:", target);
             $(target).empty();
 
             $(target).html(html);
@@ -406,7 +411,23 @@ define(function(require) {
             }
         };
 
+        this.getCurrentView = function() {
+            if (currentView) {
+                return currentView.view;
+            }
+            return null;
+        };
+
+        function setCurrentView(view, options) {
+            if (currentView.view && currentView.view.onDestroy) {
+                
+                currentView.onDestroy(currentView.options);
+            }
+            currentView = {view: view, options: options};
+            
+        }
     }
+
     var manager = new ViewManager();
     //manager.init();
     return manager;
