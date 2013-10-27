@@ -4,7 +4,7 @@ define(function(require) {
     //require('./onResourceLoad');
     var $ = require("jquery");
     require("jquery.address");
-    var viewManager = require("kv/view/view-manager");
+    var viewManager = require("spamd/view/view-manager");
     require("domReady!");
 
     var ClientSearch = require("./views/client/ClientSearch");

@@ -22,7 +22,10 @@
         target.write('<!doctype html><html><head></head><body></body></html>');
         target.close();
         $('#dialogFrame').contents().find('body').empty().html(text);
-        prettyPrint(null, $('#dialogFrame')[0].contentDocument.body);
+
+        if (typeof prettyPrint !== "undefined") {
+            prettyPrint(null, $('#dialogFrame')[0].contentDocument.body);
+        }
 
         applyStyling();
 
@@ -74,8 +77,8 @@
             var ww = $(window).width();
             var t = ((wh - oh) / 2);
             var l = ((ww - ow) / 2);
-            t+= $(document).scrollTop();
-            l+= $(document).scrollLeft();
+            t += $(document).scrollTop();
+            l += $(document).scrollLeft();
 
             element.css("top", Math.max(0, t) + "px");
             element.css("left", Math.max(0, l) + "px");

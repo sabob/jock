@@ -1,9 +1,9 @@
 define(function(require) {
     var $ = require("jquery");
     var template = require("hb!./ClientEdit.htm");
-    var utils = require("kv/utils/utils");
-    var viewManager = require("kv/view/view-manager");
-    var errorUtils = require("kv/utils/error-utils");
+    var utils = require("spamd/utils/utils");
+    var viewManager = require("spamd/view/view-manager");
+    var errorUtils = require("spamd/utils/error-utils");
     var select2 = require("select2");
 
     require("domReady!");

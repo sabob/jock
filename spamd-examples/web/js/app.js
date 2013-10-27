@@ -19,5 +19,5 @@ requirejs.config({
 
 // Load the main app module to start the app
 console.log("Loading main!@");
-requirejs(['kv/onResourceLoad', "app/main"]);
+requirejs(['spamd/onResourceLoad', "app/main"]);
 //requirejs([ "app/main"]);

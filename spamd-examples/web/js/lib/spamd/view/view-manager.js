@@ -1,10 +1,12 @@
 define(function(require) {
+    window.onerror = function MOO() {
+        console.log("MOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+    }
     var $ = require("jquery");
     require("domReady!");
     require("jquery.address");
     var utils = require("../utils/utils");
     var templateEngine = require("../template/template-engine");
-
     function ViewManager() {
 
         var that = this;
@@ -12,19 +14,13 @@ define(function(require) {
             view: null,
             options: null
         };
-
         var processHashChange = true;
-
         var initialized = false;
-
         var routesByName = {};
-
         var routesByPath = {};
-
         var callStack = {};
-
+        var errorHandlerStack = [];
         var globalOnAttached = null;
-
         this.setRoutes = function(map) {
             if (!map) {
                 return;
@@ -37,7 +33,6 @@ define(function(require) {
             }
             //console.log("routesByPath", routesByPath);
         };
-
         this.init = function(options) {
             if (initialized) {
                 // If no options are specified, and view-manager has been initialized before, we can skip initialization
@@ -47,12 +42,9 @@ define(function(require) {
             }
 
             initialized = true;
-
             var defaultView;
-
             if (options) {
                 defaultView = options.defaultView;
-
                 var routes = options.routes;
                 //console.log("setting Routes", routes);
                 this.setRoutes(routes);
@@ -89,7 +81,6 @@ define(function(require) {
                     }
                 }
             });
-
             //console.log("address path", $.address.path());
             if ($.address.path()) {
                 //viewManager.showView({view: Home});
@@ -106,11 +97,9 @@ define(function(require) {
                 }
             }
         };
-
         this.setGlobalOnAttached = function(callback) {
             globalOnAttached = callback;
         };
-
         this.showView = function(options) {
             var view = options.view;
             if (!view) {
@@ -118,30 +107,19 @@ define(function(require) {
             }
 
             this.init();
-
             //var args = options.args;
             //var params = options.params;
 
             //var onViewReady = options.onViewReady;
             var target = options.target || "#container";
-
             // Make copy
             var defaults = {};
             defaults = $.extend({}, defaults, options);
             defaults.target = target;
             defaults._options = options;
 
-            // TODO setup window.error
-            var curr = window.onerror;
-            window.onerror = function(message, file, lineNumber) {
-                console.error(message, file, lineNumber);
-                that.clear(target);
-                if (curr) {
-                    curr(arguments);
-                    window.onerror = curr;
-                }
-                return false;
-            };
+            // Setup global error handler in case user doen't use try/catch logic
+            addGlobalErrorHandler(target);
 
             if (typeof (callStack[target]) === 'undefined') {
                 callStack[target] = [];
@@ -160,20 +138,16 @@ define(function(require) {
             }
 
             callStack[target].push(1);
-
             if (typeof view === 'string') {
                 var View = require(view);
                 defaults.view = new View();
-
             } else if (view instanceof Function) {
                 defaults.view = new view();
             }
 
             options.viewInstance = defaults.view;
-
             var mainDeferred = $.Deferred();
             defaults.mainDeferred = mainDeferred;
-
             //setTimeout(function() {
             that.showViewInstance(defaults);
             //});
@@ -192,7 +166,6 @@ define(function(require) {
 
             processHashChange = false;
             var route = routesByPath[viewPath] || viewPath;
-
             $.address.autoUpdate(false);
             $.address.value(route);
             for (var param in params) {
@@ -219,8 +192,6 @@ define(function(require) {
                 this.attach = function(html, domOptions) {
                     var domDefaults = {anim: true};
                     domDefaults = $.extend({}, domDefaults, domOptions);
-
-
                     var deferred = $.Deferred();
                     setTimeout(function() {
                         var onAttached = function() {
@@ -233,32 +204,28 @@ define(function(require) {
                                 templateEngine.bind(options.target);
                             }
                         };
-
                         options.onAttached = onAttached;
                         if (domDefaults.anim) {
                             that.attachViewWithAnim(html, options);
-
                         } else {
                             that.attachView(html, options);
                         }
 
                     });
-
                     return deferred.promise();
                     //return this;
                 };
 
                 this.stay = function() {
-                    var deferred = $.Deferred();
+                    var stayDeferred = $.Deferred();
                     setTimeout(function() {
                         var target = options.target;
                         that.clear(target);
-                        deferred.resolve();
+                        stayDeferred.resolve();
                     });
-                    return deferred.promise();
+                    return stayDeferred.promise();
                 };
             };
-
             if (!view.onInit) {
                 throw new Error("Views must have a public 'onInit' method!");
             }
@@ -273,17 +240,18 @@ define(function(require) {
             defaults = $.extend({}, defaults, options);
             defaults._options = options;
             defaults.target = target;
-
             // TODO setup window.error
-            var curr = window.onerror;
-            window.onerror = function(message, file, lineNumber) {
-                that.clear(target);
-                if (curr) {
-                    curr(arguments);
-                    window.onerror = curr;
-                }
-                return false;
-            };
+            addGlobalErrorHandler(target);
+            /*
+             var curr = window.onerror;
+             window.onerror = function(message, file, lineNumber) {
+             that.clear(target);
+             if (curr) {
+             curr(arguments);
+             window.onerror = curr;
+             }
+             return false;
+             };*/
 
             if (typeof (callStack[target]) === 'undefined') {
                 callStack[target] = [];
@@ -302,7 +270,6 @@ define(function(require) {
             }
 
             callStack[target].push(1);
-
             var deferred = $.Deferred();
             setTimeout(function() {
                 var onAttached = function() {
@@ -314,19 +281,15 @@ define(function(require) {
                         //templateEngine.bind(target);
                     }
                 };
-
                 var html = defaults.html;
-
                 defaults.onAttached = onAttached;
                 if (defaults.anim) {
                     that.attachViewWithAnim(html, defaults);
-
                 } else {
                     that.attachView(html, defaults);
                 }
 
             });
-
             //var view = null;
             //var onAttached = null;
             //var options = {};
@@ -337,21 +300,15 @@ define(function(require) {
 
             return deferred.promise();
         };
-
         this.attachView = function(html, options) {
             var target = options.target;
             $(target).empty();
-
             $(target).html(html);
-
             that.viewAttached(options);
-
             that.viewComplete(options);
         };
-
         this.viewAttached = function(options) {
             var onAttached = options.onAttached;
-
             if (globalOnAttached) {
                 var origOptions = options._options;
                 globalOnAttached(origOptions);
@@ -367,40 +324,33 @@ define(function(require) {
              templateEngine.bind(target);
              }*/
         };
-
         this.viewComplete = function(options) {
 
             var target = options.target;
             var view = options.view;
             //var onViewReady = options.onViewReady;
             var mainDeferred = options.mainDeferred;
-
             if (mainDeferred) {
                 mainDeferred.resolve(view);
             }
             that.clear(target);
+            removeGlobalErrorHandler(target);
         };
-
         // TODO Replace this method for alternate animation
         this.attachViewWithAnim = function(html, options) {
 
             var target = options.target;
             console.log("T:", target);
-
             $(target).fadeOut('fast', function() {
 
                 $(target).empty();
-
                 $(target).html(html);
                 that.viewAttached(options);
-
-
                 $(target).fadeIn('fast', function() {
                     that.viewComplete(options);
                 });
             });
         };
-
         this.clear = function(target) {
             var obj = callStack[target];
             if (obj) {
@@ -410,22 +360,80 @@ define(function(require) {
                 }
             }
         };
-
         this.getCurrentView = function() {
             if (currentView) {
                 return currentView.view;
             }
             return null;
         };
-
         function setCurrentView(view, options) {
             if (currentView.view && currentView.view.onDestroy) {
-                
+
                 currentView.onDestroy(currentView.options);
             }
             currentView = {view: view, options: options};
-            
         }
+
+        function removeGlobalErrorHandler(target) {
+            console.log("globalErrorHandler removing", target);
+            var i = $.inArray(target, errorHandlerStack);
+            if (i !== -1) {
+                errorHandlerStack.splice(i, 1);
+                console.log("globalErrorHandler removed", target);
+            }
+        }
+
+        function addGlobalErrorHandler(target) {
+            console.log("addGlobalErrorHandler", target);
+            var i = $.inArray(target, errorHandlerStack);
+            if (i !== -1) {
+                return;
+            }
+
+            if (errorHandlerStack.length >= 1) {
+                errorHandlerStack.push(target);
+                console.log("addGlobalErrorHandler already present", target);
+                return;
+            }
+
+            errorHandlerStack.push(target);
+            if (window.onerror === globalErrorHandler) {
+                console.log("globalErrorHandler is already se as window.onerror");
+                return;
+            }
+
+            var prevError = window.onerror;
+            globalErrorHandler.prevError = prevError;
+            window.onerror = globalErrorHandler;
+        }
+
+        function globalErrorHandler(message, url, lineNumber) {
+            console.log("Global called");
+            console.log("Old error", globalErrorHandler.prevError);
+            for (var i = 0; i < errorHandlerStack.length; i++) {
+                var target = errorHandlerStack[i];
+                targetErrorHandler(message, url, lineNumber, target);
+            }
+            
+            var prevError = globalErrorHandler.prevError;
+
+            if (prevError) {
+                //window.onerror = currentError;
+                prevError(message, url, lineNumber);
+                console.log("Current error called " + target);
+            }
+        }
+        
+        function targetErrorHandler(message, url, lineNumber, target) {
+                console.log("targetErrorHandler for " + target, message, url, lineNumber);
+                that.clear(target);
+                $(target).finish();
+                $(target).clearQueue().stop(true, true);
+                setTimeout(function() {
+                    $(target).css({'opacity': '1', 'display': 'block'});
+                }, 10);
+                return false;
+            }
     }
 
     var manager = new ViewManager();

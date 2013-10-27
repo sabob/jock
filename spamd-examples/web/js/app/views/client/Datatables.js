@@ -4,12 +4,12 @@ define(function(require) {
     var datatables = require("jquery.dataTables");
     //var module = require("module");
     var ClientEdit = require("./ClientEdit");
-    var utils = require("kv/utils/utils");
-    var viewManager = require("kv/view/view-manager");
-    var errorUtils = require("kv/utils/error-utils");
+    var utils = require("spamd/utils/utils");
+    var viewManager = require("spamd/view/view-manager");
+    var errorUtils = require("spamd/utils/error-utils");
     var template = require("hb!./Datatables.htm");
     var aTemplate = require("hb!./ATemplate.htm");
-    var templateEngine = require("kv/template/template-engine");
+    var templateEngine = require("spamd/template/template-engine");
     require("domReady!");
     function ClientSearch() {
         var that = this;

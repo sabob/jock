@@ -3,8 +3,8 @@ define(function(require) {
     var $ = require("jquery");
     var template = require("text!./Home.htm");
     var ClientSearch = require("../client/ClientSearch");
-    var utils = require("kv/utils/utils");
-    var viewManager = require("kv/view/view-manager");
+    var utils = require("spamd/utils/utils");
+    var viewManager = require("spamd/view/view-manager");
     require("domReady!");
 
     function Home() {
