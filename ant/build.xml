@@ -17,7 +17,7 @@
    specific language governing permissions and limitations
    under the License.
 -->
-<project name="ratel" default="dist" basedir="..">
+<project name="spamd" default="dist" basedir="..">
     
     <property file="ant/build.properties"/>
     <xmlproperty file="ant/javascript-syntax-highlighter.xml"/>
@@ -41,7 +41,7 @@
         <attribute name="path"/>
         <sequential>
             <get src="${repository}/maven2/@{path}/@{name}"
-                 dest="ratel/lib/@{name}"
+                 dest="spamd/lib/@{name}"
                  verbose="true"
                  usetimestamp="true"/>            
         </sequential>
@@ -66,7 +66,7 @@
                version="true"
                verbose="false"
                windowtitle="@{windowtitle}"
-      	       packagenames="com.google.ratel.*"
+      	       packagenames="com.google.spamd.*"
          	     overview="@{overview}"
                doctitle="@{doctitle}"
                encoding="UTF-8"
@@ -107,7 +107,7 @@
     </presetdef>
     
     <path id="compile.classpath">
-        <fileset dir="ratel/lib">
+        <fileset dir="spamd/lib">
             <include name="*.jar"/>
         </fileset>
     </path>
@@ -120,44 +120,44 @@
     <target name="init" description="Initialize folders" depends="clean">
         <mkdir dir="build/classes"/>
         <mkdir dir="dist" />
-        <mkdir dir="ratel/lib" />
+        <mkdir dir="spamd/lib" />
     </target>
 
-    <target name="compile" depends="init" description="compile ratel">
-        <javac destdir="build/classes" debug="true" srcdir="ratel/src" target="1.6" source="${javac.source}">
+    <target name="compile" depends="init" description="compile spamd">
+        <javac destdir="build/classes" debug="true" srcdir="spamd/src" target="1.6" source="${javac.source}">
             <classpath refid="compile.classpath"/>
         </javac>
         
         <copy todir="build/classes">
-            <fileset dir="ratel/src">
+            <fileset dir="spamd/src">
                 
             </fileset>
         </copy>
         
     </target>
     
-    <target name="build" depends="compile" description="jar ratel">
-         <jar destfile="dist/ratel-${version}.jar">
+    <target name="build" depends="compile" description="jar spamd">
+         <zip destfile="dist/spamd-${version}.zip">
     <fileset dir="build/classes"
              excludes="**/Test.class"
     />
-  </jar>
+  </zip>
     </target>
     
-    <target name="build-examples" description="build ratel-examples WAR file" depends="build">
+    <target name="build-examples" description="build spamd-examples WAR file" depends="build">
       <ant antfile="ant/build.xml" 
-           dir="ratel-examples"
+           dir="spamd-examples"
            target="dist" 
            inheritall="false"/>
    </target>
    
    
-    <target name="dist" depends="build, build-examples" description="create ratel distribution">
+    <target name="dist" depends="build, build-examples" description="create spamd distribution">
    </target>
    
-    <target name="deploy" depends="dist" description="Deploy ratel examples">
+    <target name="deploy" depends="dist" description="Deploy spamd examples">
         <ant antfile="ant/build.xml" 
-           dir="ratel-examples"
+           dir="spamd-examples"
            target="deploy" 
            inheritall="false"/>
    </target>
@@ -173,7 +173,7 @@
       <downloadMacro name="${jar.velocity}" path="org/apache/velocity/velocity/${velocity.version}"/>
       <downloadMacro name="${jar.ant}" path="org/apache/ant/ant/${antjar.version}"/>
       <ant antfile="ant/build.xml" 
-           dir="ratel-examples"
+           dir="spamd-examples"
            target="get-deps"
            inheritall="false"/>
      
@@ -186,13 +186,13 @@
     <target name="javadoc" description="create Javadoc HTML files">
       <!-- Framework -->
       <delete quiet="false" failonerror="false">
-         <fileset dir="documentation/javadocs/ratel-api" includes="**/*"/>
+         <fileset dir="documentation/javadocs/spamd-api" includes="**/*"/>
       </delete>
 
-      <javadocMacro src="ratel/src"
-                    destdir="documentation/javadocs/ratel-api"
-                    windowtitle="Ratel API - v${version}"
-                    doctitle="Ratel API - v${version}"
+      <javadocMacro src="spamd/src"
+                    destdir="documentation/javadocs/spamd-api"
+                    windowtitle="Spamd API - v${version}"
+                    doctitle="Spamd API - v${version}"
                     classpath="compile.classpath"
       	            overview="documentation/javadocs/core-overview.html"
                     excludes=""/>
