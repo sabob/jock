@@ -1,7 +1,5 @@
 define(function(require) {
-    window.onerror = function MOO() {
-        console.log("MOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
-    }
+
     var $ = require("jquery");
     require("domReady!");
     require("jquery.address");
@@ -57,7 +55,6 @@ define(function(require) {
                 //event.preventDefault();
                 //event.stopPropagation();
 
-                //console.log("E:", event);
                 if (processHashChange) {
                     var viewName = event.path;
                     //console.log("name", name);
@@ -126,14 +123,14 @@ define(function(require) {
             }
 
             if (callStack[target].length !== 0) {
-                console.log("ViewManager is  already processing a showView/showHTML request for the target '" + target + "'. Use ViewManager.clear('" + target + "') to force a showView/showHTML request.", callStack[target]);
+                console.warn("ViewManager is  already processing a showView/showHTML request for the target '" + target + "'. Use ViewManager.clear('" + target + "') to force a showView/showHTML request.", callStack[target]);
                 var deferred = $.Deferred();
                 deferred.reject();
                 return deferred.promise();
             }
 
             if (templateEngine.hasActions()) {
-                console.log("It's been detected that there are unbounded actions in the TemplateEngine! Make sure to call templateEngine.bind() after template is added to DOM. Resetting to remove memory leaks!");
+                console.info("It's been detected that there are unbounded actions in the TemplateEngine! Make sure to call templateEngine.bind() after template is added to DOM. Resetting TemplateEngine to remove memory leaks!");
                 templateEngine.reset(target);
             }
 
@@ -199,9 +196,9 @@ define(function(require) {
                             deferred.resolve();
                             // In case user forgot to bind. TODO this call could be slow if DOM is large, so make autobind configurable
                             if (templateEngine.hasActions()) {
-                                console.info("autobinding template actions since templateEngine has unbounded actions!");
+                                console.info("Remember to call templateEngine.bind(target) otherwise your actions rendered with Handlebars won't fire!");
                                 // TODO shoulld we auto bind at all?? Simply warn the user?
-                                templateEngine.bind(options.target);
+                                //templateEngine.bind(options.target);
                             }
                         };
                         options.onAttached = onAttached;
@@ -258,14 +255,14 @@ define(function(require) {
             }
 
             if (callStack[target].length !== 0) {
-                console.log("ViewManager is already processing a showView/showHTML request for the target '" + target + "'. Use ViewManager.clear('" + target + "') to force a showView/showHTML request.", callStack[target]);
+                console.warn("ViewManager is already processing a showView/showHTML request for the target '" + target + "'. Use ViewManager.clear('" + target + "') to force a showView/showHTML request.", callStack[target]);
                 var deferred = $.Deferred();
                 deferred.reject();
                 return deferred.promise();
             }
 
             if (templateEngine.hasActions()) {
-                //console.warn("It's been detected in showHTML that there are unbounded actions in the TemplateEngine! Make sure to call templateEngine.bind() after template is added to DOM. Resetting to remove memory leaks!");
+                //console.info("It's been detected in showHTML that there are unbounded actions in the TemplateEngine! Make sure to call templateEngine.bind() after template is added to DOM. Resetting to remove memory leaks!");
                 //templateEngine.reset(target);
             }
 
@@ -340,7 +337,6 @@ define(function(require) {
         this.attachViewWithAnim = function(html, options) {
 
             var target = options.target;
-            console.log("T:", target);
             $(target).fadeOut('fast', function() {
 
                 $(target).empty();
@@ -375,16 +371,16 @@ define(function(require) {
         }
 
         function removeGlobalErrorHandler(target) {
-            console.log("globalErrorHandler removing", target);
+            //console.log("globalErrorHandler removing", target);
             var i = $.inArray(target, errorHandlerStack);
             if (i !== -1) {
                 errorHandlerStack.splice(i, 1);
-                console.log("globalErrorHandler removed", target);
+                //console.log("globalErrorHandler removed", target);
             }
         }
 
         function addGlobalErrorHandler(target) {
-            console.log("addGlobalErrorHandler", target);
+            //console.log("addGlobalErrorHandler", target);
             var i = $.inArray(target, errorHandlerStack);
             if (i !== -1) {
                 return;
@@ -392,13 +388,13 @@ define(function(require) {
 
             if (errorHandlerStack.length >= 1) {
                 errorHandlerStack.push(target);
-                console.log("addGlobalErrorHandler already present", target);
+                //console.log("addGlobalErrorHandler already present", target);
                 return;
             }
 
             errorHandlerStack.push(target);
             if (window.onerror === globalErrorHandler) {
-                console.log("globalErrorHandler is already se as window.onerror");
+                //console.log("globalErrorHandler is already se as window.onerror");
                 return;
             }
 
@@ -408,8 +404,8 @@ define(function(require) {
         }
 
         function globalErrorHandler(message, url, lineNumber) {
-            console.log("Global called");
-            console.log("Old error", globalErrorHandler.prevError);
+            //console.log("Global called");
+            //console.log("Old error", globalErrorHandler.prevError);
             for (var i = 0; i < errorHandlerStack.length; i++) {
                 var target = errorHandlerStack[i];
                 targetErrorHandler(message, url, lineNumber, target);
@@ -418,14 +414,12 @@ define(function(require) {
             var prevError = globalErrorHandler.prevError;
 
             if (prevError) {
-                //window.onerror = currentError;
                 prevError(message, url, lineNumber);
-                console.log("Current error called " + target);
             }
         }
         
         function targetErrorHandler(message, url, lineNumber, target) {
-                console.log("targetErrorHandler for " + target, message, url, lineNumber);
+                //console.log("targetErrorHandler for " + target, message, url, lineNumber);
                 that.clear(target);
                 $(target).finish();
                 $(target).clearQueue().stop(true, true);
