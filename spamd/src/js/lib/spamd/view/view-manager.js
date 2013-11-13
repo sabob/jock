@@ -110,7 +110,10 @@ define(function(require) {
             //var onViewReady = options.onViewReady;
             var target = options.target || "#container";
             // Make copy
-            var defaults = {};
+            var defaults = {
+                params: {},
+                args: {}
+            };
             defaults = $.extend({}, defaults, options);
             defaults.target = target;
             defaults._options = options;
