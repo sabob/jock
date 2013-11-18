@@ -5,16 +5,15 @@
 requirejs.config({
     "baseUrl": "lib",
     "paths": {
-      "app": "../app",
-      "hb": "spamd/hb",
-        "moment": "moment",
-        "numeral": "numeral"
-               
-    },
-    "shim": {
-        "handlebars": { exports: "Handlebars"}
+      "app": "../app"
     }
+    /*
+    , "shim": {
+    }*/
 });
 
 // Load the main app module to start the app
-requirejs(['spamd/onResourceLoad', "app/main"]);
+console.log("Loading MAIN!@");
+//requirejs(['spamd/onResourceLoad', "app/main"]);
+requirejs(["spamd/spamd"]);
+requirejs([ "app/main"]);

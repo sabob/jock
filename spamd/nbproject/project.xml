@@ -10,21 +10,12 @@
             </properties>
             <folders>
                 <source-folder>
-                    <label>bou</label>
-                    <type>java</type>
-                    <location>.</location>
-                </source-folder>
-                <source-folder>
-                    <label>bou</label>
-                    <location>.</location>
-                </source-folder>
-                <source-folder>
-                    <label>bou</label>
+                    <label>spamd</label>
                     <type>doc_root</type>
                     <location>.</location>
                 </source-folder>
                 <source-folder>
-                    <label>bou</label>
+                    <label>spamd</label>
                     <type>web_inf</type>
                     <location>.</location>
                 </source-folder>
@@ -62,10 +53,6 @@
                         <label>WEB-INF Content</label>
                         <location>.</location>
                     </source-folder>
-                    <source-folder style="packages">
-                        <label>bou</label>
-                        <location>.</location>
-                    </source-folder>
                     <source-file>
                         <location>${ant.script}</location>
                     </source-file>
@@ -78,13 +65,9 @@
                     <ide-action name="redeploy"/>
                 </context-menu>
             </view>
+            <subprojects/>
         </general-data>
-        <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/1">
-            <compilation-unit>
-                <package-root>.</package-root>
-                <source-level>1.5</source-level>
-            </compilation-unit>
-        </java-data>
+        <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/1"/>
         <web-data xmlns="http://www.netbeans.org/ns/freeform-project-web/2">
             <web-module>
                 <doc-root>.</doc-root>
