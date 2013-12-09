@@ -115,7 +115,7 @@ h3{
     text-decoration: none;
 }
 
-.title {
+.title-wrapper .title {
     width: 1170px;
     margin: 0 auto;
 }
@@ -328,4 +328,27 @@ a:visited {
 }
 .off-color {
     color: #888;
+}
+.api {
+    position: relative;
+}
+.api .toc {
+    border: 1px solid #000;
+    width: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    position:fixed;
+}
+
+.api .toc .title {
+    display: block;
+}
+
+.api .toc section {
+}
+
+.api .content {
+    margin: 40px 0 50px 260px;
+    width: 550px;
+    
 }

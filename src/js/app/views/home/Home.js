@@ -1,11 +1,10 @@
 define(function(require) {
     var $ = require("jquery");
     var template = require("hb!./Home.htm");
-    var bobPartial = require("hb!./BobPartial.htm");
-    var utils = require("../../utils/utils");
+    var titlePartial = require("hb!./title.htm");
     var Handlebars = require("handlebars");
-        var te = require("../../utils/template-engine");
-    var viewManager = require("../../utils/view-manager");
+        var te = require("spamd/template/template-engine");
+    var viewManager = require("spamd/view/view-manager");
     require("domReady!");
 
     function Home() {
@@ -16,7 +15,7 @@ define(function(require) {
         // priviledged methods
 
         this.onInit = function(dom, args) {
-                Handlebars.registerPartial("bobPartial", bobPartial);
+                Handlebars.registerPartial("titlePartial", titlePartial);
             //onReady();
             var context = {'name': 'Bob'};
             var options = {
@@ -32,7 +31,8 @@ define(function(require) {
             };
             var html = te.render(this.getTemplate(), context, options);
 
-            dom.attachWithAnim(html, function() {
+            dom.attach(html).then(function() {
+                //alert("Goes");
                //te.bind("#cont");
                 //te.bind();
                 //te.bind();

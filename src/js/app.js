@@ -5,12 +5,17 @@
 requirejs.config({
     "baseUrl": "js/lib",
     "paths": {
-      "app": "../app"
+        "app": "../app"
     },
     "shim": {
-        "handlebars": { exports: "Handlebars"}
+        "handlebars": {exports: "Handlebars"}
     }
 });
 
 // Load the main app module to start the app
-requirejs(["app/main"]);
+//requirejs(["spamd/spamd", "app/setup", "app/main"]);
+
+requirejs(["spamd/spamd", "app/setup"], function() {
+    requirejs(["app/main"]);
+});
+

@@ -1,7 +1,7 @@
 define(function(require) {
 
     var $ = require("jquery");
-    var template = require("hb!./Intro.htm");
+    var template = require("hb!./Docs.htm");
     require("domReady!");
 
     function Intro() {

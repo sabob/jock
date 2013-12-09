@@ -2,13 +2,12 @@ define(function(require) {
     var $ = require("jquery");
     var Intro = require("./views/intro/Intro");
     var Home = require("./views/home/Home");
+    var Docs = require("./views/docs/Docs");
+    var API = require("./views/api/API");
     var footer = require("hb!./views/footer/footer.htm");
-    var errorUtils = require("./utils/error-utils");
-    var viewManager = require("./utils/view-manager");
+    var viewManager = require("spamd/view/view-manager");
     var prettify = require("prettify");
     require("domReady!");
-
-    setupActiveMenu();
 
     viewManager.setGlobalOnAttached(function() {
         prettify.prettyPrint();
@@ -16,17 +15,17 @@ define(function(require) {
 
     $("#home").click(function(e) {
         e.preventDefault();
-        viewManager.showView(Home);
+        viewManager.showView({view: Home});
     });
 
     $("#intro").click(function(e) {
         e.preventDefault();
-        viewManager.showView(Intro);
+        viewManager.showView({view: Intro});
     });
 
     $("#menu-home").click(function(e) {
         e.preventDefault();
-        viewManager.showView(Home);
+        viewManager.showView({view: Home});
         //var link = e.target;
         //setActiveMenu(link);
 
@@ -34,79 +33,57 @@ define(function(require) {
 
     $("#menu-intro").click(function(e) {
         e.preventDefault();
-        viewManager.showView(Intro);
+        viewManager.showView({view: Intro});
         //var link = e.target;
         //setActiveMenu(link);
     });
 
     $("#menu-docs").click(function(e) {
         e.preventDefault();
-        viewManager.showView(Intro);
+        viewManager.showView({view: Docs});
         //var link = e.target;
         //setActiveMenu(link);
     });
 
     $("#menu-api").click(function(e) {
         e.preventDefault();
-        viewManager.showView(Intro);
+        var promise = viewManager.showView({view: API});
+        promise.attached.then(function() {
+            console.log("attached DEFAULT done", $(".toc").position());
+        });
+        console.log("promise", promise);
+        promise.visible.then(function() {
+            console.log("onVisible done", $(".toc").position());
+        });
         //var link = e.target;
         //setActiveMenu(link);
     });
 
     $("#menu-download").click(function(e) {
         e.preventDefault();
-        viewManager.showView(Intro);
+        viewManager.showView({view: Intro});
         //var link = e.target;
         //setActiveMenu(link);
     });
-
-    /*function setActiveMenu(link) {
-     console.log(link);
-     $("#navbar a.active").removeClass("active");
-     $(link).addClass("active");
-     }*/
-
-    function setupActiveMenu() {
-        //var offsetLeft = $(homeItem).offset().left - $('#navbar').offset().left;
-        //var right = $('#navbar').width() - $(homeItem).width() - offsetLeft;
-        //$('#nav-ind').css({right: right});
-
-
-        $('#navbar li').click(function() {
-            if (!$(this).hasClass('active')) {
-                $('li.active').removeClass('active');
-                slideToActive($(this));
-            }
-        });
-    }
-
-    function slideToActive(li) {
-        $(li).addClass('active');
-        //var offsetTop = $(li).offset().top - $('#navbar').offset().top;
-        var location = getActiveMenuLocation(li);
-        $('#nav-ind').animate(location, 'fast', 'linear');
-    }
-
-    function getActiveMenuLocation(li) {
-        var offsetTop = 57;
-        var offsetLeft = $(li).offset().left - $('#navbar').offset().left;
-        var location = {
-            top: offsetTop,
-            left: offsetLeft,
-            right: $('#navbar').width() - $(li).width() - offsetLeft,
-            bottom: $('#navbar').height() - $(li).height() - offsetTop
-        };
-        return location;
-    }
-
-    viewManager.showView(Home, null, function() {
-        /*$("body").show();*/
-        // Set first menu item to active
-        var homeItem = $("#navbar li:first");
-        var location = getActiveMenuLocation(homeItem);
-        $("#nav-ind").css(location);
+console.log("MAIN: ShowHTML footer");
+    var promise = viewManager.showHTML({html: footer, target: "#footer-holder"});
+    /*
+    var promise = viewManager.showHTML({html: footer, target: "#footer-holder"});
+    promise.attached.then(function() {
+        console.log("showHtml attached then");
+        return promise.visible;
+    } , function() {
+        console.log("showHtml attached FAIL");
+    }).then(function() {
+        console.log("showHtml visible then");
+        return promise;
+    } , function() {
+        console.log("showHtml visible FAIL");
+    }).then(function() {
+        console.log("showHtml main then");
+    }, function() {
+        console.log("showHtml main FAIL");
     });
-    viewManager.showTemplate(footer, null, "#footer-holder");
-    
-    
+*/
+
 });

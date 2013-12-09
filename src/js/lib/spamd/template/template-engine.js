@@ -1,6 +1,6 @@
 define(function(require) {
     var $ = require("jquery");
-    require("jquery.address");
+    //require("jquery.address");
     var utils = require("../utils/utils");
     var Handlebars = require("handlebars");
     var moment = require("moment");
