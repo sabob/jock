@@ -26,6 +26,20 @@ define(function(require) {
             };
 
             result.add = function(newParams) {
+                for (var key in newParams) {
+
+                    var val = newParams[key];
+                    if ($.isArray(val)) {
+                        for (var i = 0; i < val.length; i++) {
+                            putParam(params, key, val[i]);
+                        }
+                    } else {
+                        putParam(params, key, val);
+                    }
+                }
+            };
+
+            result.set = function(newParams) {
                 for (var p in newParams) {
                     params[p] = newParams[p];
                 }
@@ -75,15 +89,7 @@ define(function(require) {
 
                 putParam(params, key, val);
             });
-            /*
-             var entries = hash.split("&");
-             for (var i = 0; i < entries.length; i++) {
-             var entry = entries[i].split("=");
-             var key = entry[0];
-             var val = decodeURIComponent(entry[1]);
-             //putParam(params, entry[0], entry[1]);
-             putParam(params, key, val);
-             }*/
+
             return params;
         };
 

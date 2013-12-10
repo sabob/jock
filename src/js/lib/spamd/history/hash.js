@@ -61,18 +61,30 @@ define(function(require) {
         var iframe;
 
         var that = function(hash) {
-            if(!arguments.length){
-                return getHash();
+            that.ensureInitialized();
+
+            if(arguments.length){
+                return setHash(hash);
 
             } else {
-                setHash(hash);
+                return getHash();
             }
         };
-        
+
+        that.ensureInitialized = function() {
+            if (callback == null) {
+                throw new Error("hash not initialized! Call hash.init first!");
+            }
+        };
+
         that.init = function(cb) {
                 // init can only be called once.
-                if (callback)
+                if (callback) {
                     return;
+                }
+                if (!cb) {
+                    throw new Error("hash.init requires callback!");
+                }
 
                 callback = cb;
 
@@ -142,6 +154,7 @@ define(function(require) {
                 window.location.hash = hash = newHash;
                 callback(newHash, false);
             }
+            return newHash;
         };
 
 // Used by all browsers except Internet Explorer 7 and below.
