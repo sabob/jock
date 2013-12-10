@@ -5,13 +5,13 @@
 requirejs.config({
     //"baseUrl": "lib",
     "paths": {
-      //"app": "../app",
-      "hb": "spamd/hb",
+        //"app": "../app",
+        "hb": "spamd/hb",
         "moment": "moment",
         "numeral": "numeral"
     },
     "shim": {
-        "handlebars": { exports: "Handlebars"}
+        "handlebars": {exports: "Handlebars"}
         //"jquery.address": { exports: "address"}
     }
 });
@@ -19,9 +19,12 @@ requirejs.config({
 // Load the main app module to start the app
 //console.log("Loading SPAMD");
 requirejs(['spamd/onResourceLoad']);
-requirejs(["jquery"]);
+requirejs(["jquery"], function($) {
+    $.ajaxSetup({ traditional: true });
+});
 //requirejs(["jquery.history"]);
 //requirejs(["history.adapter.jquery"]);
+//requirejs(["jsuri"]);
 requirejs(["jquery.deparam"]);
 requirejs(["jquery.deserialize"]);
 //requirejs([ "app/main"]);
