@@ -4,15 +4,12 @@ define(function(require) {
     var template = require("hb!./API.htm");
     var viewManager = require("spamd/view/view-manager");
     require("domReady!");
-
     function Intro() {
 
         var that = this;
-
         this.getTemplate = function() {
             return template;
         };
-
         this.onInit = function(dom, options) {
             //console.log("API.onInit", options);
             //viewManager.hash.disabled(true);
@@ -23,23 +20,32 @@ define(function(require) {
             dom.attach(this.getTemplate(), {anim: animValue});
             dom.attached.then(onAttached);
             dom.visible.then(onVisible);
-
             function onAttached() {
                 console.log("POS", $(".toc").position());
+                //var thref = location.href;
+                //  $.address.parameter("id", null);
+                //var lhref = location.href;
+                //location.href = thref;
 
+                //var uri = new $.spamd.Uri(location.href);
+                //console.log(location.href);
+                //console.log("parms", uri.query().params);
+
+                $(".toc a").each(function(i, elem) {
+                    var href = $(this).attr("href");
+                    if (href) {
+                        href = "&" + href;
+                    }
+
+                    //console.log("URI", uri);
+                    var lhref = removeParameter(location.href, "id");
+                    $(this).attr("href", lhref + href);
+                });
                 $(".toc a").on("click", function(e) {
                     //console.log("url", $.parseUrl(this.href));
                     var url = $.parseUrl(this.href);
-                    console.log("id", url.params.id);
-                    //console.log("T", target);
-                    //e.preventDefault();
                     viewManager.hash.skipOnce(true);
-                    //viewManager.setProcessHashChange(false);
-                    //$.address.value("");
-                    //$.address.path(url.hash);
                     var id = url.params.id;
-                    //$.address.parameter("id", id);
-                    //viewManager.setProcessHashChange(true);
                     scrollIntoView(id);
                 });
             }
@@ -56,14 +62,30 @@ define(function(require) {
                 if (id) {
                     top = $("#" + id).offset().top;
                 }
+                console.log("ID", id);
                 $(window).scrollTop(top);
             }
         };
-
         this.onDestroy = function() {
             //console.log("Hash Disabled false");
             //viewManager.hash.disable(false);
         };
+
+        function endsWith(str, suffix) {
+            return str.indexOf(suffix, str.length - suffix.length) !== -1;
+        }
+
+        function removeParameter(url, param) {
+            var idx = url.indexOf(param + "=");
+            if (idx == -1) {
+                return url;
+            }
+            url = url.substr(0, idx);
+            if (endsWith(url, "&")) {
+                url = url.slice(0, -1);
+            }
+            return url;
+        }
     }
     return Intro;
 });
