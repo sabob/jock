@@ -63,9 +63,19 @@ define(function(require) {
             if (that.disable()) {
                 return;
             }
-            var str = paramsObj.string();
-            hash(str);
-            paramsObj = null;
+            if (paramsObj) {
+                var str = paramsObj.string();
+                hash(str);
+                paramsObj = null;
+            }
+        };
+        
+        that.trigger = function() {
+            if (that.disable()) {
+                return;
+            }
+
+            hash.trigger();
         };
 
         that.params = function(val) {
@@ -76,45 +86,45 @@ define(function(require) {
             ensureParamsInitialized();
 
             if (arguments.length) {
-                return paramsObj.add(val);
+                return paramsObj.set(val);
             } else {
                 return paramsObj.get();
             }
         };
-        
+
         that.params.get = function(param) {
             if (that.disable()) {
                 return;
             }
 
             ensureParamsInitialized();
-            
+
             if (arguments.length) {
                 paramsObj.get(param);
             } else {
                 return paramsObj.get();
             }
         };
-        
+
         that.params.add = function(params) {
             if (that.disable()) {
                 return;
             }
 
             ensureParamsInitialized();
-            
+
             if (arguments.length) {
                 paramsObj.add(params);
             }
         };
-        
+
         that.params.set = function(params) {
             if (that.disable()) {
                 return;
             }
 
             ensureParamsInitialized();
-            
+
             if (arguments.length) {
                 paramsObj.set(params);
             }
@@ -126,7 +136,7 @@ define(function(require) {
             }
 
             ensureParamsInitialized();
-            
+
             if (arguments.length) {
                 paramsObj.remove(params);
             }
@@ -170,15 +180,17 @@ define(function(require) {
         }
     });
 
-    h.hash('moo&x=1&x=2&y');
+    h.hash('moo=&x=1&x=2&y=');
+    h.update();
     console.log("h", h.hash());
     console.log("params()", h.params());
-    //h.params({"x": "y"});
+    h.params({"x": "y"});
     //console.log("params(x:y)", h.params());
     //console.log("params.get()", h.params.get());
-    h.params.clear();
+    //h.params.clear();
     //console.log("params.add'(x', 'y')", h.params.get());
     h.update();
+    h.trigger();
 
 
     //hash('x=1&y&x=1');

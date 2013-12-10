@@ -63,7 +63,7 @@ define(function(require) {
         var that = function(hash) {
             that.ensureInitialized();
 
-            if(arguments.length){
+            if (arguments.length) {
                 return setHash(hash);
 
             } else {
@@ -78,45 +78,57 @@ define(function(require) {
         };
 
         that.init = function(cb) {
-                // init can only be called once.
-                if (callback) {
-                    return;
+            // init can only be called once.
+            if (callback) {
+                return;
+            }
+            if (!cb) {
+                throw new Error("hash.init requires callback!");
+            }
+
+            callback = cb;
+
+            // Keep track of the hash value.
+            hash = getHash();
+            cb(hash, true);
+
+            if (isHashChangeSupported()) {
+                if (window.addEventListener) {
+                    window.addEventListener('hashchange', poll, false);
+                } else if (window.attachEvent) {
+                    window.attachEvent('onhashchange', poll);
                 }
-                if (!cb) {
-                    throw new Error("hash.init requires callback!");
-                }
-
-                callback = cb;
-
-                // Keep track of the hash value.
-                hash = getHash();
-                cb(hash, true);
-
-                if (isHashChangeSupported()) {
-                    if (window.addEventListener) {
-                        window.addEventListener('hashchange', poll, false);
-                    } else if (window.attachEvent) {
-                        window.attachEvent('onhashchange', poll);
+            } else {
+                // Run specific code for Internet Explorer.
+                if (window.ActiveXObject) {
+                    if (!documentMode || documentMode < 8) {
+                        // Internet Explorer 5.5/6/7 need an iframe for history
+                        // support.
+                        setUpIframe();
                     }
                 } else {
-                    // Run specific code for Internet Explorer.
-                    if (window.ActiveXObject) {
-                        if (!documentMode || documentMode < 8) {
-                            // Internet Explorer 5.5/6/7 need an iframe for history
-                            // support.
-                            setUpIframe();
-                        }
-                    } else {
-                        // Change Opera navigation mode to improve history support.
-                        if (history.navigationMode) {
-                            history.navigationMode = 'compatible';
-                        }
-
-                        setInterval(poll, 50);
+                    // Change Opera navigation mode to improve history support.
+                    if (history.navigationMode) {
+                        history.navigationMode = 'compatible';
                     }
-                }
-            };
 
+                    setInterval(poll, 50);
+                }
+            }
+        };
+
+        that.update = function() {
+            that.ensureInitialized();
+            var curHash = getHash();
+            hash = curHash;
+            callback(curHash, false);
+        };
+        
+        that.trigger = function() {
+            that.ensureInitialized();
+            var curHash = getHash();
+            callback(curHash, false);
+        };
 
         function getHash() {
             // Internet Explorer 6 (and possibly other browsers) extracts the query
@@ -137,7 +149,8 @@ define(function(require) {
             // location.href.
             var index = window.location.href.indexOf('#');
             return (index == -1 ? '' : window.location.href.substr(index + 1));
-        };
+        }
+        ;
 
         function setHash(newHash) {
             // Cancel if the new hash is the same as the current one, since there
@@ -145,7 +158,7 @@ define(function(require) {
             // same hash multiple times in a row. A wrapper can handle this by
             // adding an incrementing counter to the end of the hash.
             if (newHash == hash) {
-                return;
+                return false;
             }
 
             if (iframe) {
@@ -155,7 +168,7 @@ define(function(require) {
                 callback(newHash, false);
             }
             return newHash;
-        };
+        }
 
 // Used by all browsers except Internet Explorer 7 and below.
         function poll() {
@@ -164,7 +177,7 @@ define(function(require) {
                 hash = curHash;
                 callback(curHash, false);
             }
-        };
+        }
 
         // From: http://perfectionkills.com/detecting-event-support-without-browser-sniffing/
         function isHashChangeSupported() {
@@ -179,7 +192,7 @@ define(function(require) {
             // generates false positives).
             return isSupported && (document.documentMode === undefined ||
                     document.documentMode > 7);
-        };
+        }
 
         function createIframe() {
             var tempEl = document.createElement();
@@ -188,7 +201,7 @@ define(function(require) {
             var frame = tempEl.childNodes[0];
             document.body.appendChild(frame);
             return frame;
-        };
+        }
 
 // Used to create a history entry with a value in the iframe.
         function setIframe(newHash) {
@@ -203,7 +216,7 @@ define(function(require) {
                     setIframe(newHash);
                 }, 10);
             }
-        };
+        }
 
 // Used by Internet Explorer 7 and below to set up an iframe that keeps track
 // of history changes.
@@ -237,7 +250,7 @@ define(function(require) {
                 } catch (e) {
                 }
             }, 50);
-        };
+        }
 
         return that;
     };
