@@ -100,11 +100,11 @@ define(function(require) {
 
                     processHashChange = false;
 
-                    var viewName = event.path;
-                    //var viewName = event.parameters.page;
+                    //var viewName = event.path;
+                    var viewName = event.parameters.page;
                     //if (!viewName) {
-                        //var url = $.parseUrl(location.href);
-                        //viewName = url.params.page;
+                    //var url = $.parseUrl(location.href);
+                    //viewName = url.params.page;
                     //}
                     console.log("viewName", viewName);
                     //console.log("hash", $.address.hash());
@@ -136,12 +136,9 @@ define(function(require) {
                 }
             });
             //console.log("address path", $.address.path());
-            //var hasPage = $.address.parameter("page");
-            //if (!hasPage) {
-            //  var url = $.parseUrl(location.href);
-            //hasPage = url.params.page;
-            //}
-            if ($.address.path()) {
+            var hasPage = $.address.parameter("page");
+            //var hasPage = $.address.path();
+            if (hasPage) {
                 //viewManager.showView({view: Home});
                 //$.address.value($.address.value());
                 //console.log("updating");
@@ -150,7 +147,7 @@ define(function(require) {
 
                 if (defaultView) {
                     options.view = defaultView;
-                    console.log("show defaultView calld");
+                    console.log("show defaultView called");
                     this.showView(options).then(function(view) {
                         console.log("show default view deferred", view);
                         if (onHashChange) {
@@ -218,11 +215,11 @@ define(function(require) {
                     that.commonShowView(View, deferredHolder, defaults);
                     /*
                      defaults.view = new View();
-                     
+
                      options.viewInstance = defaults.view;
                      defaults.mainDeferred = mainDeferred;
                      that.showViewInstance(defaults);
-                     
+
                      return mainDeferred.promise();
                      */
                 });
@@ -241,7 +238,7 @@ define(function(require) {
              //setTimeout(function() {
              var result = that.showViewInstance(defaults);
              //});
-             
+
              var mainPromise = mainDeferred.promise();
              mainPromise.attached = result.attached;
              mainPromise.visible = result.visible;
@@ -271,7 +268,7 @@ define(function(require) {
             deferredHolder.visibleDeferred = visibleDeferred;
             deferredHolder.promises = promises;
             return deferredHolder;
-        }
+        };
 
         this.commonShowView = function(view, deferredHolder, defaults) {
             defaults.view = new view();
@@ -290,6 +287,16 @@ define(function(require) {
              */
         };
 
+        this.hasMovedToNewView = function(route) {
+            var url = $.parseUrl(location.href);
+            var currentViewName = url.params.page;
+            if (currentViewName === route) {
+                return false;
+            }
+            return true;
+
+        };
+
         this.showViewInstance = function(options) {
             console.log("SHOW VIEW INSTANCE");
             var view = options.view;
@@ -304,7 +311,7 @@ define(function(require) {
             processHashChange = false;
             var route = routesByPath[viewPath] || viewPath;
             $.address.autoUpdate(false);
-            $.address.value(route);
+            //$.address.value(route);
             for (var param in params) {
                 var val = params[param];
                 if ($.isArray(val)) {
@@ -316,7 +323,13 @@ define(function(require) {
                     $.address.parameter(param, val);
                 }
             }
-            //$.address.parameter("page", route);
+            var newView = this.hasMovedToNewView(route);
+            if (newView) {
+                console.log("NEW VIEW!");
+                $.address.value("");
+            }
+            //$.address.value("");
+            $.address.parameter("page", route);
             $.address.autoUpdate(true);
             $.address.update();
             processHashChange = true;
