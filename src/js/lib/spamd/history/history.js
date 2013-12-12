@@ -24,20 +24,20 @@ define(function(require) {
         var changeCallback;
 
         that.skipOnce = function(val) {
-            if (typeof val !== 'undefined') {
+            if (typeof val === 'undefined') {
+                return skipOnce;
+            } else {
                 skipOnce = val;
                 return val;
-            } else {
-                return skipOnce;
             }
         };
 
         that.disable = function(val) {
-            if (typeof val !== 'undefined') {
+            if (typeof val === 'undefined') {
+                return disable;
+            } else {
                 disable = val;
                 return val;
-            } else {
-                return disable;
             }
         };
 
@@ -81,10 +81,10 @@ define(function(require) {
 
             ensureParamsInitialized();
 
-            if (typeof val !== 'undefined') {
-                return paramsObj.set(val);
-            } else {
+            if (typeof val === 'undefined') {
                 return paramsObj.get();
+            } else {
+                return paramsObj.set(val);
             }
         };
 
@@ -95,10 +95,10 @@ define(function(require) {
 
             ensureParamsInitialized();
 
-            if (typeof param !== 'undefined') {
-                paramsObj.get(param);
-            } else {
+            if (typeof param === 'undefined') {
                 return paramsObj.get();
+            } else {
+                paramsObj.get(param);
             }
         };
 

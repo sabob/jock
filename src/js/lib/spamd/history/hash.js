@@ -63,11 +63,11 @@ define(function(require) {
         var that = function(val) {
             that.ensureInitialized();
 
-            if (typeof val !== 'undefined') {
-                return setHash(val);
+            if (typeof val === 'undefined') {
+                return getHash();
 
             } else {
-                return getHash();
+                return setHash(val);
             }
         };
 
