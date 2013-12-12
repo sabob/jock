@@ -8,7 +8,7 @@
 define(function(require) {
     var $ = require("jquery");
 
-    var createHashParams = function() {
+    var createParams = function() {
 
         var params;
 
@@ -64,22 +64,22 @@ define(function(require) {
 
             result.hash = function() {
                 return "#" + result.string();
-            }
+            };
 
             return result;
         };
 
-        var parseParams = function(hash) {
+        var parseParams = function(val) {
             //var params = window.location.hash ? window.location.hash.substr(1).split("&") : [];
             var params = {};
-            if (hash == null) {
+            if (val == null) {
                 return params;
             }
-            if (hash.charAt(0) === "#") {
-                hash = hash.substr(1);
+            if (val.charAt(0) === "#") {
+                val = val.substr(1);
             }
 
-            $.each(hash.replace(/\+/g, ' ').split('&'), function(i, entry) {
+            $.each(val.replace(/\+/g, ' ').split('&'), function(i, entry) {
                 var param = entry.split('=');
                 var key = decodeURIComponent(param[0]);
                 var val = '';
@@ -112,8 +112,8 @@ define(function(require) {
         return that;
     };
 
-    var hashParams = createHashParams();
-    return hashParams;
+    var params = createParams();
+    return params;
 
 //url("x").params({"a":"b"}).hparams.add().remove().hparams.set()params().addParam("a", "b").removeParam("x").setParam("x". "y").setHashParam("moo", "pok");
 //var x = url("");
