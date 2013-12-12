@@ -115,5 +115,9 @@ define(function(require) {
     var hashParams = createHashParams();
     return hashParams;
 
+//url("x").params({"a":"b"}).hparams.add().remove().hparams.set()params().addParam("a", "b").removeParam("x").setParam("x". "y").setHashParam("moo", "pok");
+//var x = url("");
+
+//moo();
 
 });

@@ -16,11 +16,7 @@ define(function(require) {
                 return;
             }
 
-            if (arguments.length) {
-                return hash(val);
-            } else {
-                return hash();
-            }
+            return hash(val);
         };
 
         var skipOnce = false;
@@ -28,7 +24,7 @@ define(function(require) {
         var changeCallback;
 
         that.skipOnce = function(val) {
-            if (arguments.length) {
+            if (typeof val !== 'undefined') {
                 skipOnce = val;
                 return val;
             } else {
@@ -37,7 +33,7 @@ define(function(require) {
         };
 
         that.disable = function(val) {
-            if (arguments.length) {
+            if (typeof val !== 'undefined') {
                 disable = val;
                 return val;
             } else {
@@ -85,7 +81,7 @@ define(function(require) {
 
             ensureParamsInitialized();
 
-            if (arguments.length) {
+            if (typeof val !== 'undefined') {
                 return paramsObj.set(val);
             } else {
                 return paramsObj.get();
@@ -99,7 +95,7 @@ define(function(require) {
 
             ensureParamsInitialized();
 
-            if (arguments.length) {
+            if (typeof param !== 'undefined') {
                 paramsObj.get(param);
             } else {
                 return paramsObj.get();
@@ -113,7 +109,7 @@ define(function(require) {
 
             ensureParamsInitialized();
 
-            if (arguments.length) {
+            if (typeof params !== 'undefined') {
                 paramsObj.add(params);
             }
         };
@@ -125,7 +121,7 @@ define(function(require) {
 
             ensureParamsInitialized();
 
-            if (arguments.length) {
+            if (typeof params !== 'undefined') {
                 paramsObj.set(params);
             }
         };
@@ -137,7 +133,7 @@ define(function(require) {
 
             ensureParamsInitialized();
 
-            if (arguments.length) {
+            if (typeof params !== 'undefined') {
                 paramsObj.remove(params);
             }
         };
@@ -155,6 +151,10 @@ define(function(require) {
             changeCallback = callback;
             hash.init(hashHandler);
         };
+        
+        that.clear = function() {
+            that.params.clear();
+        };
 
         function ensureParamsInitialized() {
             if (paramsObj == null) {
@@ -168,6 +168,7 @@ define(function(require) {
 
     $.spamd.history = createHistory();
 
+/*
     var h = $.spamd.history;
     //h.disable(true);
     $.spamd.history.init(function(newHash, initial) {
@@ -179,7 +180,6 @@ define(function(require) {
             console.log('Hash changed to "' + newHash + '"');
         }
     });
-
     h.hash('moo=&x=1&x=2&y=');
     h.update();
     console.log("h", h.hash());
@@ -191,7 +191,7 @@ define(function(require) {
     //console.log("params.add'(x', 'y')", h.params.get());
     h.update();
     h.trigger();
-
+*/
 
     //hash('x=1&y&x=1');
     //var val = hash();

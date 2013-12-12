@@ -24,7 +24,7 @@ requirejs(["jquery"], function($) {
 });
 //requirejs(["jquery.history"]);
 //requirejs(["history.adapter.jquery"]);
-//requirejs(["jsuri"]);
+requirejs(["jsuri"]);
 requirejs(["jquery.deparam"]);
 requirejs(["jquery.deserialize"]);
 //requirejs([ "app/main"]);

@@ -2,7 +2,8 @@ define(function(require) {
 
     var $ = require("jquery");
     require("domReady!");
-    require("jquery.address");
+    //require("jquery.address");
+    require("spamd/history/history");
     var utils = require("../utils/utils");
     var templateEngine = require("../template/template-engine");
     function ViewManager() {
@@ -28,6 +29,7 @@ define(function(require) {
         this.hash = {
         };
 
+/*
         this.hash.disable = function(val) {
             if (val == null) {
                 return disableHash;
@@ -41,6 +43,7 @@ define(function(require) {
             }
             skipHashChangeOnce = val;
         };
+        */
 
         this.setRoutes = function(map) {
             if (!map) {
@@ -78,19 +81,32 @@ define(function(require) {
                 onHashChange = options.onHashChange;
             }
 
-            $.address.strict(false);
+            //$.address.strict(false);
 
             //$.address.state("http://localhost:9988/").init(function() {
             //});
             //$.address.autoUpdate(false);
             //$.address.change(function(event) {
-            console.log("CHANGE REGISTERED");
-            $.address.change(function(event) {
+            console.log("HISTORY REGISTERED");
+
+
+            $.spamd.history.init(function(newHash, initial) {
+
+                console.log('Hash "' + newHash + '"');
+                if (initial) {
+                    console.log('Initial Hash is "' + newHash + '"');
+                } else {
+                    console.log('Hash changed to "' + newHash + '"');
+                }
+            //});
+
+            //$.address.change(function(event) {
+            /*
                 console.log("CHANGE", event);
                 if (that.hash.skipOnce()) {
                     that.hash.skipOnce(false);
                     return;
-                }
+                }*/
                 //event.preventDefault();
                 //event.stopPropagation();
 
@@ -101,7 +117,8 @@ define(function(require) {
                     processHashChange = false;
 
                     //var viewName = event.path;
-                    var viewName = event.parameters.page;
+                    //var viewName = event.parameters.page;
+                    var viewName = $.spamd.history.params().page;
                     //if (!viewName) {
                     //var url = $.parseUrl(location.href);
                     //viewName = url.params.page;
@@ -120,7 +137,8 @@ define(function(require) {
                     if (viewPath) {// ensure path is not blank
                         //if (name !== event.path) { // ensure we don't process path twice
                         //console.log("name", viewPath, "event.path", event.path);
-                        var params = event.parameters;
+                        //var params = event.parameters;
+                        var params = $.spamd.history.params.get();
                         //console.log("URL PArams", params);
                         //console.log("initial ShowView for:", viewPath);
                         console.log("showView called from HASH", viewPath);
@@ -136,13 +154,15 @@ define(function(require) {
                 }
             });
             //console.log("address path", $.address.path());
-            var hasPage = $.address.parameter("page");
+            //var hasPage = $.address.parameter("page");
+            var hasPage = $.spamd.history.params().page;
             //var hasPage = $.address.path();
             if (hasPage) {
                 //viewManager.showView({view: Home});
                 //$.address.value($.address.value());
                 //console.log("updating");
-                $.address.update();
+                //$.address.update();
+                $.spamd.history.update();
             } else {
 
                 if (defaultView) {
@@ -215,11 +235,11 @@ define(function(require) {
                     that.commonShowView(View, deferredHolder, defaults);
                     /*
                      defaults.view = new View();
-
+                     
                      options.viewInstance = defaults.view;
                      defaults.mainDeferred = mainDeferred;
                      that.showViewInstance(defaults);
-
+                     
                      return mainDeferred.promise();
                      */
                 });
@@ -238,7 +258,7 @@ define(function(require) {
              //setTimeout(function() {
              var result = that.showViewInstance(defaults);
              //});
-
+             
              var mainPromise = mainDeferred.promise();
              mainPromise.attached = result.attached;
              mainPromise.visible = result.visible;
@@ -288,11 +308,13 @@ define(function(require) {
         };
 
         this.hasMovedToNewView = function(route) {
-            var url = $.parseUrl(location.href);
-            var currentViewName = url.params.page;
+            var currentViewName = $.spamd.history.params().page;
+            //var url = $.parseUrl(location.href);
+            //var currentViewName = url.params.page;
             if (currentViewName === route) {
                 return false;
             }
+            console.info("You have moved to a new view. From " + currentViewName + " to " + route);
             return true;
 
         };
@@ -310,28 +332,36 @@ define(function(require) {
 
             processHashChange = false;
             var route = routesByPath[viewPath] || viewPath;
-            $.address.autoUpdate(false);
+            $.spamd.history.params.set(params);
+            //$.address.autoUpdate(false);
             //$.address.value(route);
+            /*
             for (var param in params) {
                 var val = params[param];
+                //$.spamd.history.params.add({param : item});
+                
                 if ($.isArray(val)) {
                     for (var i = 0; i < val.length; i++) {
                         var item = val[i];
-                        $.address.parameter(param, item, true);
+                        //$.address.parameter(param, item, true);
+                        $.spamd.history.params.add({param : item});
                     }
                 } else {
-                    $.address.parameter(param, val);
+                    $.spamd.history.params.add({param : item});
+                    //$.address.parameter(param, val);
                 }
-            }
+            }*/
             var newView = this.hasMovedToNewView(route);
             if (newView) {
-                console.log("NEW VIEW!");
-                $.address.value("");
+                //$.address.value("");
+                $.spamd.history.clear();
             }
             //$.address.value("");
-            $.address.parameter("page", route);
-            $.address.autoUpdate(true);
-            $.address.update();
+            $.spamd.history.params.set({page : route});
+            //$.address.parameter("page", route);
+            //$.address.autoUpdate(true);
+            //$.address.update();
+            $.spamd.history.update();
             processHashChange = true;
             //$.address.value(viewName);
             //route[viewName] = arguments;
@@ -411,8 +441,10 @@ define(function(require) {
             if (!view.onInit) {
                 throw new Error("Views must have a public 'onInit' method!");
             }
-
-            var initOptions = {args: args, params: params, hashChange: options.hashChange};
+            
+            var viewOptions = {};
+            viewOptions.path = route;
+            var initOptions = {args: args, params: params, hashChange: options.hashChange, view: viewOptions};
             view.onInit(dom, initOptions);
             //return result;
         };

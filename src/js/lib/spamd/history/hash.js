@@ -60,11 +60,11 @@ define(function(require) {
         // IE-specific
         var iframe;
 
-        var that = function(hash) {
+        var that = function(val) {
             that.ensureInitialized();
 
-            if (arguments.length) {
-                return setHash(hash);
+            if (typeof val !== 'undefined') {
+                return setHash(val);
 
             } else {
                 return getHash();
