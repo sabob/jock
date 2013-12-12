@@ -1,7 +1,7 @@
 define(function(require) {
     var $ = require("jquery");
     var hash = require("./hash");
-    var params = require("./params");
+    var params = require("../utils/params");
     var paramsObj = null;
 
     $.spamd = $.spamd || {};
