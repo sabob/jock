@@ -60,7 +60,7 @@ define(function(require) {
                 return;
             }
             if (paramsObj) {
-                var str = paramsObj.string();
+                var str = paramsObj.toString();
                 hash(str);
                 paramsObj = null;
             }
@@ -196,7 +196,7 @@ define(function(require) {
     //hash('x=1&y&x=1');
     //var val = hash();
     //var p = params(val);
-    //console.log("params", val, p.get(), p.string());
+    //console.log("params", val, p.get(), p.toString());
 
     return $.spamd.history;
 });
