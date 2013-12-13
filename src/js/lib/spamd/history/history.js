@@ -81,8 +81,8 @@ define(function(require) {
 
             ensureParamsInitialized();
 
-            if (typeof val === 'undefined') {
-                return paramsObj.get();
+            if (typeof val === 'undefined' || typeof val === 'string') {
+                return paramsObj.get(val);
             } else {
                 return paramsObj.set(val);
             }
