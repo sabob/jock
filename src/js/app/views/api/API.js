@@ -11,17 +11,18 @@ define(function(require) {
             return template;
         };
         this.onInit = function(dom, options) {
+            console.log("API path", options.view.path);
             //console.log("API.onInit", options);
             //viewManager.hash.disabled(true);
             //console.log("Hash Disabled true");
 
             var animValue = !options.hashChange;
-            console.log("Will anim", options);
+
             dom.attach(this.getTemplate(), {anim: animValue});
             dom.attached.then(onAttached);
             dom.visible.then(onVisible);
             function onAttached() {
-                console.log("POS", $(".toc").position());
+
                 //var thref = location.href;
                 //  $.address.parameter("id", null);
                 //var lhref = location.href;
@@ -36,15 +37,17 @@ define(function(require) {
                     if (href) {
                         href = "&" + href;
                     }
-
-                    //console.log("URI", uri);
+                    
                     var lhref = removeParameter(location.href, "id");
                     $(this).attr("href", lhref + href);
                 });
                 $(".toc a").on("click", function(e) {
+                    
+                    var url = $.spamd.url(window.location.href);
+                    console.log("URL ANCHOR", url.anchor());
                     //console.log("url", $.parseUrl(this.href));
                     var url = $.parseUrl(this.href);
-                    viewManager.hash.skipOnce(true);
+                    $.spamd.history.skipOnce(true);
                     var id = url.params.id;
                     scrollIntoView(id);
                 });
@@ -77,7 +80,7 @@ define(function(require) {
 
         function removeParameter(url, param) {
             var idx = url.indexOf(param + "=");
-            if (idx == -1) {
+            if (idx === -1) {
                 return url;
             }
             url = url.substr(0, idx);
