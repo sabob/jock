@@ -68,7 +68,7 @@ define(function(require) {
         return source * 1 || 0;
     };
     
-    $.spamd = $.spamd = {};
+    $.spamd = $.spamd || {};
     $.spamd.string = string;
 
     return string;

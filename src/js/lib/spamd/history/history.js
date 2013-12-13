@@ -3,6 +3,7 @@ define(function(require) {
     var hash = require("./hash");
     var params = require("../utils/params");
     var paramsObj = null;
+    
 
     $.spamd = $.spamd || {};
     $.spamd.history = $.spamd.history || {};
@@ -198,5 +199,7 @@ define(function(require) {
     //var p = params(val);
     //console.log("params", val, p.get(), p.toString());
 
+//console.log("History goes1", $.spamd);
+//console.log("History goes2", $.spamd.history);
     return $.spamd.history;
 });

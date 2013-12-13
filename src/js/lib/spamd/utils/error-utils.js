@@ -9,10 +9,10 @@
 }(function($) {
 // use $ safely, it's provided either by AMD or module pattern
 
-    var spamd = {};
-    if (!$.spamd) {
+    $.spamd = $.spamd || {};
+    /*if (!$.spamd) {
         $.spamd = spamd;
-    }
+    }*/
     $.spamd.showError = function(text, selector) {
         selector = selector || 'body';
         var tmpl = '<div id="kv-overlay" class="overlay"></div><div id="errorDialog"><div id="errorHolder"></div><div class="close bl-close"><a href="#">Close</a></div><div class="close br-close"><a href="#">Close</a></div></div>';
@@ -149,5 +149,5 @@
             });
         }
     };
-    return spamd;
+    return $.spamd;
 }));
