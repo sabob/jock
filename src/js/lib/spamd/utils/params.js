@@ -26,6 +26,22 @@ define(function(require) {
             };
 
             result.add = function(newParams) {
+                if (arguments.length === 1) {
+
+                    if (typeof newParams === 'string') {
+                        putParam(params, newParams, null);
+
+                    } else {
+                        addObject(newParams);
+
+                    }
+
+                } else if (arguments.length > 1) {
+                    addArray.apply(this, arguments);
+                }
+            };
+
+            function addObject(newParams) {
                 for (var key in newParams) {
 
                     var val = newParams[key];
@@ -37,18 +53,68 @@ define(function(require) {
                         putParam(params, key, val);
                     }
                 }
-            };
+            }
+
+            function addArray() {
+                for (var i = 0; i < arguments.length; i += 2) {
+                    var key = arguments[i];
+                    var val = null;
+
+                    // Check if there is an matching val for the key
+                    if (arguments.length > i + 1) {
+                        val = arguments[i + 1];
+                    }
+
+                    if ($.isArray(val)) {
+                        for (var i = 0; i < val.length; i++) {
+                            putParam(params, key, val[i]);
+                        }
+                    } else {
+                        putParam(params, key, val);
+                    }
+                }
+            }
 
             result.set = function(newParams) {
-                for (var p in newParams) {
-                    params[p] = newParams[p];
+                if (arguments.length === 1) {
+
+                    if (typeof newParams === 'string') {
+                        params[newParams] = null;
+
+                    } else {
+
+                        for (var key in newParams) {
+                            var val = newParams[key];
+                            params[key] = val;
+                        }
+                    }
+
+                } else if (arguments.length > 1) {
+                    for (var i = 0; i < arguments.length; i += 2) {
+                        var key = arguments[i];
+                        var val = null;
+
+                        // Check if there is an matching val for the key
+                        if (arguments.length > i + 1) {
+                            val = arguments[i + 1];
+                        }
+                        params[key] = val;
+                    }
                 }
             };
 
             result.remove = function(removeParams) {
-                removeParams = (typeof (removeParams) == 'string') ? [removeParams] : removeParams;
-                for (var i = 0; i < removeParams.length; i++) {
-                    delete params[removeParams[i]];
+                if (arguments.length === 1) {
+                    removeParams = (typeof (removeParams) === 'string') ? [removeParams] : removeParams;
+                    for (var i = 0; i < removeParams.length; i++) {
+                        delete params[removeParams[i]];
+                    }
+
+                } else if (arguments.length > 1) {
+                    for (var i = 0; i < arguments.length; i++) {
+                        delete params[arguments[i]];
+                    }
+
                 }
             };
 
