@@ -29,7 +29,7 @@ define(function(require) {
 
             index = hash.indexOf("&");
             if (index >= 0) {
-                hash = has.substring(0, index);
+                hash = hash.substring(0, index);
             }
         }
 
