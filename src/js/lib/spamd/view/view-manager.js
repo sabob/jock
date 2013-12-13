@@ -52,11 +52,11 @@ define(function(require) {
 
             routesByName = map;
             routesByPath = {};
-            console.log("RoutesMap is now empy!");
+            //console.log("RoutesMap is now empy!");
             for (var prop in routesByName) {
                 routesByPath[routesByName[prop]] = prop;
             }
-            console.log("RoutesMap is now populated!");
+            //console.log("RoutesMap is now populated!");
             //console.log("routesByPath", routesByPath);
         };
 
@@ -87,16 +87,17 @@ define(function(require) {
             //});
             //$.address.autoUpdate(false);
             //$.address.change(function(event) {
-            console.log("HISTORY REGISTERED");
+            //console.log("HISTORY REGISTERED", $.spamd);
+            //console.log("HISTORY REGISTERED", $.spamd.history);
 
 
             $.spamd.history.init(function(newHash, initial) {
 
-                console.log('Hash "' + newHash + '"');
+                //console.log('Hash "' + newHash + '"');
                 if (initial) {
-                    console.log('Initial Hash is "' + newHash + '"');
+                    //console.log('Initial Hash is "' + newHash + '"');
                 } else {
-                    console.log('Hash changed to "' + newHash + '"');
+                    //console.log('Hash changed to "' + newHash + '"');
                 }
             //});
 
@@ -110,7 +111,7 @@ define(function(require) {
                 //event.preventDefault();
                 //event.stopPropagation();
 
-                console.log("PROCESS HASH CHANGE OVER", disableHash);
+                //console.log("PROCESS HASH CHANGE OVER", disableHash);
 
                 if (processHashChange && !disableHash) {
 
@@ -123,11 +124,13 @@ define(function(require) {
                     //var url = $.parseUrl(location.href);
                     //viewName = url.params.page;
                     //}
-                    console.log("viewName", viewName);
+                    //console.log("viewName", viewName);
                     //console.log("hash", $.address.hash());
                     //console.log("path", $.address.path());
                     //console.log("value", $.address.value());
                     //console.log("parameterNames", $.address.parameterNames());
+                    //console.log("CURR routes", routesByPath);
+                    //console.log("CURR routes", routesByName);
                     var viewPath = routesByName[viewName];
                     if (!viewPath) {
                         viewPath = viewName;
@@ -141,10 +144,10 @@ define(function(require) {
                         var params = $.spamd.history.params.get();
                         //console.log("URL PArams", params);
                         //console.log("initial ShowView for:", viewPath);
-                        console.log("showView called from HASH", viewPath);
+                        //console.log("showView called from HASH", viewPath);
                         that.showView({view: viewPath, params: params, hashChange: true}).then(function(view) {
                             if (onHashChange) {
-                                console.log("show HASH view deferred", view);
+                                //console.log("show HASH view deferred", view);
                                 onHashChange(view);
                             }
                             processHashChange = true;
@@ -167,9 +170,9 @@ define(function(require) {
 
                 if (defaultView) {
                     options.view = defaultView;
-                    console.log("show defaultView called");
+                    //console.log("show defaultView called");
                     this.showView(options).then(function(view) {
-                        console.log("show default view deferred", view);
+                        //console.log("show default view deferred", view);
                         if (onHashChange) {
                             onHashChange(view);
                         }
