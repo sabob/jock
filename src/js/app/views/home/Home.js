@@ -15,6 +15,13 @@ define(function(require) {
         // priviledged methods
 
         this.onInit = function(dom, args) {
+            var url = $.spamd.url("https://bob:pok@yahoo.com:8080/mydir1/mydir2/index.html?x=1&y=1#x=1&y=1", true);
+            //url.setParam("x");
+            url.removeParam("y");
+            url.addParam("m", null);
+            console.log("URL", url.uri);
+            console.log("Hash PARAMS", url.getHashParam("x"));
+            console.log("MyURL", url.port(999).toString());
                 Handlebars.registerPartial("titlePartial", titlePartial);
             //onReady();
             var context = {'name': 'Bob'};
