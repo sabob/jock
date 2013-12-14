@@ -1,5 +1,5 @@
 ({
-    "appDir": "../src",
+    appDir: "../src",
    baseUrl: "js/lib",
     dir: "../deploy",
     optimize: 'uglify',
@@ -29,5 +29,5 @@
             return null;
         }
         return contents;
-    },
+    }
 })
