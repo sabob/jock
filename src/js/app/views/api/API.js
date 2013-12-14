@@ -12,7 +12,7 @@ define(function(require) {
         };
         this.onInit = function(dom, options) {
             console.log("API path", options.view.path);
-      
+
 
             var animValue = !options.hashChange;
 
@@ -22,10 +22,11 @@ define(function(require) {
 
             function onAttached() {
 
+                var windowUrl = $.spamd.url().removeHashParam("id");
+
                 $(".toc a").each(function(i, elem) {
                     var href = $(this).attr("href");
-                    
-                    var windowUrl = $.spamd.url().removeHashParam("id");
+
                     $(this).attr("href", windowUrl + "&" + href);
                 });
                 $(".toc a").on("click", function(e) {
