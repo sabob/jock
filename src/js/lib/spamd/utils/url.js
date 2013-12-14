@@ -13,7 +13,12 @@ define(function(require) {
     }
 
     function Url(url, strictMode) {
-        url = url || window.location.href;
+        if (typeof url === 'boolean') {
+            strictMode = url;
+            url = window.location.href;
+        } else {
+            url = url || window.location.href;  
+        }
 
         this.uri = parseUri(url, strictMode);
 
@@ -343,13 +348,15 @@ define(function(require) {
         return string.isNotEmpty(s);
     }
 
-
 // parseUri 1.2.2
 // (c) Steven Levithan <stevenlevithan.com>
 // MIT License
     function parseUri(str, strictMode) {
         var options = parseUri.options;
-        strictMode = strictMode || false;
+        if (typeof strictMode === 'undefined') {
+            strictMode = true;
+        }
+
         var m = options.parser[strictMode ? "strict" : "loose"].exec(str);
         var uri = {};
         var i = 14;
