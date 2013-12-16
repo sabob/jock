@@ -150,7 +150,6 @@ define(function(require) {
             var index = window.location.href.indexOf('#');
             return (index == -1 ? '' : window.location.href.substr(index + 1));
         }
-        ;
 
         function setHash(newHash) {
             // Cancel if the new hash is the same as the current one, since there
