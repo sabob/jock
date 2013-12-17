@@ -1,7 +1,8 @@
 define(function(require) {
-    console.log("Global starting!");
+    console.log("Setup starting!");
 
     var $ = require("jquery");
+    require("spamd/spamd");
     //require("jquery.address");
     require("spamd/utils/error-utils");
     var viewManager = require("spamd/view/view-manager");
@@ -30,7 +31,7 @@ define(function(require) {
         var location = getActiveMenuLocation(item);
         item.addClass("active");
         $("#nav-ind").css(location);
-        
+
     };
     options.defaultView = Home;
     //options.params = {p1: ["val1", "val2"], p2: "pok"};
@@ -74,4 +75,10 @@ define(function(require) {
         };
         return location;
     }
+    
+    return {
+        start: function() {
+            
+        }
+    };
 });

@@ -2,6 +2,7 @@ define(function(require) {
 
     var $ = require("jquery");
     var template = require("hb!./API.htm");
+    var domUtils = require("app/util/dom-utils");
     var viewManager = require("spamd/view/view-manager");
     require("domReady!");
     function Intro() {
@@ -13,7 +14,6 @@ define(function(require) {
         this.onInit = function(dom, options) {
             console.log("API path", options.view.path);
 
-
             var animValue = !options.hashChange;
 
             dom.attach(this.getTemplate(), {anim: animValue});
@@ -22,7 +22,7 @@ define(function(require) {
 
             function onAttached() {
 
-                var windowUrl = $.spamd.url().removeHashParam("id");
+                var windowUrl = $.spamd.url().removeHashParam("id").toString();
 
                 $(".toc a").each(function(i, elem) {
                     var href = $(this).attr("href");
@@ -40,18 +40,23 @@ define(function(require) {
             function onVisible() {
                 console.log("POS2", $(".toc").position());
                 var id = options.params.id;
-                console.log("ID", id);
                 scrollIntoView(id);
+
+                //domUtils.trackSidebarBottomPosition();
             }
 
             function scrollIntoView(id) {
                 var top = 0;
                 if (id) {
-                    top = $("#" + id).offset().top;
+                    var $el = top = $("#" + id);
+                    if ($el.length) {
+                        top = $el.offset().top;
+                    }
                 }
-                console.log("ID", id);
                 $(window).scrollTop(top);
             }
+
+           //$('#f').followTo(250);
         };
     }
     return Intro;

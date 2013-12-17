@@ -3,19 +3,15 @@
 // Configure loading modules from the lib directory,
 // except 'app' ones, 
 requirejs.config({
-    "baseUrl": "js/lib",
+    "baseUrl": "../js/lib",
     "paths": {
-        "app": "../app"
-    },
-    "shim": {
-        "handlebars": {exports: "Handlebars"}
+        
     }
 });
 
 // Load the main app module to start the app
 //requirejs(["spamd/spamd", "app/setup", "app/main"]);
 
-requirejs(["spamd/spamd", "app/setup"], function() {
-    requirejs(["app/main"]);
+requirejs(["spamd/history/history"], function(history) {
 });
 

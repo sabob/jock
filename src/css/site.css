@@ -307,12 +307,30 @@ a:visited {
     color: #eee;
 }
 .footer {
+    display:  block;
+    /*height: 74px;*/
+}
+.footer-content {
+    opacity: 0.9;
     background-color: #000;
     padding: 20px;
     border-top: 5px solid #E5053A;
     color: #6D6D6D;
 }
+.footer-ind {
+    border: 1px solid red;
+    background-color: yellow;
+    width: 300px;
+    height: 50px;
+    /*position: fixed;
+    bottom: 0;*/
+    z-index: 1;
+    
+}
 #footer-holder {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
     
 }
 #logo {
@@ -334,21 +352,44 @@ a:visited {
 }
 .api .toc {
     border: 1px solid #000;
-    width: 200px;
+    width: 300px;
     overflow-y: auto;
     overflow-x: hidden;
     position:fixed;
+    bottom: 50px;
+    top: 61px;
+    padding: 10px;
+    margin: 15px;
+    
 }
 
 .api .toc .title {
     display: block;
+    margin-top: 10px;
 }
 
 .api .toc section {
 }
 
 .api .content {
-    margin: 40px 0 50px 260px;
+    margin: 40px 0 50px 350px;
     width: 550px;
     
+}
+
+.api .toc ul{
+    list-style-type: none;
+    margin: 5px 15px;
+}
+.api .toc ul li{
+    
+}
+.api a{
+    color: #000;
+    text-decoration: underline;
+    font-weight: 600;
+}
+.api .section a{
+    text-decoration: none;
+    font-weight: normal;
 }

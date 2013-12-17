@@ -258,7 +258,7 @@ blockquote {
   padding: 0 0 0 30px;
 }
 
-ul li {
+pre ul li {
   list-style: disc inside;
   padding-left: 20px;
 }

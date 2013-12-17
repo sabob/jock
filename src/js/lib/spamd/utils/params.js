@@ -7,6 +7,7 @@
 
 define(function(require) {
     var $ = require("jquery");
+    var string = require("spamd/utils/string");
 
     var createParams = function() {
 
@@ -160,6 +161,10 @@ define(function(require) {
         };
 
         function putParam(params, key, val) {
+            if (string.isBlank(key)) {
+                console.log("Empty url param key -> ignoring", key);
+                return;
+            }
 
             if ($.isArray(params[key])) {
                 // val is already an array, so push on the next value.
