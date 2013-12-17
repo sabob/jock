@@ -71,15 +71,15 @@ define(function(require) {
     viewManager.showHTML({anim: false, html: footer, target: "#footer-holder"});
 
     var $footer = $("#footer");
-    var $footerInd = $("#footer-ind");
+    var $footerHint = $("#footer-hint");
 
-    var footerHeight, footerIndHeight;
+    var footerHeight, footerHintHeight;
     setupFooterHeight();
     //$footer.css({position: "absolute"});
-    //$footerInd.css({"": "absolute"});
+    //$footerHint.css({"": "absolute"});
     var speed = "fast";
     var busyAnimating = false;
-    $("#footer-ind, #footer-content").on("mouseenter", function(e) {
+    $("#footer-hint, #footer-content").on("mouseenter", function(e) {
         //console.log("enter" + $(this).attr("id"));
         //var that = this;
         setTimeout(function() {
@@ -91,7 +91,7 @@ define(function(require) {
             var $toc = $("#toc");
             $footer.stop();
             $toc.stop();
-            tocBottom = footerHeight - footerIndHeight;
+            tocBottom = footerHeight - footerHintHeight;
             if (overlapTocAndFooterHint()) {
                 var tocBottom = footerHeight;
             }
@@ -100,7 +100,7 @@ define(function(require) {
 
         }, 0);
     });
-    $("#footer-ind, #footer-content").on("mouseleave", function(e) {
+    $("#footer-hint, #footer-content").on("mouseleave", function(e) {
         //console.log("leave" + $(this).attr("id"));
         var that = this;
         setTimeout(function() {
@@ -117,11 +117,11 @@ define(function(require) {
 
             var tocBottom = 0;
             if (overlapTocAndFooterHint()) {
-                tocBottom = footerIndHeight;
+                tocBottom = footerHintHeight;
             }
             console.log("tocbottom", tocBottom);
 
-            $footer.animate({height: footerIndHeight}, speed);
+            $footer.animate({height: footerHintHeight}, speed);
             $toc.animate({bottom: tocBottom}, speed);
 
         }, 0);
@@ -138,7 +138,7 @@ define(function(require) {
         if (!$toc.length) {
             return;
         }
-        var $footerHint = $("#footer-ind");
+        var $footerHint = $("#footer-hint");
         if (!$footerHint.length) {
             return;
         }
@@ -146,7 +146,6 @@ define(function(require) {
         var hintWidth = $footerHint.outerWidth();
         var hintRight = hintLeft + hintWidth;
         var tocLeft = $toc.position().left;
-        console.log("right vs lef", hintRight < (tocLeft));
         if (hintRight > tocLeft) {
             return true;
         }
@@ -159,9 +158,9 @@ define(function(require) {
         $footer.css({
             visibility: "none", display: "block", position: "absolute"});
         footerHeight = $footer.height();
-        footerIndHeight = $footerInd.height();
+        footerHintHeight = $footerHint.height();
         $footer.css({
-            visibility: "visible", height: footerIndHeight, position: "static"});
+            visibility: "visible", height: footerHintHeight, position: "static"});
     }
     //});
     /*
