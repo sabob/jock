@@ -79,15 +79,19 @@ define(function(require) {
     //$footerHint.css({"": "absolute"});
     var speed = "fast";
     var busyAnimating = false;
-    $("#footer-hint, #footer-content").on("mouseenter", function(e) {
-        //console.log("enter" + $(this).attr("id"));
-        //var that = this;
+    $("#footer-hint, #footer-content").on("mouseenter", mouseEnterFooterHint);
+    $("#footer-hint, #footer-content").on("mouseleave", mouseLeaveFooterHint);
+
+    function mouseEnterFooterHint(e) {
+        var that = this;
         setTimeout(function() {
             if (busyAnimating) {
-                //console.log("SKIP")
                 busyAnimating = false;
                 return;
             }
+
+            $("#footer-hint").addClass("active");
+
             var $toc = $("#toc");
             $footer.stop();
             $toc.stop();
@@ -99,27 +103,28 @@ define(function(require) {
             $toc.animate({bottom: tocBottom}, speed);
 
         }, 0);
-    });
-    $("#footer-hint, #footer-content").on("mouseleave", function(e) {
-        //console.log("leave" + $(this).attr("id"));
+    }
+
+    function mouseLeaveFooterHint(e) {
         var that = this;
         setTimeout(function() {
             if ($('#footer-content:hover').length > 0) {
                 busyAnimating = true;
-                //console.log("skip leave" + $(that).attr("id"));
                 return;
             }
+            if ($('#footer-hint:hover').length === 0) {
+                $("#footer-hint").removeClass("active");
+            }
 
-            //console.log("leave stopping" + $(that).attr("id"));
             var $toc = $("#toc");
             $footer.stop();
             $toc.stop();
+
 
             var tocBottom = 0;
             if (overlapTocAndFooterHint()) {
                 tocBottom = footerHintHeight;
             }
-            console.log("tocbottom", tocBottom);
 
             $footer.animate({height: footerHintHeight}, speed);
             $toc.animate({bottom: tocBottom}, speed);
@@ -131,7 +136,7 @@ define(function(require) {
          console.log("skip, hover:content true");
          return;
          }*/
-    });
+    }
 
     function overlapTocAndFooterHint() {
         var $toc = $("#toc");

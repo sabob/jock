@@ -10,7 +10,7 @@
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure, 
 .footer, header, hgroup, menu, nav, section {
-	display: block;
+    display: block;
 }
 
 p {
@@ -18,7 +18,7 @@ p {
 }
 body {
     font-size: 1.2em;
-  line-height: 1.5; 
+    line-height: 1.5; 
     overflow-y: scroll;
     text-shadow: none;    
     margin: 0;
@@ -27,7 +27,7 @@ body {
     /*background-color: #F4ED7C;*/
     background-color: #ECECEF;
     color: #000;
-    
+
 }
 /*
 .gutter {
@@ -73,7 +73,7 @@ h3{
 .header a {
     text-shadow: none;
     display: block;
-    
+
     padding: 16px 15px;
     margin: 0;
 }
@@ -91,7 +91,7 @@ h3{
     position: absolute;
     top: 57px;
     left: 0;
-    
+
     /*bottom: 80px;*/
     height: 4px;
     border-radius: 2px;
@@ -100,9 +100,9 @@ h3{
     float:left;
     list-style-type: none;
     padding: 0;
-    
+
     display: block;
-    
+
     /*padding-right: 20px;*/
 }
 
@@ -123,7 +123,7 @@ h3{
     font-size: 120px;
     margin: 0;
     color: #fff;
-    
+
 
 }
 h2 {
@@ -198,12 +198,12 @@ span.token, span.token span.pln, span.token span.atv {
 }
 
 #features > li {
-float: left;
-list-style-type: none;
-width: 370px;
-position: relative;
-margin: 0 10px;
-padding: 0;
+    float: left;
+    list-style-type: none;
+    width: 370px;
+    position: relative;
+    margin: 0 10px;
+    padding: 0;
 }
 
 #features > li div {
@@ -221,7 +221,7 @@ padding: 0;
 #features > li div.border {
     border-left: 1px dotted #ccc;
 }
-    
+
 
 .feature-list li {
     font-size: 15px;
@@ -236,7 +236,7 @@ padding: 0;
 
 a {
     color: #E5053A;
-  text-decoration: none;
+    text-decoration: none;
 }
 
 a:active {
@@ -271,7 +271,7 @@ a:visited {
     display: inline-block;
     font-size: 20px;
     font-weight: normal;
-    
+
     padding: 0;
     text-align: left;
     text-decoration: none;
@@ -322,16 +322,41 @@ a:visited {
     background-color: yellow;
     width: 300px;
     height: 50px;
-    /*position: fixed;
-    bottom: 0;*/
-    z-index: 1;
-    
+    line-height: 50px;
+    padding-left: 50px;
 }
+
+
+    .footer-hint i {
+    -webkit-transition-duration: 0.2s;
+    -moz-transition-duration: 0.2s;
+    -o-transition-duration: 0.2s;
+    transition-duration: 0.2s;
+
+    -webkit-transition-property: -webkit-transform,color;
+    -moz-transition-property: -moz-transform, color;
+    -o-transition-property: -o-transform,color;
+    transition-property: transform,color;
+    text-align:  right;
+    vertical-align: middle;
+    position: absolute;
+    left: 10px;
+    top: 10px;
+}
+
+.footer-hint.active i {
+    color: red;
+    -webkit-transform:rotate(180deg);
+    -moz-transform:rotate(180deg); 
+    -o-transform:rotate(180deg);
+    transform:rotate(180deg);
+}
+
 #footer-holder {
     position: fixed;
     bottom: 0;
     width: 100%;
-    
+
 }
 #logo {
     float: right;
@@ -360,7 +385,7 @@ a:visited {
     top: 61px;
     padding: 10px;
     margin: 15px;
-    
+
 }
 
 .api .toc .title {
@@ -374,7 +399,7 @@ a:visited {
 .api .content {
     margin: 40px 0 50px 350px;
     width: 550px;
-    
+
 }
 
 .api .toc ul{
@@ -382,7 +407,7 @@ a:visited {
     margin: 5px 15px;
 }
 .api .toc ul li{
-    
+
 }
 .api a{
     color: #000;

@@ -3,6 +3,7 @@ define(function(require) {
 
     var $ = require("jquery");
     require("spamd/spamd");
+    require("app/lib/jquery.hoverIntent");
     //require("jquery.address");
     require("spamd/utils/error-utils");
     var viewManager = require("spamd/view/view-manager");
