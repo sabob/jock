@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project name="Bou-site" default="" basedir=".">
+<project name="Spamd-site" default="" basedir=".">
     <!-- properties -->
     <property name="r.js" value="r.js" />
     <property name="rhino.jar" value="lib/js.jar" />
@@ -27,7 +27,7 @@
             <param name="requirejs.optimizer.settings" value="${js.build}" />
         </antcall>
         
-        <move file="${dist}/js/app.js" tofile="${dist}/js/lib/require.js"/>
+        <move file="${dist}/js/config.js" tofile="${dist}/js/lib/require.js"/>
         
         <move todir="${root}">
             <fileset dir="${dist}">
