@@ -1,3 +1,5 @@
+//Better TOC? http://www.html5rocks.com/en/tutorials/es6/promises/#toc-api
+
 define(function(require) {
 
     var $ = require("jquery");

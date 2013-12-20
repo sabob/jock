@@ -327,7 +327,7 @@ a:visited {
 }
 
 
-    .footer-hint i {
+.footer-hint i {
     -webkit-transition-duration: 0.2s;
     -moz-transition-duration: 0.2s;
     -o-transition-duration: 0.2s;
@@ -376,7 +376,6 @@ a:visited {
     position: relative;
 }
 .api .toc {
-    border: 1px solid #000;
     width: 300px;
     overflow-y: auto;
     overflow-x: hidden;
@@ -385,7 +384,12 @@ a:visited {
     top: 61px;
     padding: 10px;
     margin: 15px;
+    font-size: 15px;
+}
 
+.toc .header {
+    border-bottom: 1px solid #ddd;
+    font-weight: 700;
 }
 
 .api .toc .title {
@@ -407,14 +411,39 @@ a:visited {
     margin: 5px 15px;
 }
 .api .toc ul li{
-
+}
+.api h2 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
 }
 .api a{
     color: #000;
-    text-decoration: underline;
+    text-decoration: none;
     font-weight: 600;
+    font-size: 15px;
+}
+.api a:hover {
+    text-decoration: underline;
+    color: #333;
 }
 .api .section a{
-    text-decoration: none;
     font-weight: normal;
+}
+.toc a {
+    position:relative;
+    color: #555;
+}    
+.toc a:before {
+    font-family: FontAwesome;
+    font-size: 12px;
+    color: #bbb;
+    position:absolute;
+    top: 2px;
+    left:-15px;
+    content: "\f067";
+    //content: "\f101";
+}
+.toc ul ul a:before {
+    content: "\f068";
 }
