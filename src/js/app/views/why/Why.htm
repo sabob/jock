@@ -5,7 +5,7 @@
             <ul class="section">
                 <li>
 
-                    <a href="" class="title">SPAMD</a>
+                    <a href="" class="title">Why SPAMD</a>
 
                     <a href="id=errorUtils" class="title">errorUtils</a>
                     <ul class="section">
@@ -73,67 +73,10 @@
         <div class="content">
 
             <div>
-                <h2>SPAMD Documentation</h2>
-
-                <h3>Introduction</h3>
-
+                <h2>Why SPAMD</h2>
                 <p>
-                    SPAMD provides the best-of-breed components and some simple utilities to build Single Page Applications (SPA) using a
-                    structured MVC approach.
+                    SPAMD provides the best-of-breed components with a small and simple set of utilities for building single page applications (SPA).
                 </p>
-                <p>
-                    SPAMD is built on three major building blocks: <a target="_blank" href="http://jquery.com/">jQuery</a> for DOM manipulation and events,
-                    <a target="_blank" href="http://requirejs.org/">RequireJS (AMD)</a> for modularization and 
-                    <a target="_blank" href="http://requirejs.org/">Handlebars</a>
-                    for HTML templates.
-                </p>
-                <p>
-                    SPAMD is based on some core principles, namely:
-                </p>
-                <ul>
-                    <li>SPAMD must play nice with the web. If you want to use a JavaScript utility or jQuery plugin
-                        it should work as you would expect, no extra work should be required from your side.</li>
-                    <li>
-                        SPAMD does not interfere with DOM manipulation. You can perform any DOM manipulation you want, SPAMD doesn't care.
-                    </li>
-                    <li>
-                        HTML templates must consist of HTML, no propriety extensions.
-                    </li>
-                    <li>
-                        SPAMD should be simple and easy to learn. One should be able to learn SPAMD in a couple of hours.
-                    </li>
-                </ul>
-                
-                <p>
-                    SPAMD provides a simple mechanism to navigate between your views in a SPA. One of the core utilities is the #ViewManager.
-                    #ViewManager provides a method, #showView, for you guessed it, to show views.
-                </p>
-                <p>
-                    Views in SPAMD are AMD modules that contains regular a JavaScript function. Views don't extend from any 
-                    SPAMD provided types. The only requirement is that a view must include an #onInit method.
-                </p>
-                <p>
-                    An example AMD module for a SPAMD view:
-                </p>
-                <pre class="prettyprint">
-define(function(require) {
-    
-    function PersonView () {
-        
-        // The onInit method accepts an options object
-            this.onInit(options) {
-            }
-    }
-return PersonView;
-});</pre>
-                    
-                <p>
-                    Optionally an onDestroy method can also be specified.
-                    
-                </p>
-
-
-                <h3>Hello world example</h3>
                 <p>
                     Here is a Hello World example in SPAMD:
                 </p>
@@ -257,18 +200,18 @@ $("#form").copyFrom(model);
                 <p>
                     In this worst scenario case copying will be completely manual, one field at a time.
                 </p>
-                <pre class="prettyprint">
+                  <pre class="prettyprint">
 var model = {};
 model.name = "Bob";
 // Copy values to form
 $("#form #other").val(model.name); // Copying model.name to input with id of "other"
                 </pre>
-
+                
                 <p>
                     Every input will have to be copied in this fashion. Not ideal but keep in mind that with data binding you also have to
                     bind each and every field to the model:
                 </p>
-                <pre class="prettyprint">
+                 <pre class="prettyprint">
 <input name="other" type="text" data-bind="{{model.name}}"/>
 <input name="organisation" type="text" data-bind="{{model.company}}"/>
                 </pre>
@@ -286,7 +229,7 @@ $("#form #other").val(model.name); // Copying model.name to input with id of "ot
                     Now it is easy to reason over your codebase because it explicitly states behavior. If something goes wrong you can
                     put a breakpoint anywhere on one of those copy methods and see what is happening.
                 </p>
-
+                
                 <p>
                     But the biggest drawback of automatic data binding in a SPA setting, is that it cannot allow for DOM manipulation. Why? Because
                     that would break the automatic data binding since event listeners registered on the input controls would be destroyed
@@ -302,9 +245,9 @@ $("#form #other").val(model.name); // Copying model.name to input with id of "ot
                     a new version of the plugin is released it will have to ported again.
                 </p>
                 <p>
-
+                    
                 </p>
-
+                
                 <p id="view-manager">
                 <h2>
                     View Manager

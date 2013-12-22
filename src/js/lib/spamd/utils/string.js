@@ -13,6 +13,15 @@ define(function(require) {
             str = str == null ? '' : String(str);
             return str.charAt(0).toUpperCase() + str.slice(1);
         },
+        isCapitalized: function(str) {
+            str = str == null ? '' : String(str);
+            if (str.length === 0) {
+                return false;
+            }
+
+            var first = str.charAt(0);
+            return first.toUpperCase() === first;
+        },
         isEmpty: function(str) {
             if (str == null) {
                 return true;

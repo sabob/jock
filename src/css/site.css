@@ -42,6 +42,18 @@ h3{
     color: #eee;
 }
 
+.content h3 {
+    color: #000;
+    font-weight: 600;
+    font-size: 20px;
+}
+.content {
+    font-size: 15px;
+}
+.content ul {
+    margin-left: 20px;
+}
+
 .container {
     margin: 0 auto;
     width: 1170px;
@@ -412,22 +424,22 @@ a:visited {
 }
 .api .toc ul li{
 }
-.api h2 {
+.toc h2 {
     font-size: 15px;
     font-weight: 600;
     color: #333;
 }
-.api a{
+.toc a{
     color: #000;
     text-decoration: none;
     font-weight: 600;
     font-size: 15px;
 }
-.api a:hover {
+.toc a:hover {
     text-decoration: underline;
     color: #333;
 }
-.api .section a{
+.toc .section a{
     font-weight: normal;
 }
 .toc a {

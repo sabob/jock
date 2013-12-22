@@ -29,21 +29,21 @@ define(function(require) {
         this.hash = {
         };
 
-/*
-        this.hash.disable = function(val) {
-            if (val == null) {
-                return disableHash;
-            }
-            disableHash = val;
-        };
-
-        this.hash.skipOnce = function(val) {
-            if (val == null) {
-                return skipHashChangeOnce;
-            }
-            skipHashChangeOnce = val;
-        };
-        */
+        /*
+         this.hash.disable = function(val) {
+         if (val == null) {
+         return disableHash;
+         }
+         disableHash = val;
+         };
+         
+         this.hash.skipOnce = function(val) {
+         if (val == null) {
+         return skipHashChangeOnce;
+         }
+         skipHashChangeOnce = val;
+         };
+         */
 
         this.setRoutes = function(map) {
             if (!map) {
@@ -99,15 +99,15 @@ define(function(require) {
                 } else {
                     //console.log('Hash changed to "' + newHash + '"');
                 }
-            //});
+                //});
 
-            //$.address.change(function(event) {
-            /*
-                console.log("CHANGE", event);
-                if (that.hash.skipOnce()) {
-                    that.hash.skipOnce(false);
-                    return;
-                }*/
+                //$.address.change(function(event) {
+                /*
+                 console.log("CHANGE", event);
+                 if (that.hash.skipOnce()) {
+                 that.hash.skipOnce(false);
+                 return;
+                 }*/
                 //event.preventDefault();
                 //event.stopPropagation();
 
@@ -294,7 +294,23 @@ define(function(require) {
         };
 
         this.commonShowView = function(view, deferredHolder, defaults) {
-            defaults.view = new view();
+
+            // Check if invokeWithNew has been set yet
+            if (typeof view.invokeWithNew === "undefined") {
+
+                var invokewithNew = utils.isInvokeFunctionWithNew(view);
+                view.invokeWithNew = invokewithNew;
+            }
+
+            if (view.invokeWithNew) {
+                // Function name starts with uppercase so invoke with "new"
+                defaults.view = new view();
+
+            } else {
+                // Function name is lowercase so invoke without "new"
+                defaults.view = view();
+            }
+
             //options.viewInstance = defaults.view;
 
             //defaults.mainDeferred = deferredHolder.mainDeferred;
@@ -444,7 +460,7 @@ define(function(require) {
             if (!view.onInit) {
                 throw new Error("Views must have a public 'onInit' method!");
             }
-            
+
             var viewOptions = {};
             viewOptions.path = route;
             var initOptions = {args: args, params: params, hashChange: options.hashChange, view: viewOptions};

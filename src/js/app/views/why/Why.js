@@ -3,7 +3,7 @@
 define(function(require) {
 
     var $ = require("jquery");
-    var template = require("hb!./Docs.htm");
+    var template = require("hb!./Why.htm");
     var domUtils = require("app/util/dom-utils");
     var viewManager = require("spamd/view/view-manager");
     require("domReady!");

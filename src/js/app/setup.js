@@ -11,6 +11,7 @@ define(function(require) {
     var Intro = require("./views/intro/Intro");
     var API = require("./views/api/API");
     var Docs = require("./views/docs/Docs");
+    var Why = require("./views/why/Why");
     require("domReady!");
 
     setupActiveMenu();
@@ -20,7 +21,8 @@ define(function(require) {
         "api": API.id,
         "intro": Intro.id,
         "docs": Docs.id,
-        "home": Home.id
+        "home": Home.id,
+        "why": Why.id
     };
 
     options.onHashChange = function(view) {
@@ -28,6 +30,11 @@ define(function(require) {
         var route = routesByPath[view.id];
         console.log("change", view, view.id, "Route:", route);
         $("#navbar li.active").removeClass("active");
+
+        if (route == null) {
+            console.warn("View with id ", view.id, " does not have a route defined. Cannot determine which menu item this view is associated with.");
+            return;
+        }
         var item = $("#menu-" + route).parent();
         var location = getActiveMenuLocation(item);
         item.addClass("active");
@@ -67,7 +74,11 @@ define(function(require) {
 
     function getActiveMenuLocation(li) {
         var offsetTop = 57;
-        var offsetLeft = $(li).offset().left - $('#navbar').offset().left;
+        var $item = $(li);
+        var offsetLeft = 0;
+        if ($item.length) {
+            var offsetLeft = $item.offset().left - $('#navbar').offset().left;
+        }
         var location = {
             top: offsetTop,
             left: offsetLeft,
@@ -76,10 +87,10 @@ define(function(require) {
         };
         return location;
     }
-    
+
     return {
         start: function() {
-            
+
         }
     };
 });

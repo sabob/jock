@@ -4,6 +4,7 @@ define(function(require) {
     var Intro = require("./views/intro/Intro");
     var Home = require("./views/home/Home");
     var Docs = require("./views/docs/Docs");
+    var Why = require("./views/why/Why");
     var API = require("./views/api/API");
     var footer = require("hb!./views/footer/footer.htm");
     var viewManager = require("spamd/view/view-manager");
@@ -45,6 +46,7 @@ define(function(require) {
         //var link = e.target;
         //setActiveMenu(link);
     });
+    
 
     $("#menu-api").click(function(e) {
         e.preventDefault();
@@ -60,11 +62,17 @@ define(function(require) {
         //setActiveMenu(link);
     });
 
+
     $("#menu-download").click(function(e) {
         e.preventDefault();
         viewManager.showView({view: Intro});
         //var link = e.target;
         //setActiveMenu(link);
+    });
+
+     $("#menu-why").click(function(e) {
+        e.preventDefault();
+        viewManager.showView({view: Why});
     });
 
     console.log("MAIN: ShowHTML footer");

@@ -28,8 +28,13 @@ define(function(require) {
 
                 $(".toc a").each(function(i, elem) {
                     var href = $(this).attr("href");
+                    if (href) {
+                        href = windowUrl + "&" + href;
+                    } else {
+                        href = windowUrl;
+                    }
 
-                    $(this).attr("href", windowUrl + "&" + href);
+                    $(this).attr("href", href);
                 });
                 $(".toc a").on("click", function(e) {
                     var url = $.parseUrl(this.href);
