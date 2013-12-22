@@ -60,9 +60,12 @@ define(function(require) {
             return 0 === $.trim(str).length;
         };
 
-        this.getViewName = function(view) {
+        this.getFunctionName = function(view) {
             if (typeof view === 'string') {
                 return view;
+            }
+            if (view.name) {
+                return view.name;
             }
             var funcNameRegex = /function (.{1,})\(/;
             var results = (funcNameRegex).exec((view).constructor.toString());
