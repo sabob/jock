@@ -9,6 +9,10 @@ define(function(require) {
     require("domReady!");
 
     var string = {
+        capitalize: function(str) {
+            str = str == null ? '' : String(str);
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        },
         isEmpty: function(str) {
             if (str == null) {
                 return true;
@@ -67,7 +71,7 @@ define(function(require) {
     var parseNumber = function(source) {
         return source * 1 || 0;
     };
-    
+
     $.spamd = $.spamd || {};
     $.spamd.string = string;
 
