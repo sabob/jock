@@ -6,6 +6,7 @@ define(function(require) {
     var template = require("hb!./Docs.htm");
     var domUtils = require("app/util/dom-utils");
     var viewManager = require("spamd/view/view-manager");
+    var HelloWorldDemo = require("../demos/hello/HelloWorld");
     require("domReady!");
     function Intro() {
 
@@ -14,11 +15,12 @@ define(function(require) {
             return template;
         };
         this.onInit = function(dom, options) {
-            console.log("API path", options.view.path);
+            console.log("Docs path", options.view.path);
 
             var animValue = !options.hashChange;
-
-            dom.attach(this.getTemplate(), {anim: animValue});
+            
+            var o = {anim: animValue};
+            dom.attach(this.getTemplate(), o);
             dom.attached.then(onAttached);
             dom.visible.then(onVisible);
 
@@ -38,9 +40,17 @@ define(function(require) {
                 });
                 $(".toc a").on("click", function(e) {
                     var url = $.parseUrl(this.href);
-                    $.spamd.history.skipOnce(true);
+                    $.spamd.history.skipEventOnce(true);
                     var id = url.params.id;
                     scrollIntoView(id);
+                });
+                
+                $("#link-hello-world-demo").on("click", function(e) {
+                    e.preventDefault();
+                    //$.spamd.history.disable(true);
+                    $.spamd.history.disableOnce(true);
+                    viewManager.showView({view: HelloWorldDemo, target: "#hello-world-demo"});
+                    //$.spamd.history.disable(false);
                 });
             }
 

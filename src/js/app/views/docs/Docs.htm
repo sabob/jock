@@ -75,7 +75,7 @@
             <div>
                 <h2>SPAMD Documentation</h2>
 
-                <h3>Introduction</h3>
+                <h3 id="intro">Introduction</h3>
 
                 <p>
                     SPAMD provides the best-of-breed components and some simple utilities to build Single Page Applications (SPA) using a
@@ -91,287 +91,285 @@
                     SPAMD is based on some core principles, namely:
                 </p>
                 <ul>
+                    <li>
+                        The developer knows best how to organize and structure the code. SPAMD must not get in your way.
+                        SPAMD is not a framework and should not dictate how to write your views. SPAMD
+                        should perform a task and then hand control back to you.
+                    </li>
                     <li>SPAMD must play nice with the web. If you want to use a JavaScript utility or jQuery plugin
                         it should work as you would expect, no extra work should be required from your side.</li>
                     <li>
                         SPAMD does not interfere with DOM manipulation. You can perform any DOM manipulation you want, SPAMD doesn't care.
                     </li>
                     <li>
-                        HTML templates must consist of HTML, no propriety extensions.
+                        HTML templates must consist of HTML, no proprietary extensions.
                     </li>
                     <li>
                         SPAMD should be simple and easy to learn. One should be able to learn SPAMD in a couple of hours.
                     </li>
                 </ul>
+
+                <h3 id="the-view">The View</h3>
+                <p>The primary use case in SPAMD is to navigate between views, replacing the current view with a new view.
+                </p>
+
+                <p>Views in SPAMD are specified as an AMD module. Views do not extend from a SPAMD specific class or type, instead Views
+                    are normal JavaScript <em>Functions</em> or <em>Objects</em>. The only requirement is for the View to provide an
+                    #onInit method. SPAMD invokes the #onInit method to inform the view to initialize itself when needed.
+                </p>
+
+                <h3 id="hello-world-example">Hello world example</h3>
+                <p>Let's look at a  Hello World example in SPAMD which we will discuss in detail below.
+                </p>
+                <p>First let's look at the HelloWorld JavaScript file.
+                </p>
+                <code>HelloWorld.js</code>
+
+                <pre class="prettyprint linenums">
+// We define an AMD module
+define(function(require) {
+
+    // We include the HelloWorld Handblebars template
+    var template = require("hb!./hello-world.htm");
+
+    function HelloWorld () {
+
+        // We provide an onInit method
+        this.onInit(container, viewOptions) {
+            // We tell the container argument to attach the
+            // view's template to the DOM
+           container.attach(template);
+        }
+
+        // We return the View
+        return HelloWorld;
+});</pre>
+
+                <p>Next is the hello-world HTML template file.</p>
+
+                <code>hello-world.htm</code>
+                <pre class="prettyprint">&lt;h1&gt;Hello World!&lt;/h1&gt;</pre>
+
+                <p>Lastly we show an application to run the Hello World demo.</p>
+
+                <code>main.js</code>
+
+                <pre class="prettyprint linenums">
+define(function(require) {
+
+    // include the HelloWorld view
+    var helloWorldView = require("app/views/HelloWorld");
+
+    // include ViewManager
+    var viewManager = require("spamd/view/view-manager");
+
+    // Target specifies the ID of the HTML element where views
+    // will be placed
+    var options = {view: HelloWorldView,
+                   target: '#hello-world-demo'};
+    viewManager.showView(options);
+});</pre>
+
+                Click <a href="#" id="link-hello-world-demo">here</a> to run the Hello World Demo below.
+
+                <div id="hello-world-demo" class="demo" style="height: 50px">
+                </div>
+
+                <p>Let's go through the <em>HelloWorld</em> example in more detail.
+                </p>
+
+                <p>In <em>HelloWorld.js</em> line 2 we define a basic AMD module. If you are not familiar with AMD, the <em>define</em>
+                    function is used to define a module.
+                </p>
+
+                <p>On line 5 we <em>import</em> the <span class="typ">HelloWorld</span> View's
+                    associated template, <em>hello-world.htm</em>. Note the <em>hb!</em> prefix before the template path,
+                    <em>"hb!./hello-world.htm"</em>.This is an AMD plugin provided by SPAMD to load and compile Handlebars
+                    templates. The <em>template</em> variable in line 5, will in fact be a compiled Handlebars function,
+                    not a string. For those familiar with AMD, one can also use the AMD <em>text</em> plugin to load Handlebars templates,
+                    but one will then have to compile them manually.
+
+                <p>Line 7 declares the <em>HelloWorld</em> View as a function and on line 17, the View is
+                    returned as the result of the AMD module.
+                </p>
+                <p>On line 10 the onInit method is implemented which accepts two arguments, <em>container</em> and <em>viewOptions</em>.
+                    The <em>container</em> represents where the view will be added in the DOM. <em>viewOptions</em> are <em>arguments</em>
+                    and <em>URL parameters</em> that are passed to the view.
+                </p>
+                <p>Line 13 uses the <em>container.attach</em> method to <em>adds</em> the HelloWorld <em>template</em> to the DOM. By default
+                    the <em>attach</em> method will use a fadeIn and fadeOut animation when adding views, however this can be turned off,
+                    or another animation effect can be specified.
+                </p>
+
+                <p>The next section shows the view's associated template, <em>hello-world.htm</em>. The template contains a simple header
+                    with the text Hello World!.
+                </p>
+                <p>The last section, <em>main.js</em>, shows how to display the HelloWorld view.
+                </p>
+                <p>On line 1, we define <em>main</em> as another AMD module. On line 4 we <em>import</em> the HelloWorld view using AMD's
+                    <em>require</em> function. If you are not familiar with AMD you will note that there is no need for <em>&lt;script&gt;</em>
+                    tags to include JavaScript files in your application.
+                </p>
+                <p>Line 7 imports SPAMD's <em>ViewManager</em>, a mechanism for showing views. We will discuss ViewManager in detail below.
+                </p>
+                <p>Line 11 creates an option, <em>view</em> to pass to ViewManager telling it the name of the view to show. Line 12
+                    specifies the <em>target</em>, a CSS selector, where the view must be added to on the DOM. The <em>container</em> object
+                    that was passed into the <em>onInit</em> method uses this <em>target</em> when it's <em>attach</em> method is invoked,
+                    to add the new view. If no <em>target</em> is specified, a default target <em>#container</em> is used.
+                </p>
+                <p>Finally line 13 calls the ViewManager.<em>showView</em> method to display the view.
+
+                </p>
                 
+                <h3 id="spamd-configuration">SPAMD configuration</h3>
+
+
+                <h3 id="ViewManager">ViewManager</h3>
+
                 <p>
-                    SPAMD provides a simple mechanism to navigate between your views in a SPA. One of the core utilities is the #ViewManager.
-                    #ViewManager provides a method, #showView, for you guessed it, to show views.
+                    SPAMD provides a simple mechanism to navigate between views in a SPA. One of the core utilities is the #ViewManager.
+                    #ViewManager provides a method, #showView for, you guessed it, showing views.
+                </p>
+
+                <p>
+                    Views in SPAMD are AMD modules that contains regular JavaScript code. Views don't extend from any 
+                    SPAMD provided types. The only requirement is that a view must include an #onInit method. 
                 </p>
                 <p>
-                    Views in SPAMD are AMD modules that contains regular a JavaScript function. Views don't extend from any 
-                    SPAMD provided types. The only requirement is that a view must include an #onInit method.
+                    When ViewManager#showView is called, #ViewManager will create the new View (or reuse an existing instance) and invoke
+                    #onInit on that view. The #onInit method allows the view to initialize itself. During onInit the View could make Ajax
+                    calls to fetch data and render it's HTML template.
                 </p>
+
+                <h3 id="basic-view-example">Basic View example</h3>
                 <p>
                     An example AMD module for a SPAMD view:
                 </p>
-                <pre class="prettyprint">
+                <pre class="prettyprint linenums">
 define(function(require) {
     
     function PersonView () {
         
-        // The onInit method accepts an options object
-            this.onInit(options) {
-            }
+        // Note: onInit accepts a container and viewOptions object
+        this.onInit(container, viewOptions) {
+        }
+
+        // The optional onDestroy accepts a viewOptions object
+        this.onDestroy(viewOptions) {
+        }
     }
-return PersonView;
+    return PersonView;
 });</pre>
-                    
-                <p>
-                    Optionally an onDestroy method can also be specified.
-                    
+
+                <h3 id="ViewManager-life-cycle">ViewManager life cycle</h3>
+                <p>The #ViewManager provides a well defined <em>life cycle</em> for views.
+                </p>
+                <p>The <em>life cycle</em> consists of an <em>initialization</em> phase and a optional <em>destroy</em> phase. These phases
+                    are implemented by the view through two methods namely, <em>onInit</em> (shown above) and <em>onDestroy</em>.
                 </p>
 
-
-                <h3>Hello world example</h3>
-                <p>
-                    Here is a Hello World example in SPAMD:
-                </p>
-                <p>
-                    There are a myriad of JavaScript MVC frameworks to choose from for writing SPA, so why SPAMD?
-                </p>
-                <p>
-                    JavaScript together with HTML and JSON already provides a well defined MVC separation to your code. The real question
-                    should be, Why use a framework at all?
-                </p>
-                <p>
-                    One commonality found in all JavaScript frameworks is a feature called automatic data <em>binding</em>. This technique
-                    was made popular by Adobe's Flex but was also mentioned by Martin Fowler in his Presentation Model pattern here:
-                    <a href="http://martinfowler.com/eaaDev/PresentationModel.html">Presentation Model</a>.
-                <p>
-                    SPAMD provides no binding support and this is a good thing.
-                </p>
-                <p>
-                    The case against data binding.
-                </p>
-                <p>
-                    Data binding is based on the Observer pattern as popularized by the book, Design Patterns. The observer pattern
-                    allows observers to be notified of changes to an underlying event, such as events that fire or data that changes
-                    etc. While obviously useful for enabling separation of concerns it does have a cost in that it also hides a
-                    programs logical flow. In other words it becomes difficult to track how data flows through the system, because
-                    the Observer pattern provides a black box wherein things will automatically (implicitly) "happen" without you
-                    having any say in it.</p>
-
-                <p>"Well duh, that's the point.!" Sure, but implicit code bases are weak code bases when it
-                    comes to maintenance. When someone has to figure out why some event isn't firing or some trigger point never
-                    fired it is very difficult to debug and understand the flow because of the Observer pattern "magic". It creates
-                    doubt as to weather the event was registered correctly, or if the event is firing or even worse if there is
-                    another configuration option which alters the observer behavior in some way such as disabling the triggering of the
-                    event in specific circumstances etc. With the observer pattern your code cannot explicitly communicate your intent,
-                    rather behavior is hidden by the observer. Please note, the observer pattern is useful and important, but there is no
-                    free lunch here, there is a cost involved.
-                </p>
-                <p>As mentioned before, data binding is based on the observer pattern. Sounds good at first glance. You want to copy the 
-                    <em>name</em> property from the input control to the model and back? No problem. In your view you might do something
-                    like this:
+                <p>The onInit method is invoked by ViewManager on the <em>new</em> view to inform it that there was a #showView request.
+                    The view gets a chance to initialize itself during the <em>onInit</em> phase. During <em>onInit</em>, the view will
+                    typically make Ajax requests to fetch it's data, render it's associated template and attach the template to the DOM.
                 </p>
 
-                <pre class="prettyprint">
-<input name="name" type="text" data-bind="{{model.name}}"/>
+                <p>The onDestroy method is invoked by ViewManager on the <em>current</em> view shown to notify it that it is about to be
+                    removed from the DOM. Depending on application needs, during the <em>onDestroy</em> phase the view can perform 
+                    cleanup tasks such as storing the current view data so that it does not have to fetch it later when the view is
+                    shown again. Or in the case of splitting a large form over multiple views, one can use the onDestroy phase to store
+                    the current view's data until the whole form is completed before posting all the views data to the server.
+                </p>
+
+                <p>Note: when the application loads the first time there is no current view to invoke onDestroy on.
+                </p>
+
+                <p>The destroy phase is optional, views do not have to implement the <em>onDestroy</em> method if they don't care about
+                    this phase.
+                </p>
+                
+                <h3 id="initialize-view-template">Initialize ViewManager</h3>
+                
+                <h3 id="view-manager-showView">ViewManager showView</h3>
+                
+                <h3 id="view-manager-showView-promises">ViewManager showView promises</h3>
+                
+                <h3 id="view-manager-showHTML">ViewManager showHTML</h3>
+                
+                <h3 id="view-manager-container">ViewManager.Container</h3>
+                Users <em>must</em> always call either Container.attach or Container.cancel, in order for the ViewManager to resolve any
+                promises made by callers of ViewManager#showView.
+                
+                <h3 id="view-manager-container-attach">ViewManager.Container attach</h3>
+                
+                <h3 id="view-manager-container-attach-promises">ViewManager.Container attach promises</h3>
+                
+                <h3 id="view-manager-container-cancel">ViewManager.Container cancel</h3>
+                
+                <h3 id="view-manager-container-custom-animation">ViewManager.Container custom animation</h3>
+                
+                <h3 id="view-manager-double-click-problem">ViewManager double click problem</h3>
+                
+                <h3 id="view-manager-history">ViewManager history</h3>
+               
+                <h3 id="view-manager-routes">ViewManager routes</h3>
+                
+                <h3 id="url-utility">URL utility</h3>
+                
+                <h3 id="template-engine">Template Engine</h3>
+                
+                <h3 id="template-engine-helpers">Template Engine Helpers</h3>
+                
+                <h3 id="action-helper">action Helper</h3>
+                
+                <h3 id="template-engine-bind">Template Engine Bind</h3>
+                
+                <h3 id="formatDate-helper">formatDate helper</h3>
+                
+                <h3 id="formatNumber-helper">formatNumber helper</h3>
+
+                
+                <h3 id="validation">Validation</h3>
+                
+                <h3 id="build">Build</h3>
+
+                <h3 id="view-template">View Template</h3>
+
+                <p>
+                    In this example we show how to <em>include</em> the view's external HTML <em>template</em> file, called
+                    <em>person-view.htm</em>.
+                    We will discuss the example in detail below.
+                </p>
+
+                <pre class="prettyprint linenums">
+define(function(require) {
+
+    // include the PersonView Handblebars template
+    var template = require("hb!./person-view.htm");
+    
+    function PersonView () {
+    ...
                 </pre>
-
-                <p>and in your JavaScript cotroller:</p>
-                <pre class="prettyprint">
-var model = {};
-model.name = "Bob";
-                </pre>
-                <p>
-                    Great, your model and view are now bound and data flows back and forth as the user enters data into the input control. But
-                    when exactly is the data pushed to the model? When the user hits the <em>submit</em> button or when the input control loses
-                    focus? Or on each keystroke? See the issue here? You have lost control of your data flow.
+                <p>In line <em>4</em> we use RequireJS to include the view template, <em>person-view.htm</em>. 
                 </p>
-                <p>
-                    But let's continue with the example above. Let's say on every keystroke the input is sync'd to the model. When the user
-                    clicks the <em>save</em> button the model will be persisted on the server. But what if the user entered invalid data? You
-                    wouldn't want to store invalid data on the server now would you. No sir, not this soldier! 
+                <p>This is a Handlebars template so we use a special AMD Handlebars plugin called <em>hb</em>, to load the template. Note the
+                    <em>hb!</em> syntax in the <em>require</em> argument on line 4.
                 </p>
-                <p>
-                    So with data binding there will inevitably come a validation framework as well to stop invalid data from entering your
-                    model. But what if you decide that your users should always be able to store their data even if it is invalid. Perhaps
-                    they can come back later and complete the missing detail?
-                </p>
-                <p>
-                    "Darn it , are you trying to be hard headed?"
-                </p>
-                <p>
-                    Not really, real world applications throw all kinds of illogical requirements at us. The point is that data binding
-                    is simply a feature with pros and cons, it ain't all rosy and there is a price to pay.
-                </p>
-                <p>
-                    Now most frameworks will provide options to solve most use cases such as forcing a sync between the input and model to
-                    allow invalid data to enter the model to persist on the server. Most will also provide the ability to tweak when data
-                    will be pushed to the model. The important point to understand is that you have given control to your data flow over to
-                    a framework.
-                </p>
-                <p>
-                    There are alternative UI patterns to the Presentation Model which relies on data binding. Martin Fowler also talks about
-                    the <a href="http://martinfowler.com/eaaDev/PassiveScreen.html">Passive Screen pattern</a> which doesn't use automatic
-                    data binding.
-                </p>
-                <p>
-                    SPAMD doesn't provide data binding. It provides an alternative which for syncing input and models. It is the exact
-                    opposite of data binding. Ready for it? It's called <em>copying</em>. That's right. That age old stalwart you can always
-                    rely upon.
-                </p>
-                <p>
-                    How does it compare with automatic data binding?
-                </p>
-                <p>
-                    First off it is explicit code that is viewable by anyone. Explicit code leads to strong code bases even if there are
-                    mode lines of code.
-                </p>
-                <p>
-                    Off course we wouldn't want to copy each and every field back and forth in our code either. It's enough that there is
-                    <em>one</em> line of code which explicitly states what is going on. That one line of code puts you, the programmer, back
-                    in control of your data flow. Let's see how this is done in SPAMD:
-                </p>
-                <pre class="prettyprint">
-<input name="name" type="text"/>
-                </pre>
-
-                <p>and in your JavaScript cotroller:</p>
-                <pre class="prettyprint">
-var model = {};
-model.name = "Bob";
-// Copy values to form
-$("#form").copyFrom(model);
-                </pre>
-
-                <p>One line to copy the model to the form. Not so bad is it? Off course this method works because the model and input share
-                    the same <em>name</em>. This is convention over configuration at work here. But this is generally how the model and
-                    input controls are named.
-                </p>
-                <p>If for some reason the model or input control is named differently the <code>codeFrom</code>
-                    won't work as it has no way for  the model and input controls to match up.
-                </p>
-                <p>
-                    In this worst scenario case copying will be completely manual, one field at a time.
-                </p>
-                <pre class="prettyprint">
-var model = {};
-model.name = "Bob";
-// Copy values to form
-$("#form #other").val(model.name); // Copying model.name to input with id of "other"
-                </pre>
-
-                <p>
-                    Every input will have to be copied in this fashion. Not ideal but keep in mind that with data binding you also have to
-                    bind each and every field to the model:
-                </p>
-                <pre class="prettyprint">
-<input name="other" type="text" data-bind="{{model.name}}"/>
-<input name="organisation" type="text" data-bind="{{model.company}}"/>
-                </pre>
-                <p>
-                    Off course automatic data binding is generally two way so it doesn't have to worry about copying values back to the model
-                    as explicit copying does.
-                </p>
-                <p>
-                    That is true but is it worth the price of not being in control of your data flow? With explicit copying you are in control
-                    when data should be copied to the the model and back. Should copying occur when user hits <em>submit</em> or onblur?
-                    Your choice. Do you want invalid data stored on the server so your users don't loose their incomplete
-                    data? Your choice. No need to think or reason about it, just put it in plain code for everybody to see.
-                </p>
-                <p>
-                    Now it is easy to reason over your codebase because it explicitly states behavior. If something goes wrong you can
-                    put a breakpoint anywhere on one of those copy methods and see what is happening.
+                <p>The <em>hb</em> plugin will load the person-view template and then compile the template using the Handlebars compiler.
+                    The result of the compilation step is a <em>function</em> which can be executed by the Handlebars runtime. In other
+                    words on line <em>4</em> above, the variable <em>template</em> will be assigned a Handlebars compiled template
+                    <em>function</em>. The <em>template</em> variable is not assigned a string.
                 </p>
 
-                <p>
-                    But the biggest drawback of automatic data binding in a SPA setting, is that it cannot allow for DOM manipulation. Why? Because
-                    that would break the automatic data binding since event listeners registered on the input controls would be destroyed
-                    and the model won't be notified of changes. Another reason why DOM manipulation won't be allowed by data binding frameworks
-                    is that new elements added to the DOM won't be known to the framework, hence it cannot bind to them. Instead framework
-                    specific avenues will have to be followed to inform the framework when you want to perform any DOM manipulation.
-                </p>
-                <p>
-                    This is a major drawback. Not allowing DOM manipulation, which is a core browser function, effectively
-                    detaches the framework from the web! No external JavaScript code that touches the DOM will work out of the box in such
-                    an environment. No jQuery plugin will work as documented on it's site. Instead it will have to be "ported" to the framework so that the
-                    external code can play nice with the framework's data binding. So plugins have to be written for <em>plugins</em>. When
-                    a new version of the plugin is released it will have to ported again.
-                </p>
                 <p>
 
                 </p>
 
-                <p id="view-manager">
-                <h2>
-                    View Manager
-                </h2>
-                asd
-                f
-                asdf
-                asd
-                fds
-                afads
-                fds
-                f
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-            </div>
+                <p>
+                    Note the view does not attach it's HTML template to the DOM,
+                    instead it delegates this task back to the #ViewManager through the <em>container</em> that is passed in to the #onInit
+                    method.
+                </p>
 
-            <div id="view-manager_showView">
-                <h2>
-                    showView
-                </h2>
-                asd
-                f
-                asdf
-                asd
-                fds
-                afads
-                fds
-            </div>
-
-
-            <div id="view-manager_showHTML">
-                <h2>
-                    showHTML
-                </h2>
-                asd
-                f
-                asdf
-                asd
-                fds
-                afads
-                fds
-            </div>
-
-            <div id="view-manager_showHTML">
-                <h2>
-                    showHTML
-                </h2>
-                asd
-                f
-                asdf
-                asd
-                fds
-                afads
-                fds
             </div>
         </div>
     </div>
-</div>

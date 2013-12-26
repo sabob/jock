@@ -12,6 +12,7 @@ define(function(require) {
     var API = require("./views/api/API");
     var Docs = require("./views/docs/Docs");
     var Why = require("./views/why/Why");
+    var prettify = require("prettify");
     require("domReady!");
 
     setupActiveMenu();
@@ -32,7 +33,7 @@ define(function(require) {
         $("#navbar li.active").removeClass("active");
 
         if (route == null) {
-            console.warn("View with id ", view.id, " does not have a route defined. Cannot determine which menu item this view is associated with.");
+            console.warn("View with id '", view.id, "' does not have a route defined. Cannot determine which menu item this view is associated with.");
             return;
         }
         var item = $("#menu-" + route).parent();
@@ -42,14 +43,34 @@ define(function(require) {
 
     };
     options.defaultView = Home;
+    //options.animate= false;
+    //options.target = "#moo";
+
+    /*
+    options.animateHandler = function(html, options) {
+        var target = options.target;
+            var $target = $(target);
+            var viewAttached = options.viewAttached;
+            var viewVisible = options.viewVisible;
+            $target.fadeOut(1000, function() {
+
+                $target.empty();
+                $target.html(html);
+                viewAttached(options);
+                $target.fadeIn('fast', function() {
+                    viewVisible(options);
+                });
+            });
+    };*/
     //options.params = {p1: ["val1", "val2"], p2: "pok"};
+    options.globalOnAttached = function(options) {
+        prettify.prettyPrint();
+    };
 
     console.log("calling viewManager.init");
     // Move main code to here???
     viewManager.init(options);
     console.log("viewManager.init called");
-    viewManager.setGlobalOnAttached(function(options) {
-    });
 
     function setupActiveMenu() {
         //var offsetLeft = $(homeItem).offset().left - $('#navbar').offset().left;

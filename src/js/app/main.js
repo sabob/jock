@@ -8,12 +8,7 @@ define(function(require) {
     var API = require("./views/api/API");
     var footer = require("hb!./views/footer/footer.htm");
     var viewManager = require("spamd/view/view-manager");
-    var prettify = require("prettify");
     require("domReady!");
-
-    viewManager.setGlobalOnAttached(function() {
-        prettify.prettyPrint();
-    });
 
     $("#home").click(function(e) {
         e.preventDefault();

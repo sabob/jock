@@ -38,7 +38,7 @@ define(function(require) {
                 });
                 $(".toc a").on("click", function(e) {
                     var url = $.parseUrl(this.href);
-                    $.spamd.history.skipOnce(true);
+                    $.spamd.history.skipEventOnce(true);
                     var id = url.params.id;
                     scrollIntoView(id);
                 });
