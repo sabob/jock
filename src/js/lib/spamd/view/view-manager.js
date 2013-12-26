@@ -33,9 +33,6 @@ define(function(require) {
         var callStack = {};
         var errorHandlerStack = [];
 
-        //this.hash = {
-        //};
-
         this.setRoutes = function(map) {
             if (map == null) {
                 return;
