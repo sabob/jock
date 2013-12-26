@@ -115,7 +115,6 @@ define(function(require) {
                     for (var i = 0; i < arguments.length; i++) {
                         delete params[arguments[i]];
                     }
-
                 }
             };
 

@@ -3,7 +3,6 @@ define(function(require) {
     var hash = require("./hash");
     var params = require("../utils/params");
     var paramsObj = null;
-    
 
     $.spamd = $.spamd || {};
     $.spamd.history = $.spamd.history || {};
@@ -11,8 +10,17 @@ define(function(require) {
     var createHistory = function() {
 
         var that = {};
+        var skipEventOnce = false;
+        var disableOnce = false;
+        var disable = false;
+        var storedDisabledValue = null;
+        var changeCallback;
 
         that.hash = function(val) {
+            if (typeof val === 'undefined') {
+                return hash();
+            }
+
             if (that.disable()) {
                 return;
             }
@@ -20,15 +28,32 @@ define(function(require) {
             return hash(val);
         };
 
-        var skipOnce = false;
-        var disable = false;
-        var changeCallback;
-
-        that.skipOnce = function(val) {
+        that.skipEventOnce = function(val) {
             if (typeof val === 'undefined') {
-                return skipOnce;
+                return skipEventOnce;
             } else {
-                skipOnce = val;
+                skipEventOnce = val;
+                return val;
+            }
+        };
+
+        that.disableOnce = function(val) {
+            if (typeof val === 'undefined') {
+                return disableOnce;
+
+            } else {
+                disableOnce = val;
+                if (storedDisabledValue == null) {
+                    storedDisabledValue = disable;
+                }
+
+                if (val === true) {
+                    disable = true;
+
+                } else {
+                    disable = storedDisabledValue;
+                    storedDisabledValue = null;
+                }
                 return val;
             }
         };
@@ -38,16 +63,23 @@ define(function(require) {
                 return disable;
             } else {
                 disable = val;
+
+                // update the stored value in case it is currently used
+                storedDisabledValue = val;
                 return val;
             }
         };
 
         function hashHandler(newHash, initial) {
             if (that.disable()) {
+                if (that.disableOnce()) {
+                    that.disableOnce(false);
+                    return;
+                }
                 return;
             }
-            if (that.skipOnce()) {
-                that.skipOnce(false);
+            if (that.skipEventOnce()) {
+                that.skipEventOnce(false);
                 return;
             }
 
@@ -58,6 +90,10 @@ define(function(require) {
 
         that.update = function() {
             if (that.disable()) {
+                if (that.disableOnce()) {
+                    that.disableOnce(false);
+                    return;
+                }
                 return;
             }
             if (paramsObj) {
@@ -66,7 +102,7 @@ define(function(require) {
                 paramsObj = null;
             }
         };
-        
+
         that.trigger = function() {
             if (that.disable()) {
                 return;
@@ -76,24 +112,20 @@ define(function(require) {
         };
 
         that.params = function(val) {
-            if (that.disable()) {
-                return;
-            }
-
-            ensureParamsInitialized();
-
             if (typeof val === 'undefined' || typeof val === 'string') {
+                ensureParamsInitialized();
                 return paramsObj.get(val);
+
             } else {
+                if (that.disable()) {
+                    return;
+                }
+                ensureParamsInitialized();
                 return paramsObj.set(val);
             }
         };
 
         that.params.get = function(param) {
-            if (that.disable()) {
-                return;
-            }
-
             ensureParamsInitialized();
 
             if (typeof param === 'undefined') {
@@ -148,13 +180,14 @@ define(function(require) {
             paramsObj.clear();
         };
 
+        that.clear = function() {
+            // Synonymous to that.params.clear()
+            that.params.clear();
+        };
+
         that.init = function(callback) {
             changeCallback = callback;
             hash.init(hashHandler);
-        };
-        
-        that.clear = function() {
-            that.params.clear();
         };
 
         function ensureParamsInitialized() {
@@ -168,38 +201,5 @@ define(function(require) {
     };
 
     $.spamd.history = createHistory();
-
-/*
-    var h = $.spamd.history;
-    //h.disable(true);
-    $.spamd.history.init(function(newHash, initial) {
-
-        console.log('Hash "' + newHash + '"');
-        if (initial) {
-            console.log('Initial Hash is "' + newHash + '"');
-        } else {
-            console.log('Hash changed to "' + newHash + '"');
-        }
-    });
-    h.hash('moo=&x=1&x=2&y=');
-    h.update();
-    console.log("h", h.hash());
-    console.log("params()", h.params());
-    h.params({"x": "y"});
-    //console.log("params(x:y)", h.params());
-    //console.log("params.get()", h.params.get());
-    //h.params.clear();
-    //console.log("params.add'(x', 'y')", h.params.get());
-    h.update();
-    h.trigger();
-*/
-
-    //hash('x=1&y&x=1');
-    //var val = hash();
-    //var p = params(val);
-    //console.log("params", val, p.get(), p.toString());
-
-//console.log("History goes1", $.spamd);
-//console.log("History goes2", $.spamd.history);
     return $.spamd.history;
 });

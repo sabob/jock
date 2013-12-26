@@ -9,44 +9,35 @@ define(function(require) {
     function ViewManager() {
 
         var that = this;
+
         var currentView = {
             view: null,
             options: null
         };
-        var processHashChange = true;
 
-        var disableHash = false;
+        var settings = {
+            defaultView: null,
+            target: "#container",
+            animate: true,
+            animateHandler: null,
+            attachHandler: null,
+            onHashChange: $.noop,
+            globalOnAttached: $.noop
+        };
+
+        var processHashChange = true;
 
         var initialized = false;
         var routesByName = {};
         var routesByPath = {};
-        var onHashChange = null;
         var callStack = {};
         var errorHandlerStack = [];
-        var globalOnAttached = null;
-        var skipHashChangeOnce = false;
 
-        this.hash = {
-        };
-
-        /*
-         this.hash.disable = function(val) {
-         if (val == null) {
-         return disableHash;
-         }
-         disableHash = val;
-         };
-         
-         this.hash.skipOnce = function(val) {
-         if (val == null) {
-         return skipHashChangeOnce;
-         }
-         skipHashChangeOnce = val;
-         };
-         */
+        //this.hash = {
+        //};
 
         this.setRoutes = function(map) {
-            if (!map) {
+            if (map == null) {
                 return;
             }
 
@@ -65,21 +56,33 @@ define(function(require) {
         };
         this.init = function(options) {
             if (initialized) {
-                // If no options are specified, and view-manager has been initialized before, we can skip initialization
+                // If no options are specified, and view-manager has been initialized before, we can skip initialization, otherwise
+                // we continue and initialize ViewManager again.
                 if (!options) {
                     return;
                 }
             }
 
             initialized = true;
-            var defaultView;
-            if (options) {
-                defaultView = options.defaultView;
-                var routes = options.routes;
-                //console.log("setting Routes", routes);
-                this.setRoutes(routes);
-                onHashChange = options.onHashChange;
-            }
+            settings.animateHandler = that.attachViewWithAnim;
+            settings.attachHandler = that.attachView;
+
+            //var defaultView;
+
+            //if (options) {
+            settings = $.extend({}, settings, options);
+            //var defaultView = options.defaultView;
+            //var routes = options.routes;
+            //defaultTarget = options.target || defaultTarget;
+            //if (typeof options.animate !== 'undefined') {
+            //  defaultAnimate = options.animate;
+            //}
+            //animateHandler = options.animateHandler || that.attachViewWithAnim;
+            //attachHandler = options.attachHandler || that.attachView;
+            //console.log("setting Routes", routes);
+            this.setRoutes(settings.routes);
+            //onHashChange = settings.onHashChange;
+            //}
 
             //$.address.strict(false);
 
@@ -99,38 +102,22 @@ define(function(require) {
                 } else {
                     //console.log('Hash changed to "' + newHash + '"');
                 }
-                //});
 
-                //$.address.change(function(event) {
-                /*
-                 console.log("CHANGE", event);
-                 if (that.hash.skipOnce()) {
-                 that.hash.skipOnce(false);
-                 return;
-                 }*/
                 //event.preventDefault();
                 //event.stopPropagation();
 
-                //console.log("PROCESS HASH CHANGE OVER", disableHash);
+                console.log("PROCESS HASH CHANGE OVER", processHashChange);
 
-                if (processHashChange && !disableHash) {
+                if (processHashChange) {
 
                     processHashChange = false;
 
                     //var viewName = event.path;
                     //var viewName = event.parameters.page;
-                    var viewName = $.spamd.history.params().page;
-                    //if (!viewName) {
-                    //var url = $.parseUrl(location.href);
-                    //viewName = url.params.page;
+                    //if (!$.spamd.history.disable()) {
+
                     //}
-                    //console.log("viewName", viewName);
-                    //console.log("hash", $.address.hash());
-                    //console.log("path", $.address.path());
-                    //console.log("value", $.address.value());
-                    //console.log("parameterNames", $.address.parameterNames());
-                    //console.log("CURR routes", routesByPath);
-                    //console.log("CURR routes", routesByName);
+                    var viewName = $.spamd.history.params().page;
                     var viewPath = routesByName[viewName];
                     if (!viewPath) {
                         viewPath = viewName;
@@ -146,10 +133,10 @@ define(function(require) {
                         //console.log("initial ShowView for:", viewPath);
                         //console.log("showView called from HASH", viewPath);
                         that.showView({view: viewPath, params: params, hashChange: true}).then(function(view) {
-                            if (onHashChange) {
+                            //if (settings.onHashChange) {
                                 //console.log("show HASH view deferred", view);
-                                onHashChange(view);
-                            }
+                                settings.onHashChange(view);
+                            //}
                             processHashChange = true;
                         });
                         //}
@@ -161,29 +148,23 @@ define(function(require) {
             var hasPage = $.spamd.history.params().page;
             //var hasPage = $.address.path();
             if (hasPage) {
-                //viewManager.showView({view: Home});
-                //$.address.value($.address.value());
-                //console.log("updating");
-                //$.address.update();
                 $.spamd.history.update();
             } else {
 
-                if (defaultView) {
-                    options.view = defaultView;
+                if (settings.defaultView) {
+                    options.view = settings.defaultView;
                     //console.log("show defaultView called");
                     this.showView(options).then(function(view) {
                         //console.log("show default view deferred", view);
-                        if (onHashChange) {
-                            onHashChange(view);
-                        }
+                        //if (settings.onHashChange) {
+                            settings.onHashChange(view);
+                        //}
                     });
-                    //$.address.value(Home.id);
-                    //$.address.update();
                 }
             }
         };
         this.setGlobalOnAttached = function(callback) {
-            globalOnAttached = callback;
+            settings.globalOnAttached = callback;
         };
         this.showView = function(options) {
 
@@ -199,7 +180,7 @@ define(function(require) {
             //var params = options.params;
 
             //var onViewReady = options.onViewReady;
-            var target = options.target || "#container";
+            var target = options.target || settings.target;
             // Make copy
             var defaults = {
                 params: {},
@@ -333,7 +314,11 @@ define(function(require) {
             if (currentViewName === route) {
                 return false;
             }
-            console.info("You have moved to a new view. From " + currentViewName + " to " + route);
+
+            if (typeof currentViewName === "undefined") {
+                currentViewName = "/";
+            }
+            console.info("You have moved to a new view. From '" + currentViewName + "' to '" + route + "'");
             return true;
 
         };
@@ -355,31 +340,29 @@ define(function(require) {
             //$.address.autoUpdate(false);
             //$.address.value(route);
             /*
-            for (var param in params) {
-                var val = params[param];
-                //$.spamd.history.params.add({param : item});
-                
-                if ($.isArray(val)) {
-                    for (var i = 0; i < val.length; i++) {
-                        var item = val[i];
-                        //$.address.parameter(param, item, true);
-                        $.spamd.history.params.add({param : item});
-                    }
-                } else {
-                    $.spamd.history.params.add({param : item});
-                    //$.address.parameter(param, val);
-                }
-            }*/
+             for (var param in params) {
+             var val = params[param];
+             //$.spamd.history.params.add({param : item});
+             
+             if ($.isArray(val)) {
+             for (var i = 0; i < val.length; i++) {
+             var item = val[i];
+             //$.address.parameter(param, item, true);
+             $.spamd.history.params.add({param : item});
+             }
+             } else {
+             $.spamd.history.params.add({param : item});
+             //$.address.parameter(param, val);
+             }
+             }*/
             var newView = this.hasMovedToNewView(route);
             if (newView) {
                 //$.address.value("");
                 $.spamd.history.clear();
             }
             //$.address.value("");
-            $.spamd.history.params.set({page : route});
-            //$.address.parameter("page", route);
-            //$.address.autoUpdate(true);
-            //$.address.update();
+            $.spamd.history.params.set({page: route});
+
             $.spamd.history.update();
             processHashChange = true;
             //$.address.value(viewName);
@@ -400,7 +383,7 @@ define(function(require) {
                 //var attachedPromise = attachedDeferred.promise();
 
                 me.attach = function(html, domOptions) {
-                    var domDefaults = {anim: true};
+                    var domDefaults = {anim: settings.animate};
                     domDefaults = $.extend({}, domDefaults, domOptions);
 
 
@@ -422,10 +405,13 @@ define(function(require) {
 
                     options.onAttached = onAttached;
                     options.onVisible = onVisible;
+                    options.viewAttached = parent.viewAttached;
+                    options.viewVisible = parent.viewVisible;
                     if (domDefaults.anim) {
-                        parent.attachViewWithAnim(html, options);
+                        settings.animateHandler(html, options);
                     } else {
-                        parent.attachView(html, options);
+                        settings.attachHandler(html, options);
+                        //parent.attachView(html, options);
                     }
                     //});
 
@@ -471,8 +457,8 @@ define(function(require) {
         this.showHTML = function(options) {
             //this.init();
             this.ensureInitialized();
-            var target = options.target || "#container";
-            var defaults = {anim: true};
+            var target = options.target || settings.target;
+            var defaults = {anim: settings.animate};
             defaults = $.extend({}, defaults, options);
             defaults._options = options;
             defaults.target = target;
@@ -529,35 +515,36 @@ define(function(require) {
 
             defaults.onAttached = onAttached;
             defaults.onVisible = onVisible;
+            defaults.viewAttached = that.viewAttached;
+            defaults.viewVisible = that.viewVisible;
             if (defaults.anim) {
-                that.attachViewWithAnim(html, defaults);
+                //that.attachViewWithAnim(html, defaults);
+                settings.animateHandler(html, defaults);
             } else {
-                that.attachView(html, defaults);
+                //that.attachView(html, defaults);
+                settings.attachHandler(html, defaults);
             }
-
-            //});
-            //var view = null;
-            //var onAttached = null;
-            //var options = {};
-            //options.view = template;
-            //options.target = target;
-            //this.attachViewWithAnim(target, view, template, onAttached, notifyTemplateReady);
-            //this.attachViewWithAnim(template, options);
 
             return deferredHolder.promises;
         };
 
         this.attachView = function(html, options) {
             var target = options.target;
-            $(target).empty();
-            $(target).html(html);
-            that.viewAttached(options);
-            that.viewComplete(options);
+            var viewAttached = options.viewAttached;
+            var viewVisible = options.viewVisible;
+            var $target = $(target);
+            if ($target.length === 0) {
+                throw new Error("The showView/showHTML target '" + target + "' does not exist in the DOM!");
+            }
+            $target.empty();
+            $target.html(html);
+            viewAttached(options);
+            viewVisible(options);
         };
         this.viewAttached = function(options) {
-            if (globalOnAttached) {
+            if (settings.globalOnAttached != null) {
                 var origOptions = options._options;
-                globalOnAttached(origOptions);
+                settings.globalOnAttached(origOptions);
             }
 
             var onAttached = options.onAttached;
@@ -571,7 +558,7 @@ define(function(require) {
              templateEngine.bind(target);
              }*/
         };
-        this.viewComplete = function(options) {
+        this.viewVisible = function(options) {
 
             var target = options.target;
             var view = options.view;
@@ -602,16 +589,23 @@ define(function(require) {
         this.attachViewWithAnim = function(html, options) {
 
             var target = options.target;
-            $(target).fadeOut('fast', function() {
+            var $target = $(target);
+            if ($target.length === 0) {
+                throw new Error("The showView/showHTML target '" + target + "' does not exist in the DOM!");
+            }
+            var viewAttached = options.viewAttached;
+            var viewVisible = options.viewVisible;
+            $target.fadeOut('fast', function() {
 
-                $(target).empty();
-                $(target).html(html);
-                that.viewAttached(options);
-                $(target).fadeIn('fast', function() {
-                    that.viewComplete(options);
+                $target.empty();
+                $target.html(html);
+                viewAttached(options);
+                $target.fadeIn('fast', function() {
+                    viewVisible(options);
                 });
             });
         };
+
         this.clear = function(target) {
             var obj = callStack[target];
             if (obj) {
@@ -695,10 +689,11 @@ define(function(require) {
         function targetErrorHandler(message, url, lineNumber, target) {
             //console.log("targetErrorHandler for " + target, message, url, lineNumber);
             that.clear(target);
-            $(target).finish();
-            $(target).clearQueue().stop(true, true);
+            var $target = $(target);
+            $target.finish();
+            $target.clearQueue().stop(true, true);
             setTimeout(function() {
-                $(target).css({'opacity': '1', 'display': 'block'});
+                $target.css({'opacity': '1', 'display': 'block'});
             }, 10);
             return false;
         }
