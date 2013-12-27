@@ -2,7 +2,6 @@ define(function(require) {
 
     var $ = require("jquery");
     require("domReady!");
-    //require("jquery.address");
     require("spamd/history/history");
     var utils = require("../utils/utils");
     var templateEngine = require("../template/template-engine");
@@ -22,7 +21,8 @@ define(function(require) {
             animateHandler: null,
             attachHandler: null,
             onHashChange: $.noop,
-            globalOnAttached: $.noop
+            globalOnAttached: $.noop,
+            bindTemplate: true
         };
 
         var processHashChange = true;
@@ -40,12 +40,9 @@ define(function(require) {
 
             routesByName = map;
             routesByPath = {};
-            //console.log("RoutesMap is now empy!");
             for (var prop in routesByName) {
                 routesByPath[routesByName[prop]] = prop;
             }
-            //console.log("RoutesMap is now populated!");
-            //console.log("routesByPath", routesByPath);
         };
 
         this.getRoutesByPath = function() {
@@ -64,44 +61,11 @@ define(function(require) {
             settings.animateHandler = that.attachViewWithAnim;
             settings.attachHandler = that.attachView;
 
-            //var defaultView;
-
-            //if (options) {
             settings = $.extend({}, settings, options);
-            //var defaultView = options.defaultView;
-            //var routes = options.routes;
-            //defaultTarget = options.target || defaultTarget;
-            //if (typeof options.animate !== 'undefined') {
-            //  defaultAnimate = options.animate;
-            //}
-            //animateHandler = options.animateHandler || that.attachViewWithAnim;
-            //attachHandler = options.attachHandler || that.attachView;
-            //console.log("setting Routes", routes);
+
             this.setRoutes(settings.routes);
-            //onHashChange = settings.onHashChange;
-            //}
-
-            //$.address.strict(false);
-
-            //$.address.state("http://localhost:9988/").init(function() {
-            //});
-            //$.address.autoUpdate(false);
-            //$.address.change(function(event) {
-            //console.log("HISTORY REGISTERED", $.spamd);
-            //console.log("HISTORY REGISTERED", $.spamd.history);
-
 
             $.spamd.history.init(function(newHash, initial) {
-
-                //console.log('Hash "' + newHash + '"');
-                if (initial) {
-                    //console.log('Initial Hash is "' + newHash + '"');
-                } else {
-                    //console.log('Hash changed to "' + newHash + '"');
-                }
-
-                //event.preventDefault();
-                //event.stopPropagation();
 
                 console.log("PROCESS HASH CHANGE OVER", processHashChange);
 
@@ -109,53 +73,30 @@ define(function(require) {
 
                     processHashChange = false;
 
-                    //var viewName = event.path;
-                    //var viewName = event.parameters.page;
-                    //if (!$.spamd.history.disable()) {
-
-                    //}
                     var viewName = $.spamd.history.params().page;
                     var viewPath = routesByName[viewName];
                     if (!viewPath) {
                         viewPath = viewName;
                     }
-                    //console.log("address.change ViewName", viewName);
 
                     if (viewPath) {// ensure path is not blank
-                        //if (name !== event.path) { // ensure we don't process path twice
-                        //console.log("name", viewPath, "event.path", event.path);
-                        //var params = event.parameters;
                         var params = $.spamd.history.params.get();
-                        //console.log("URL PArams", params);
-                        //console.log("initial ShowView for:", viewPath);
-                        //console.log("showView called from HASH", viewPath);
                         that.showView({view: viewPath, params: params, hashChange: true}).then(function(view) {
-                            //if (settings.onHashChange) {
-                                //console.log("show HASH view deferred", view);
-                                settings.onHashChange(view);
-                            //}
+                            settings.onHashChange(view);
                             processHashChange = true;
                         });
-                        //}
                     }
                 }
             });
-            //console.log("address path", $.address.path());
-            //var hasPage = $.address.parameter("page");
             var hasPage = $.spamd.history.params().page;
-            //var hasPage = $.address.path();
             if (hasPage) {
                 $.spamd.history.update();
             } else {
 
                 if (settings.defaultView) {
                     options.view = settings.defaultView;
-                    //console.log("show defaultView called");
                     this.showView(options).then(function(view) {
-                        //console.log("show default view deferred", view);
-                        //if (settings.onHashChange) {
-                            settings.onHashChange(view);
-                        //}
+                        settings.onHashChange(view);
                     });
                 }
             }
@@ -170,13 +111,8 @@ define(function(require) {
                 throw new Error("options.view must be specified");
             }
 
-            //this.init();
             this.ensureInitialized();
 
-            //var args = options.args;
-            //var params = options.params;
-
-            //var onViewReady = options.onViewReady;
             var target = options.target || settings.target;
             // Make copy
             var defaults = {
@@ -187,7 +123,6 @@ define(function(require) {
             defaults.target = target;
             defaults._options = options;
 
-            // Setup global error handler in case user doen't use try/catch logic
             addGlobalErrorHandler(target);
 
             if (typeof (callStack[target]) === 'undefined') {
@@ -203,48 +138,23 @@ define(function(require) {
             }
 
             if (templateEngine.hasActions()) {
-                console.info("It's been detected that there are unbounded actions in the TemplateEngine! Make sure to call templateEngine.bind() after template is added to DOM. Resetting TemplateEngine to remove memory leaks!");
+                console.warn("It's been detected that there are unbounded actions in the TemplateEngine! Make sure to call templateEngine.bind() after template is added to DOM. Resetting TemplateEngine to remove memory leaks!");
                 templateEngine.reset(target);
             }
 
             callStack[target].push(1);
 
-
             if (typeof view === 'string') {
 
                 require([view], function(View) {
                     that.commonShowView(View, deferredHolder, defaults);
-                    /*
-                     defaults.view = new View();
-                     
-                     options.viewInstance = defaults.view;
-                     defaults.mainDeferred = mainDeferred;
-                     that.showViewInstance(defaults);
-                     
-                     return mainDeferred.promise();
-                     */
                 });
 
             } else if (view instanceof Function) {
                 this.commonShowView(view, deferredHolder, defaults);
-                //defaults.view = new view();
             }
 
             return deferredHolder.promises;
-
-            /*
-             options.viewInstance = defaults.view;
-             var mainDeferred = $.Deferred();
-             defaults.mainDeferred = mainDeferred;
-             //setTimeout(function() {
-             var result = that.showViewInstance(defaults);
-             //});
-             
-             var mainPromise = mainDeferred.promise();
-             mainPromise.attached = result.attached;
-             mainPromise.visible = result.visible;
-             return mainPromise;
-             */
         };
 
         this.createDeferreds = function() {
@@ -289,25 +199,12 @@ define(function(require) {
                 defaults.view = view();
             }
 
-            //options.viewInstance = defaults.view;
-
-            //defaults.mainDeferred = deferredHolder.mainDeferred;
-            //setTimeout(function() {
             defaults.deferredHolder = deferredHolder;
             that.showViewInstance(defaults);
-            //});
-            /*
-             var mainPromise = mainDeferred.promise();
-             mainPromise.attached = result.attached;
-             mainPromise.visible = result.visible;
-             return mainPromise;
-             */
         };
 
         this.hasMovedToNewView = function(route) {
             var currentViewName = $.spamd.history.params().page;
-            //var url = $.parseUrl(location.href);
-            //var currentViewName = url.params.page;
             if (currentViewName === route) {
                 return false;
             }
@@ -328,71 +225,37 @@ define(function(require) {
             var args = options.args;
             var params = options.params;
             var deferredHolder = options.deferredHolder;
-            //var onViewReady = options.onViewReady;
-            //var target = options.target;
 
             processHashChange = false;
             var route = routesByPath[viewPath] || viewPath;
             $.spamd.history.params.set(params);
-            //$.address.autoUpdate(false);
-            //$.address.value(route);
-            /*
-             for (var param in params) {
-             var val = params[param];
-             //$.spamd.history.params.add({param : item});
-             
-             if ($.isArray(val)) {
-             for (var i = 0; i < val.length; i++) {
-             var item = val[i];
-             //$.address.parameter(param, item, true);
-             $.spamd.history.params.add({param : item});
-             }
-             } else {
-             $.spamd.history.params.add({param : item});
-             //$.address.parameter(param, val);
-             }
-             }*/
+
             var newView = this.hasMovedToNewView(route);
             if (newView) {
-                //$.address.value("");
                 $.spamd.history.clear();
             }
-            //$.address.value("");
             $.spamd.history.params.set({page: route});
 
             $.spamd.history.update();
             processHashChange = true;
-            //$.address.value(viewName);
-            //route[viewName] = arguments;
-            //$.address.parameter("pok", "moo");
-            //console.log("param", $.address.parameter("pok"));
-
-            //var result = {};
 
             var dom = function() {
                 var parent = that;
                 var me = {};
 
-                //var attachedDeferred = $.Deferred();
-                //var visibleDeferred = $.Deferred();
-
-                //var visiblePromise = visibleDeferred.promise();
-                //var attachedPromise = attachedDeferred.promise();
-
                 me.attach = function(html, domOptions) {
-                    var domDefaults = {anim: settings.animate};
+                    var domDefaults = {animate: settings.animate};
                     domDefaults = $.extend({}, domDefaults, domOptions);
 
-
-                    //setTimeout(function() {
                     var onAttached = function() {
-                        //parent.clear(options.target);
                         deferredHolder.attachedDeferred.resolve(view);
                         // In case user forgot to bind. TODO this call could be slow if DOM is large, so make autobind configurable
                         if (templateEngine.hasActions()) {
-                            console.info("Remember to call templateEngine.bind(target) otherwise your actions rendered with Handlebars won't fire!");
-                            // TODO shoulld we auto bind at all?? Simply warn the user?
-                            //templateEngine.bind(options.target);
+                            if (settings.bindTemplate === false) {
+                                console.info("When rendering the target '" + options.target + "' it was detected that templateEngine had unbounded Actions. " +
+                                        "Remember to call templateEngine.bind(target) otherwise your actions rendered with Handlebars won't fire!");
+                                return;
+                            }
                         }
                     };
 
@@ -404,7 +267,7 @@ define(function(require) {
                     options.onVisible = onVisible;
                     options.viewAttached = parent.viewAttached;
                     options.viewVisible = parent.viewVisible;
-                    if (domDefaults.anim) {
+                    if (domDefaults.animate) {
                         settings.animateHandler(html, options);
                     } else {
                         settings.attachHandler(html, options);
@@ -455,22 +318,12 @@ define(function(require) {
             //this.init();
             this.ensureInitialized();
             var target = options.target || settings.target;
-            var defaults = {anim: settings.animate};
+            var defaults = {animate: settings.animate};
             defaults = $.extend({}, defaults, options);
             defaults._options = options;
             defaults.target = target;
-            // TODO setup window.error
+
             addGlobalErrorHandler(target);
-            /*
-             var curr = window.onerror;
-             window.onerror = function(message, file, lineNumber) {
-             that.clear(target);
-             if (curr) {
-             curr(arguments);
-             window.onerror = curr;
-             }
-             return false;
-             };*/
 
             var deferredHolder = that.createDeferreds();
             defaults.deferredHolder = deferredHolder;
@@ -514,11 +367,9 @@ define(function(require) {
             defaults.onVisible = onVisible;
             defaults.viewAttached = that.viewAttached;
             defaults.viewVisible = that.viewVisible;
-            if (defaults.anim) {
-                //that.attachViewWithAnim(html, defaults);
+            if (defaults.animate) {
                 settings.animateHandler(html, defaults);
             } else {
-                //that.attachView(html, defaults);
                 settings.attachHandler(html, defaults);
             }
 
@@ -549,21 +400,45 @@ define(function(require) {
                 onAttached();
             }
 
+            var target = options.target;
+
             // In case user forgot to bind. TODO this call could be slow if DOM is large, so make autobind configurable
-            /*if (templateEngine.hasActions()) {
-             console.info("autobinding template actions since templateEngine has unbounded actions!");
-             templateEngine.bind(target);
-             }*/
+            if (templateEngine.hasActions()) {
+                // In case user forgot to bind. TODO this call could be slow if DOM is large, so make autobind configurable
+                if (settings.bindTemplate === false) {
+                    //console.info("When rendering the target '" + target + "' it was detected that templateEngine had unbounded Actions. " +
+                    //"Remember to call templateEngine.bind(target) otherwise your actions rendered with Handlebars won't fire!");
+                    return;
+                }
+                // TODO should we auto bind at all?? Simply warn the user?
+
+                var total = -1;
+                if (performance) {
+                    var t0 = performance.now();
+                    templateEngine.bind(target);
+                    var t1 = performance.now();
+                    total = (t1 - t0);
+                    total = total.toFixed(2);
+                    var threshold = 20; // millis
+                    if (total > threshold) {
+                        console.warn("Binding the template actions took" + total + " milliseconds. You can optimize TemplateEngine.bind time by" +
+                                " manually binding on a specific target eg. templateEngine.bind('#myTable'). This ensures the whole DOM in the target, '" +
+                                target + "', is not scanned for actions to bind. ");
+                    }
+
+                } else {
+                    templateEngine.bind(target);
+                }
+
+                console.info("autobinding template actions since templateEngine has unbounded actions. Binding actions of target '" + target
+                        + "' took " + total + " milliseconds");
+
+            }
         };
         this.viewVisible = function(options) {
 
             var target = options.target;
             var view = options.view;
-            //var onViewReady = options.onViewReady;
-
-            //if (options.domOnVisible) {
-            //options.domOnVisible(view);
-            //}
 
             var onVisible = options.onVisible;
             if (onVisible) {
@@ -574,7 +449,6 @@ define(function(require) {
                 throw new Error("options.deferredHolder is required!");
             }
             var mainDeferred = options.deferredHolder.mainDeferred;
-            //console.log("MAIN?", mainDeferred);
             if (mainDeferred) {
                 mainDeferred.resolve(view);
             }
@@ -582,7 +456,6 @@ define(function(require) {
             that.clear(target);
             removeGlobalErrorHandler(target);
         };
-        // TODO Replace this method for alternate animation
         this.attachViewWithAnim = function(html, options) {
 
             var target = options.target;
@@ -636,16 +509,13 @@ define(function(require) {
         }
 
         function removeGlobalErrorHandler(target) {
-            //console.log("globalErrorHandler removing", target);
             var i = $.inArray(target, errorHandlerStack);
             if (i !== -1) {
                 errorHandlerStack.splice(i, 1);
-                //console.log("globalErrorHandler removed", target);
             }
         }
 
         function addGlobalErrorHandler(target) {
-            //console.log("addGlobalErrorHandler", target);
             var i = $.inArray(target, errorHandlerStack);
             if (i !== -1) {
                 return;
@@ -653,13 +523,11 @@ define(function(require) {
 
             if (errorHandlerStack.length >= 1) {
                 errorHandlerStack.push(target);
-                //console.log("addGlobalErrorHandler already present", target);
                 return;
             }
 
             errorHandlerStack.push(target);
             if (window.onerror === globalErrorHandler) {
-                //console.log("globalErrorHandler is already se as window.onerror");
                 return;
             }
 
@@ -669,8 +537,6 @@ define(function(require) {
         }
 
         function globalErrorHandler(message, url, lineNumber) {
-            //console.log("Global called");
-            //console.log("Old error", globalErrorHandler.prevError);
             for (var i = 0; i < errorHandlerStack.length; i++) {
                 var target = errorHandlerStack[i];
                 targetErrorHandler(message, url, lineNumber, target);
@@ -684,7 +550,6 @@ define(function(require) {
         }
 
         function targetErrorHandler(message, url, lineNumber, target) {
-            //console.log("targetErrorHandler for " + target, message, url, lineNumber);
             that.clear(target);
             var $target = $(target);
             $target.finish();
@@ -697,6 +562,5 @@ define(function(require) {
     }
 
     var manager = new ViewManager();
-    //manager.init();
     return manager;
 });
