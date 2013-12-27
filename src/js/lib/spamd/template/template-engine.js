@@ -11,77 +11,38 @@ define(function(require) {
 
         var registered = false;
 
-        var actionRegistry = [];
+        var actionRegistryLength = 0;
+        var actionRegistry = {};
+
         this.hasActions = function() {
-            return actionRegistry.length > 0;
+            return actionRegistryLength > 0;
         };
-        //var actionRegistryTypes = {};
-        //var mostRecentTarget = null;
 
         this.reset = function() {
-            //target = target || "#container";
-
-            //for (var container in actionRegistryTypes) {
-            /*
-            var container = actionRegistryTypes[target];
-                for (var type in container.types) {
-                    $(container).off(type, "[data-kv-action]");
-                }*/
-            //}
-            actionRegistry = [];
-            //delete actionRegistryTypes[target];
-            //console.log("TemplateEngine was reset!");
+            actionRegistry = {};
+            actionRegistryLength = 0;
         };
 
         this.render = function(template, context, options) {
-            //var tmpl = Handlebars.compile(template);
-            //var target = options.bindtarget;
-            //target = target || "#container";
-            //mostRecentTarget = target;
-
             var html = template(context, options);
-
-            //mostRecentTarget=null;
-
-            //if (options.bind === false) {
-              //  return html;
-            //}
-
-            //autobind(target);
             return html;
         };
-/*
-        function autobind(target) {
-
-            var container = actionRegistryTypes[target];
-            console.log("container:", container, "target:", target);
-            for (var type in container) {
-                console.log("type:", type);
-                $(target).off(type, "[data-kv-action]");
-                $(target).on(type, "[data-kv-action]", function(e) {
-                    var currentID = this.attributes["data-kv-action"].value;
-                    //console.log(currentID);
-                    var currentAction = actionRegistry[currentID];
-                    if (type !== currentAction.on) {
-                        return;
-                    }
-                    currentAction.action(e, currentAction.objectRef);
-                });
-            }
-        }*/
 
         this.bind = function(target) {
             target = target || "body";
-            //console.log("binding target:", target);
-            
-            // Select target with data-kv-attribute and all children with data-kv-attribute, hence the ',' in the selector below. Note the
-            // space between the target and data-attribute.
-            $("[data-kv-action]", target).addBack("[data-kv-action]").each(function(i, item) {
-                var currentID = this.attributes["data-kv-action"].value;
-                // TODO remove data-kv-acion
+            console.log("binding target:", target);
+
+            // Select target with data-spamd-attribute and all children with data-spamd-attribute
+            $("[data-spamd-action]", target).addBack("[data-spamd-action]").each(function(i, item) {
+                var currentID = this.attributes["data-spamd-action"].value;
+
                 var currentAction = actionRegistry[currentID];
-                
-                //$(this).off(currentAction.on);
+                delete actionRegistry[currentID];
+                actionRegistryLength--;
+                if (currentAction.action == null) {
+                    return true;
+                }
+
                 var node = $(this);
                 node.on(currentAction.on, function(e) {
                     if (currentAction.on === "click") {
@@ -89,24 +50,11 @@ define(function(require) {
                     }
 
                     // Bind jQuery this to action
-                   currentAction.action.call(this, e, currentAction.objectRef, currentAction.options);
-                 /*
-                    var tagName = node.prop("tagName").toLowerCase();
-                    var isAnchor = 'a' === tagName;
-                    if (isAnchor) {
-                        var href = node.attr('href');
-                        //$.address.value(href);
-                        e.preventDefault();
-                        //console.log(href);
-                    }
-                    */
+                    currentAction.action.call(this, e, currentAction.objectRef, currentAction.options);
                 });
                 // remove the action attribute
-                node.removeAttr("data-kv-action");
+                node.removeAttr("data-spamd-action");
             });
-            
-            this.reset();
-            
         };
 
         this.registerHelpers = function() {
@@ -130,59 +78,35 @@ define(function(require) {
                         }
                     }
                 }
+                if (actionRef == null) {
+                    console.warn("The action is '" + actionRef + "' for Action Helper: ", this);
+                }
+
                 var actionData = {
                     on: on,
                     action: actionRef,
                     options: options,
                     objectRef: this
                 };
-                /*
-                var target = mostRecentTarget;
-                console.log("target", target);
-                var container = actionRegistryTypes[target];
-                if (!container) {
-                    container = {};
-                    actionRegistryTypes[target] = container;
-                }
-                container[on] = null;
-                */
-                
-                var length = actionRegistry.push(actionData);
-                var id = length - 1;
 
-                return new Handlebars.SafeString("data-kv-action=\"" + id + "\"");
+                actionRegistry[actionRegistryLength] = actionData;
+                actionRegistryLength++;
+                var id = actionRegistryLength - 1;
+
+                return new Handlebars.SafeString("data-spamd-action=\"" + id + "\"");
             });
 
             checkHelper('formatDate');
             Handlebars.registerHelper('formatDate', function(context, block) {
-                //console.log("dateFormat", context);
 
                 var f = block.hash.format || "MMM Do, YYYY";
-                //console.log(f, " ", context);
-                //var c = moment(context);
-                //console.log("val", c);
-                //c = moment.utc(c).local();
-                //context = 18376333;
-                //var day = moment.unix(context);
-                //var day = moment(12345678900);
-                //var day = moment("1977-01-01T00:00:00.000+0000");
                 var day = moment(context);
                 return day.format(f);
             });
 
             checkHelper('formatNumber');
             Handlebars.registerHelper('formatNumber', function(context, block) {
-                //console.log("numberFormat ", context);
-
                 var f = block.hash.format || "#";
-                //console.log(f, " ", context);
-                //var c = moment(context);
-                //console.log("val", c);
-                //c = moment.utc(c).local();
-                //context = 18376333;
-                //var day = moment.unix(context);
-                //var day = moment(12345678900);
-                //var day = moment("1977-01-01T00:00:00.000+0000");
                 var str = numeral(context).format(f);
                 return str;
 
