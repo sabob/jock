@@ -21,7 +21,6 @@ define(function(require) {
         };
 
         this.onDestroy = function(viewOptions) {
-            console.error("Dash onDestroy");
         };
 
         // private methods

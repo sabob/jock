@@ -19,7 +19,6 @@ define(function(require) {
         };
 
         this.onDestroy = function(viewOptions) {
-            console.error("Dash2 onDestroy");
         };
 
         this.getTemplate = function() {
