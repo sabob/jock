@@ -11,9 +11,9 @@ define(function(require) {
 
     var createParams = function() {
 
-        var params;
 
         var that = function(val) {
+            var params;
             params = parseParams(val);
 
             var result = {};
@@ -22,7 +22,8 @@ define(function(require) {
                 if (param) {
                     return params[param];
                 } else {
-                    return params;
+                    var clone = $.extend({}, params);
+                    return clone;
                 }
             };
 

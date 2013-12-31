@@ -8,6 +8,8 @@ define(function(require) {
 //requirejs(["jsuri"]);
     require("spamd/utils/string");
     require("spamd/utils/url");
+    require("spamd/utils/utils");
+    require("spamd/utils/error-utils");
 
     //console.log("URL NOW RDY");
 

@@ -14,11 +14,11 @@ define(function(require) {
             return template;
         };
         this.onInit = function(dom, options) {
-            console.log("API path", options.view.path);
+            console.log("Why path", options.view.path, " Why params", options.params);
 
             var animValue = !options.hashChange;
 
-            dom.attach(this.getTemplate(), {anim: animValue});
+            dom.attach(this.getTemplate(), {animate: animValue});
             dom.attached.then(onAttached);
             dom.visible.then(onVisible);
 

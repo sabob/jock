@@ -6,18 +6,19 @@ define(function(require) {
     var Docs = require("./views/docs/Docs");
     var Why = require("./views/why/Why");
     var API = require("./views/api/API");
+    var Dash = require("./views/dash/Dash");
     var footer = require("hb!./views/footer/footer.htm");
     var viewManager = require("spamd/view/view-manager");
     require("domReady!");
-
-    $("#home").click(function(e) {
+    
+    $("#menu-dash").click(function(e) {
         e.preventDefault();
-        viewManager.showView({view: Home});
+        viewManager.showView({view: Dash,  updateHistory: false});
     });
 
     $("#intro").click(function(e) {
         e.preventDefault();
-        viewManager.showView({view: Intro});
+        viewManager.showView({view: Intro, params: {"intro1": "intro2"}});
     });
 
     $("#menu-home").click(function(e) {
@@ -67,11 +68,11 @@ define(function(require) {
 
      $("#menu-why").click(function(e) {
         e.preventDefault();
-        viewManager.showView({view: Why});
+        viewManager.showView({view: Why, params: {"one": "two"}});
     });
 
     console.log("MAIN: ShowHTML footer");
-    viewManager.showHTML({anim: false, html: footer, target: "#footer-holder"});
+    viewManager.showHTML({animate: false, html: footer, target: "#footer-holder"});
 
     var $footer = $("#footer");
     var $footerHint = $("#footer-hint");

@@ -9,11 +9,23 @@
         <a href="#" id="intro" class="button"><span>Intro</span></a>
     </section>
     -->
+    <div id="parent">
+        Parent
+        <div id="child">
+            child
+            <div id="subchild">
+            subchild
+        </div>
+        </div>
+    </div>
+    <div id="sibling">
+            sibling
+        </div>
     <ul id="features">
         <li>
             <div>
                 <h4>Features</h4> 
-               <ul class="feature-list">
+                <ul class="feature-list">
                     <li>
                         <span class="icon icon-ok-sign"></span>
                         Support Dom manipulation
@@ -118,4 +130,10 @@ package com.mycorp.service;
 http://localhost/MyService/MyMethod
     </pre>
 
+    <div id='global' >
+        <a href='' {{action @clk1}}>click</a>
+    </div>
+    <div id='inner' style='margin-bottom: 200px'>
+        <a href='' {{action @clk2}}>click2</a>
+    </div>
 </div>

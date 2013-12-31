@@ -90,7 +90,12 @@ define(function(require) {
 
             // Keep track of the hash value.
             hash = getHash();
-            cb(hash, true);
+            var options = {
+                newHash: hash,
+                oldHash: hash,
+                initial: true
+            };
+            callback(options);
 
             if (isHashChangeSupported()) {
                 if (window.addEventListener) {
@@ -120,14 +125,26 @@ define(function(require) {
         that.update = function() {
             that.ensureInitialized();
             var curHash = getHash();
+            var options = {
+                newHash: curHash,
+                oldHash: hash,
+                initial: false
+            };
             hash = curHash;
-            callback(curHash, false);
+            //callback(curHash, false);
+            callback(options);
         };
-        
+
         that.trigger = function() {
             that.ensureInitialized();
             var curHash = getHash();
-            callback(curHash, false);
+            var options = {
+                newHash: curHash,
+                oldHash: hash,
+                initial: false
+            };
+            callback(options);
+            //callback(curHash, false);
         };
 
         function getHash() {
@@ -163,8 +180,15 @@ define(function(require) {
             if (iframe) {
                 setIframe(newHash);
             } else {
+
+                var options = {
+                    newHash: newHash,
+                    oldHash: hash,
+                    initial: false
+                };
                 window.location.hash = hash = newHash;
-                callback(newHash, false);
+                callback(options);
+                //callback(newHash, false);
             }
             return newHash;
         }
@@ -173,8 +197,14 @@ define(function(require) {
         function poll() {
             var curHash = getHash();
             if (curHash != hash) {
+                var options = {
+                    newHash: curHash,
+                    oldHash: hash,
+                    initial: false
+                };
                 hash = curHash;
-                callback(curHash, false);
+                callback(options);
+                //callback(curHash, false);
             }
         }
 
@@ -238,9 +268,16 @@ define(function(require) {
                 try {
                     curData = iframe.contentWindow.document.body.innerText;
                     if (curData != data) {
+
+                        var options = {
+                            newHash: curData,
+                            oldHash: data,
+                            initial: true
+                        };
                         data = curData;
                         window.location.hash = hash = curData;
-                        callback(curData, true);
+                        callback(options);
+                        //callback(curData, true);
                     } else {
                         curHash = getHash();
                         if (curHash != hash)

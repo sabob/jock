@@ -68,8 +68,6 @@
                     </ul>
                 </li>
             </ul>
-
-
         </div>
 
         <div class="content">
@@ -80,48 +78,122 @@
                     SPAMD provides a small and simple set of utilities for building single page applications (SPA) with jQuery and AMD.
                 </p>
                 <p>
-                This page lists the complete SPAMD API reference.
-                    
+                    This page lists the complete SPAMD API reference.
+
                 </p>
                 <p id="view-manager">
                 <h2>
                     View Manager
                 </h2>
-                asd
-                f
-                asdf
-                asd
-                fds
-                afads
-                fds
-                f
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
+                <p>ViewManager provides a simple mechanism for switching between views in a Single Page Application.
+                </p>
+                <p>ViewManager will add views in a pre-defined option called <em>target</em>, a CSS selector. The DOM <em>target</em>
+                    defaults to <em class="kw">#container</em>, but can be changed by passing the <em>target</em> option to
+                    <em>viewManager.init({target : <span class="kw">"#views"</span>})</em>.
+                </p>
+                <p>ViewManager specifies
+                    a well-defined <em>life cycle</em> for views, consisting of an <em>initialize</em> phase and an optional
+                    <em>destroy</em> phase.
+                </p>
+                <p>To partake in the life cycle, Views are required to implement the <em>onIinit</em> method and optionally an <em>onDestroy</em>
+                    method.
+                </p>
+                <p>The main API for ViewManager is the <em>showView</em> and <em>showHTML</em> methods. showView will remove the current view
+                    and replace it with a new view. showHTML is for arbitrary HTML templates to be rendered in the DOM.
+                </p>
+                <p><em>showView</em> returns a list of <em>promises</em>, which the caller can use to interact with the new view at specific
+                    points during the rendering phase. showView returns two promises, one for when the view has been <em>attached</em> to
+                    the DOM, another for when the view becomes <em>visible</em>.
+                </p>
+                <p>If animation is switched off, these two events will occur
+                    synchronously, one after the other, since when the view is attached to the DOM it becomes automatically visible.
+                </p>
+                <p>When animation is on, the view will be <em>attached</em> to the DOM, but might not be visible yet. For example using
+                    fading animation  as an example, when showView is called, the current view will be faded out, once invisible the
+                    current view will be removed and the new view attached. At this stage the new view is attached but not yet visible.
+                    Next the new view is faded in and becomes visible.
+                </p>
+                <p>It is common after the <em>attached</em> event to enhance certain view components, ie alter a normal table to a
+                    <a href="DataTable">DataTable</a> component. This is best done before the view becomes <em>visible</em> otherwise users
+                    could see the DOM changes where the tables become datatables.
+                </p>
+                <p>The <em>visible</em> event is useful for DOM manipulations which requires the view to be visible such as manipulating the
+                    size or positions of elements.
+                </p>
             </div>
 
-            <div id="view-manager_showView">
-                <h2>
-                    showView
-                </h2>
-                asd
-                f
-                asdf
-                asd
-                fds
-                afads
-                fds
+            <div id="viewManager_showView" class="method">
+                <p>
+
+                    <span class="methodName">showView</span><code class="methodSig">viewManager.showView(options) -> <i>promise</i></code>
+                <p>Replace the current view with the new given <em>view</em> in the DOM. The new view is added to the ViewManager's default
+                    <em>target</em> (a CSS selector), but a different target can be specified in showView's <em>options</em>.
+                </p>
+
+                <div><i>Arguments:</i></div>
+                <div class="object">
+                    <strong>options</strong>
+                    <div><code><i>type:</i> Object</code></div>
+                    <ul>
+                        <li><strong>view</strong><code>(required)</code>
+                            <div><code><i>type:</i> Function() or Object</code></div>                            
+                            <div>an instance of a view object or a function that creates a view</div>
+                        </li>
+                        <li><strong>target</strong> <code>(default: the ViewManager target)</code>
+                            <div><code><i>type:</i> String</code></div>
+                            <div>a CSS selector where the view must be added to, the current view at the target in the DOM will be removed</div>
+                        </li>
+
+                    </ul>
+                </div>
+
+                <div><i>Return:</i></div>
+                <div class="object">
+                    <strong>promise</strong>
+                    <div><code><i>type:</i> Promise</code></div>
+                    <div>a promise for when the view becomes visible</div>
+                    <div>The promise also contains properties, other promises for different DOM events as shown below:</div>
+                    <ul>
+                        <li><strong>attached</strong>
+                            <div><code><i>type:</i> Promise</code></div>
+                            <div>a promise for when the view is attached to the DOM</div>
+                        </li>
+                        <li><strong>visible</strong>
+                            <div><code><i>type:</i> Promise</code></div>
+                            <div>a promise for when the view becomes visible. This is analogous to the returned promise above. 
+                                This promise is just makes it clearer when the promise will occur.</div>
+                        </li>
+
+                    </ul>
+                </div>
+
+                <div><i>Examples:</i></div>
+
+                <p>
+                    Replace the current view with the new view and returns a promise when the view is <em>visible</em>. The promise will be
+                    passed an instance of the new view.
+                </p>
+                <pre class="prettyprint">
+var promise = viewManager.showView({view: HomeView});
+promise.then(function(view) {
+// View is visible
+}); </pre>
+                <p>The returned <em>promise</em> also contains other promises as member variables, one promise for the <em>attached</em>
+                    phase and one for the <em>visible</em> phase/ The <em>visible</em> member is an alias for the returned promise as they
+                    both execute when the view becomes visible.
+                </p>
+                <pre class="prettyprint">
+var promise = viewManager.showView({view: HomeView});
+promise.then(function(view) {
+  // View is visible
+});
+
+promise.visible.then(function(view) {
+  // View is visible
+});
+promise.attached.then(function(view) {
+  // View is attached but not yet visible
+}); </pre>
             </div>
 
 

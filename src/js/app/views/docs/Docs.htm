@@ -88,7 +88,7 @@
                     for HTML templates.
                 </p>
                 <p>
-                    SPAMD is based on some core principles, namely:
+                    SPAMD is based on the following core principles:
                 </p>
                 <ul>
                     <li>
@@ -220,14 +220,185 @@ define(function(require) {
                 <p>Finally line 13 calls the ViewManager.<em>showView</em> method to display the view.
 
                 </p>
-                
+
                 <h3 id="spamd-configuration">SPAMD configuration</h3>
+                <p>
+                    Since SPAMD is based on AMD, it should be familiar to anyone with AMD experience.
+                </p>
+                <p>AMD provides a moduling system for JavaScript applications, so there is no need to include a bunch of &lt;script&gt; tags
+                    in your HTML pages. Instead, the JavaScript application is split into modules which are loaded as required.
+                </p>
+                <p>For a good overview on AMD see this <a href="article">article</a>.
+                </p>
+                <p>To start a SPAMD application you generally need the following setup:
+                </p>
+                <ul>
+                    <li>an index.html to bootstrap <code>require.js</code>.</li>
+                    <li>a <code>config.js</code> to configure <code>requirejs</code> to the needs of your application, SPAMD and other libraries.
+                        NOTE: config.js does not include application specific configuration, that is done through the <code>setup.js</code> script.</li>
+                    <li><code>main.js</code>, the entry point to your application, invoked from <code>config.js</code> above. Here you start
+                        configuring your application, such as navigation menus and events. You can also configure SPAMD in main.js, although it
+                        is common to push this configuration to a separate file, setup.js</li>
+                    <li><code>setup.js</code> is sometimes used to hold application specific configuration instead of cluttering main.js</li>
+                </ul>
 
+                <p>Let's go through the setup of a typical application.</p>
 
-                <h3 id="ViewManager">ViewManager</h3>
+                <p>We start with our <code>index.html</code> below.
+                </p>
+                <code>index.html</code>
+                <pre class="prettyprint linenums">
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;css/site.css&quot;/&gt;
+    &lt;script data-main=&quot;js/config&quot; src=&quot;js/lib/require.js&quot;&gt;
+&lt;/script&gt;
+  &lt;/head&gt;
+
+  &lt;body&gt;
+
+    &lt;!-- Basic navigation menu --&gt;
+    &lt;div class=&quot;header&quot;&gt;
+      &lt;ul id=&quot;navbar&quot;&gt;
+        &lt;li&gt;&lt;a href=&quot;#&quot; id=&quot;home-menu&quot;&gt;Home&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&quot;#&quot; id=&quot;customers-menu&quot;&gt;Customers&lt;/a&gt;&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/div&gt;
+
+    &lt;div id=&quot;container&quot;&gt;
+      &lt;!-- Our views will be placed here --&gt;
+    &lt;/div&gt;
+
+  &lt;/body&gt;
+&lt;/html&gt; </pre>
+
+                <p>On line 5, we include require.js. Notice the <em>data-main</em> attribute with the value <em>js/config</em>. This points
+                    to a script to configure requirejs, which will be loaded next. Let's look at <code>config.js</code>.
+                </p>
+
+                <code>config.js</code>
+                <pre class="prettyprint linenums">
+requirejs.config({
+    "baseUrl": "js/lib", // root location of JS libraries
+    "paths": {
+        "app": "../app", // path to our application
+        "hb": "spamd/hb", // path to the AMD Handlebars plugin
+        "moment": "moment",
+        "numeral": "numeral"
+    },
+    "shim": {
+        "handlebars": {exports: "Handlebars"}
+    }
+});
+
+// onResourceLoad is a requirejs extension to manipulate modules
+// being loaded. Here we add the module ID (which is also the
+// path to the module location) as an attribute on the module
+// itself
+requirejs.onResourceLoad = function(context, map, depArray) {
+    var obj = context.defined[map.name];
+
+    if (obj) {
+        if (obj.prototype) {
+            if (!obj.prototype.id) {
+                obj.prototype.id = map.id;
+                obj.id = map.id;
+            }
+        } else {
+            if (!obj.id) {
+                obj.id = map.id;
+            }
+        }
+    }
+};
+
+// Load the main app module to start the application
+requirejs(["app/main"]); </pre>
+
+                <p>With RequireJS now configured, it's time to load our application. Line 36 loads our application entry point,
+                    <em>main.js</em> which resides in the <em>app</em> folder.
+                </p>
+
+                <p><em>main.js</em> is shown below:
+                </p>
+
+                <code>main.js</code>
+
+                <pre class="prettyprint linenums">
+define(function(require) {
+  var $ = require("jquery"); // load jquery
+  require("spamd/spamd"); // load SPAMD bootstrap module
+  var viewManager = require("spamd/view/view-manager");
+  var Home = require("./views/home/Home"); //Home View
+  var Customer = require("./views/cust/Customers");
+
+  var options = { 
+    defaultView : Home
+  }
+
+  viewManager.init(options); // ViewManager is ready to use
+
+  // Use jQuery to wire up the menu items to show the proper View
+  $("#home-menu").click(function(e) {
+    e.preventDefault();
+    viewManager.showView({view: Home});
+  });
+  $("#customers-menu").click(function(e) {
+    e.preventDefault();
+    viewManager.showView({view: Customers});
+  });
+});</pre>
+                <p>The application is now setup and will load the <em>Home</em> view when visiting the url: <em>http://hostname/</em>
+                </p>
+                <p>Note line 3, we load the <em>spamd</em> bootstrap module. This module is provided by SPAMD to load all of SPAMD
+                    required plugins and extra jQuery plugins. Without including this module, you will run into errors where certain of the
+                    documented API under the SPAMD or jQuery namespace doesn't work, as they haven't been loaded. So always include this
+                    module in your <em>main.js</em> or <em>setup.js</em> module. 
+                </p>
+
+                <p>You could also move your application setup code into a module of it's own, for example:</p>
+
+                <code>setup.js</code>
+                <pre class="prettyprint">
+define(function(require) {
+  var viewManager = require("spamd/view/view-manager");
+  var Home = require("./views/home/Home"); //Home View
+
+  var options = {
+    defaultView : Home
+  }
+
+  viewManager.init(options); // ViewManager is ready to use
+}); </pre>
+
+                <p>Now <em>main.js</em> can be changed as follows:
+                </p>
+
+                <code>main.js</code>
+                <pre class="prettyprint">
+define(function(require) {
+  require("./setup"); // Load the setup file
+  var viewManager = require("spamd/view/view-manager");
+  var Home = require("./views/home/Home"); //Home View
+  ...
+
+  // No need to setup ViewManager as that is done in setup.js
+  $("#home-menu").click(function(e) {
+    e.preventDefault();
+    viewManager.showView({view: Home});
+  });
+
+  ...
+}); </pre>
+
+                <p>With SPAMD setup let's look at one of the main concepts in SPAMD and single page applications, switching views.</p>
+
+                <h3 id="managing-views">Managing Views</h3>
 
                 <p>
-                    SPAMD provides a simple mechanism to navigate between views in a SPA. One of the core utilities is the #ViewManager.
+                    Managing Views forms the heart of SPAMD applications. SPAMD provides a simple mechanism to switch between views in a
+                    SPA. One of the core utilities is the #ViewManager.
                     #ViewManager provides a method, #showView for, you guessed it, showing views.
                 </p>
 
@@ -261,8 +432,8 @@ define(function(require) {
     return PersonView;
 });</pre>
 
-                <h3 id="ViewManager-life-cycle">ViewManager life cycle</h3>
-                <p>The #ViewManager provides a well defined <em>life cycle</em> for views.
+                <h3 id="ViewManager-life-cycle">The View life cycle</h3>
+                <p>SPAMD provides a well defined <em>life cycle</em> for views, through the #ViewManager.
                 </p>
                 <p>The <em>life cycle</em> consists of an <em>initialization</em> phase and a optional <em>destroy</em> phase. These phases
                     are implemented by the view through two methods namely, <em>onInit</em> (shown above) and <em>onDestroy</em>.
@@ -286,50 +457,75 @@ define(function(require) {
                 <p>The destroy phase is optional, views do not have to implement the <em>onDestroy</em> method if they don't care about
                     this phase.
                 </p>
-                
+
                 <h3 id="initialize-view-template">Initialize ViewManager</h3>
-                
+                <p>Before using ViewManager, it must be initialized. For example:
+                </p>
+
+                <code>setup.js</code>
+                <pre class="prettyprint linenums">
+define(function(require) {
+
+    var viewManager = require("spamd/view/view-manager");
+    var Home = require("./views/home/Home");
+
+    var options = {
+        // set a default view to load for the url '/'
+        defaultView : Home,
+    };
+    // Initialize viewManager
+    viewManager.init(options);
+
+    // now we can invoke viewManage.showView
+});</pre>
+                <p>ViewManager supports many other options to tweak it's behavior such as <em>routing</em>, <em>custom view animation</em>,
+                    <em>default DOM target</em> etc. Click <a href='#page=api&id=ViewManager_options'>here</a> for the full list of options.
+                </p>
+
                 <h3 id="view-manager-showView">ViewManager showView</h3>
-                
+                <p><a href='#page=api&id=viewManager_showView'>showView</a> replaces the current view with the specified view.
+
+                </p>
+
                 <h3 id="view-manager-showView-promises">ViewManager showView promises</h3>
-                
+
                 <h3 id="view-manager-showHTML">ViewManager showHTML</h3>
-                
+
                 <h3 id="view-manager-container">ViewManager.Container</h3>
                 Users <em>must</em> always call either Container.attach or Container.cancel, in order for the ViewManager to resolve any
                 promises made by callers of ViewManager#showView.
-                
+
                 <h3 id="view-manager-container-attach">ViewManager.Container attach</h3>
-                
+
                 <h3 id="view-manager-container-attach-promises">ViewManager.Container attach promises</h3>
-                
+
                 <h3 id="view-manager-container-cancel">ViewManager.Container cancel</h3>
-                
+
                 <h3 id="view-manager-container-custom-animation">ViewManager.Container custom animation</h3>
-                
+
                 <h3 id="view-manager-double-click-problem">ViewManager double click problem</h3>
-                
+
                 <h3 id="view-manager-history">ViewManager history</h3>
-               
+
                 <h3 id="view-manager-routes">ViewManager routes</h3>
-                
+
                 <h3 id="url-utility">URL utility</h3>
-                
+
                 <h3 id="template-engine">Template Engine</h3>
-                
+
                 <h3 id="template-engine-helpers">Template Engine Helpers</h3>
-                
+
                 <h3 id="action-helper">action Helper</h3>
-                
+
                 <h3 id="template-engine-bind">Template Engine Bind</h3>
-                
+
                 <h3 id="formatDate-helper">formatDate helper</h3>
-                
+
                 <h3 id="formatNumber-helper">formatNumber helper</h3>
 
-                
+
                 <h3 id="validation">Validation</h3>
-                
+
                 <h3 id="build">Build</h3>
 
                 <h3 id="view-template">View Template</h3>
@@ -372,4 +568,11 @@ define(function(require) {
 
             </div>
         </div>
+    </div>
+
+    <div id='global' >
+        <a href='' {{action @clk1}}>click</a>
+    </div>
+    <div id='inner' style='margin-bottom: 200px'>
+        <a href='' {{action @clk2}}>click2</a>
     </div>

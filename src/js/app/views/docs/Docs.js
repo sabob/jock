@@ -7,25 +7,41 @@ define(function(require) {
     var domUtils = require("app/util/dom-utils");
     var viewManager = require("spamd/view/view-manager");
     var HelloWorldDemo = require("../demos/hello/HelloWorld");
+    var te = require("spamd/template/template-engine");
     require("domReady!");
-    function Intro() {
+    function Docs() {
 
         var that = this;
-        this.getTemplate = function() {
-            return template;
-        };
-        this.onInit = function(dom, options) {
-            console.log("Docs path", options.view.path);
+        var scroll = null;
+
+        this.onInit = function(container, options) {
+            //console.log("Docs path", options.view.path);
 
             var animValue = !options.hashChange;
-            
-            var o = {anim: animValue};
-            dom.attach(this.getTemplate(), o);
-            dom.attached.then(onAttached);
-            dom.visible.then(onVisible);
+
+            var o = {animate: animValue};
+
+
+            var context = {'name': 'Bob'};
+            var toptions = {
+                data: {
+                    one: "two",
+                    clk1: function(e) {
+                        e.preventDefault();
+                        console.log("clk1");
+                    },
+                    clk2: function(e) {
+                        e.preventDefault();
+                        console.log("clk2");
+                    }
+                }
+            };
+            var html = te.render(template, context, toptions);
+            container.attach(html, o);
+            container.attached.then(onAttached);
+            container.visible.then(onVisible);
 
             function onAttached() {
-
                 var windowUrl = $.spamd.url().removeHashParam("id").toString();
 
                 $(".toc a").each(function(i, elem) {
@@ -38,13 +54,30 @@ define(function(require) {
 
                     $(this).attr("href", href);
                 });
+
+                $(".content a").on("click", function(e) {
+                    console.log("1", location.href);
+                    var temp = $.spamd.history.params.get("scroll");
+                    scroll = $(window).scrollTop();
+                    if (temp == scroll) {
+                        console.log("same scroll");
+                        return true;
+                    }
+                    console.log("STILL CHANGING");
+                    $.spamd.history.skipEventOnce(true);
+                    $.spamd.history.params.set("scroll", scroll);
+                    $.spamd.history.update();
+
+                });
+
+                console.log("clicked called: scroll", scroll);
                 $(".toc a").on("click", function(e) {
                     var url = $.parseUrl(this.href);
                     $.spamd.history.skipEventOnce(true);
                     var id = url.params.id;
                     scrollIntoView(id);
                 });
-                
+
                 $("#link-hello-world-demo").on("click", function(e) {
                     e.preventDefault();
                     //$.spamd.history.disable(true);
@@ -55,7 +88,14 @@ define(function(require) {
             }
 
             function onVisible() {
-                console.log("POS2", $(".toc").position());
+                if (!scroll) {
+                    scroll = options.params.scroll;
+                }
+                if (scroll) {
+                    $("html").scrollTop(scroll);
+                    console.log("SCROLLing", scroll);
+                    return;
+                }
                 var id = options.params.id;
                 scrollIntoView(id);
 
@@ -73,8 +113,8 @@ define(function(require) {
                 $(window).scrollTop(top);
             }
 
-           //$('#f').followTo(250);
+            //$('#f').followTo(250);
         };
     }
-    return Intro;
+    return new Docs();
 });

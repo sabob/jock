@@ -13,16 +13,26 @@ define(function(require) {
         this.getTemplate = function() {
             return template;
         };
-        this.onInit = function(dom, options) {
+        this.onInit = function(container, options) {
             console.log("API path", options.view.path);
 
             var animValue = !options.hashChange;
+            var containerOptions = {};
+            if (animValue === false) {
+                containerOptions.animate = animValue;
+            };
 
-            dom.attach(this.getTemplate(), {anim: animValue});
-            dom.attached.then(onAttached);
-            dom.visible.then(onVisible);
+            container.attach(this.getTemplate(), containerOptions);
+            container.attached.then(onAttached);
+            container.visible.then(onVisible);
 
             function onAttached() {
+                
+                /*try {
+                    throw new Error("hello");
+                } catch (e) {
+                    alert($.spamd.extractStacktrace(e));
+                }*/
 
                 var windowUrl = $.spamd.url().removeHashParam("id").toString();
 
@@ -64,6 +74,10 @@ define(function(require) {
             }
 
            //$('#f').followTo(250);
+        };
+        
+        this.onDestroy = function(viewOptions) {
+            console.log("API onDestroy args.length", arguments.length);
         };
     }
     return Intro;

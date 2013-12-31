@@ -29,8 +29,12 @@ define(function(require) {
         };
 
         this.bind = function(target) {
+            if (!this.hasActions()) {
+                console.info("no actions to bind");
+                return;
+            }
             target = target || "body";
-            console.log("binding target:", target);
+            //console.log("binding target:", target);
 
             // Select target with data-spamd-attribute and all children with data-spamd-attribute
             $("[data-spamd-action]", target).addBack("[data-spamd-action]").each(function(i, item) {

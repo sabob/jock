@@ -3,9 +3,6 @@ define(function(require) {
 
     var $ = require("jquery");
     require("spamd/spamd");
-    require("app/lib/jquery.hoverIntent");
-    //require("jquery.address");
-    require("spamd/utils/error-utils");
     var viewManager = require("spamd/view/view-manager");
     var Home = require("./views/home/Home");
     var Intro = require("./views/intro/Intro");
@@ -14,7 +11,7 @@ define(function(require) {
     var Why = require("./views/why/Why");
     var prettify = require("prettify");
     require("domReady!");
-
+    
     setupActiveMenu();
 
     var options = {};
@@ -69,6 +66,7 @@ define(function(require) {
 
     console.log("calling viewManager.init");
     // Move main code to here???
+    //options.bindTemplate = false;
     viewManager.init(options);
     console.log("viewManager.init called");
 

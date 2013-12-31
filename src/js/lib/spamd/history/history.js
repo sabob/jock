@@ -70,7 +70,7 @@ define(function(require) {
             }
         };
 
-        function hashHandler(newHash, initial) {
+        function hashHandler(options) {
             if (that.disable()) {
                 if (that.disableOnce()) {
                     that.disableOnce(false);
@@ -78,13 +78,17 @@ define(function(require) {
                 }
                 return;
             }
+            // update params from new hash
+            // TODO test change
+            paramsObj = params(options.newHash);
+
             if (that.skipEventOnce()) {
                 that.skipEventOnce(false);
                 return;
             }
 
             if (changeCallback) {
-                changeCallback(newHash, initial);
+                changeCallback(options);
             }
         }
 
@@ -114,14 +118,16 @@ define(function(require) {
         that.params = function(val) {
             if (typeof val === 'undefined' || typeof val === 'string') {
                 ensureParamsInitialized();
-                return paramsObj.get(val);
+                //return paramsObj.get(val);
+                return paramsObj.get.apply(this, arguments);
 
             } else {
                 if (that.disable()) {
                     return;
                 }
                 ensureParamsInitialized();
-                return paramsObj.set(val);
+                //return paramsObj.set(val);
+                return paramsObj.set.apply(this, arguments);
             }
         };
 
@@ -131,7 +137,7 @@ define(function(require) {
             if (typeof param === 'undefined') {
                 return paramsObj.get();
             } else {
-                paramsObj.get(param);
+                return paramsObj.get(param);
             }
         };
 
@@ -143,7 +149,7 @@ define(function(require) {
             ensureParamsInitialized();
 
             if (typeof params !== 'undefined') {
-                paramsObj.add(params);
+                paramsObj.add.apply(this, arguments);
             }
         };
 
@@ -155,7 +161,7 @@ define(function(require) {
             ensureParamsInitialized();
 
             if (typeof params !== 'undefined') {
-                paramsObj.set(params);
+                paramsObj.set.apply(this, arguments);
             }
         };
 
@@ -167,7 +173,8 @@ define(function(require) {
             ensureParamsInitialized();
 
             if (typeof params !== 'undefined') {
-                paramsObj.remove(params);
+                //paramsObj.remove(params);
+                paramsObj.remove.apply(this, arguments);
             }
         };
 
