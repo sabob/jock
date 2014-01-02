@@ -1,4 +1,4 @@
-g/**
+/**
  * @author Kyle Florence <kyle[dot]florence[at]gmail[dot]com>
  * @website https://github.com/kflorence/jquery-deserialize/
  * @version 1.2.1
