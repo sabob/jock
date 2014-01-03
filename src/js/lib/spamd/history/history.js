@@ -92,7 +92,12 @@ define(function(require) {
             }
         }
 
-        that.update = function() {
+        that.update = function(options) {
+            options = options || {};
+            if (options.skipEvent === true) {
+                that.skipEventOnce(true);
+            }
+
             if (that.disable()) {
                 if (that.disableOnce()) {
                     that.disableOnce(false);
