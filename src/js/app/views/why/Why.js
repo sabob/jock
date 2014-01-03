@@ -7,7 +7,7 @@ define(function(require) {
     var domUtils = require("app/util/dom-utils");
     var viewManager = require("spamd/view/view-manager");
     require("domReady!");
-    function Intro() {
+    function Why() {
 
         var that = this;
         this.getTemplate = function() {
@@ -18,7 +18,7 @@ define(function(require) {
 
             var animValue = !options.hashChange;
 
-            dom.attach(this.getTemplate(), {animate: animValue});
+            dom.attach(this.getTemplate());
             dom.attached.then(onAttached);
             dom.visible.then(onVisible);
 
@@ -66,5 +66,5 @@ define(function(require) {
            //$('#f').followTo(250);
         };
     }
-    return Intro;
+    return Why;
 });

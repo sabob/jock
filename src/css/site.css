@@ -156,7 +156,6 @@ h2 {
 }
 
 code, pre {
-    font-size: 100%;
 }
 
 pre.programlisting {
@@ -414,7 +413,7 @@ a:visited {
 
 .api .content {
     margin: 40px 0 50px 350px;
-    width: 550px;
+    width: 650px;
 
 }
 
@@ -458,4 +457,76 @@ a:visited {
 }
 .toc ul ul a:before {
     content: "\f068";
+}
+.demo {
+    border: 1px solid #ccc;
+    height: 300px;
+}
+.demo h1 {
+    font-size: 2em;
+    font-weight: bold;
+}
+.methodName {
+    font-size: 25px;
+    line-height: 35px;
+        font-weight: normal;
+}
+.method code{
+    background: none;
+    border: none;
+}
+code.methodSig {
+        margin-left: 20px;
+}
+.method i{
+    font-style: italic;
+}
+.object ul {
+    list-style: none;
+}
+.object ul li {
+    padding: 6px 0;
+    /*border-top: 1px solid #ccc;*/
+}
+.object strong {
+    font-weight: 700;
+}
+.object > strong {
+    font-weight: 700;
+}
+
+.kw {
+    color: #7F0055;
+    /*font-weight: bold;*/
+}
+.jd {
+    color: #3F5FBF;
+}
+.cm {
+    color: #3F7F5F;
+}
+.st {
+    color: #2A00FF;
+}
+.wr {
+    color: #000080;
+    font-family: Courier New,courier;
+}
+.red {
+    color: #FF0000;
+}
+.green {
+    color: #008000;
+}
+.blue {
+    color: #0000FF;
+}
+.maroon {
+    color: #800000;
+}
+.navy {
+    color: #000080;
+}
+.yellow {
+    color: #FFFF00;
 }
