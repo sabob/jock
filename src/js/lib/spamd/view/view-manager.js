@@ -189,15 +189,7 @@ define(function(require) {
                 //console.error("Callstack DROPPED to 0");
             }
 
-            if (typeof view === 'string') {
-
-                require([view], function(View) {
-                    that.commonShowView(View, deferredHolder, viewSettings);
-                });
-
-            } else {
-                this.commonShowView(view, deferredHolder, viewSettings);
-            }
+            that.resolveViewAndShow(view, deferredHolder, viewSettings);
 
             return deferredHolder.promises;
         };
@@ -224,6 +216,18 @@ define(function(require) {
             deferredHolder.visibleDeferred = visibleDeferred;
             deferredHolder.promises = promises;
             return deferredHolder;
+        };
+
+        this.resolveViewAndShow = function(view, deferredHolder, viewSettings) {
+            if (typeof view === 'string') {
+
+                require([view], function(View) {
+                    that.commonShowView(View, deferredHolder, viewSettings);
+                });
+
+            } else {
+                this.commonShowView(view, deferredHolder, viewSettings);
+            }
         };
 
         this.commonShowView = function(view, deferredHolder, viewSettings) {
@@ -540,7 +544,7 @@ define(function(require) {
                 if (callStack[target].length >= 1) {
                     var next = callStack[target][0];
                     //console.error("show common", next.viewSettings.view);
-                    that.commonShowView(next.viewSettings.view, next.deferredHolder, next.viewSettings);
+                    that.resolveViewAndShow(next.viewSettings.view, next.deferredHolder, next.viewSettings);
                 }
 
             } else {
