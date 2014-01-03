@@ -34,7 +34,7 @@ define(function(require) {
         var initialized = false;
         var routesByName = {};
         var routesByPath = {};
-        var callStack = {};
+        var callStack = {}; // TODO put limit on how many requests the callStack can hold
         var errorHandlerStack = [];
 
         this.setRoutes = function(map) {
