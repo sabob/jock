@@ -80,7 +80,7 @@ define(function(require) {
 
                     processHashChange = false;
 
-                var historyParams = $.spamd.history.params();
+                    var historyParams = $.spamd.history.params();
                     var viewName = historyParams.page;
                     console.log("BUT VIEWNAME", viewName);
                     var viewPath = routesByName[viewName];
@@ -118,6 +118,7 @@ define(function(require) {
         this.setGlobalOnAttached = function(callback) {
             settings.globalOnAttached = callback;
         };
+
         this.showView = function(options) {
 
             var view = options.view;
@@ -148,18 +149,45 @@ define(function(require) {
 
             var deferredHolder = that.createDeferreds();
 
+
             if (callStack[target].length !== 0) {
-                console.warn("[ViewManager.showView] ViewManager is already processing a showView/showHTML request for the target '" + target + "' and options: ", options, ". Use ViewManager.clear('" + target + "') to force a showView/showHTML request.", callStack[target]);
-                deferredHolder.reject();
-                return deferredHolder.promises;
+                //console.warn("ViewSettings.animate", viewSettings.animate);
+                //viewSettings.animate = false;
+                //console.warn("ViewSettings.animate", viewSettings.animate);
+
+                //console.warn("[ViewManager.showView] ViewManager is already processing a showView/showHTML request for the target '" + target + "' and options: ", options, ". Use ViewManager.clear('" + target + "') to force a showView/showHTML request.", callStack[target]);
+                //deferredHolder.reject();
+                //return deferredHolder.promises;
             }
 
             if (templateEngine.hasActions()) {
-                console.warn("It's been detected that there are unbounded actions in the TemplateEngine! Make sure to call templateEngine.bind() after template is added to DOM. Resetting TemplateEngine to remove memory leaks!");
-                templateEngine.reset(target);
+                //console.warn("It's been detected that there are unbounded actions in the TemplateEngine! Make sure to call templateEngine.bind() after template is added to DOM!");
+                console.warn("It's been detected that there are unbounded actions in the TemplateEngine! Make sure to call templateEngine.bind() after template is added to DOM. Resetting TemplateEngine to remove memory leaks!");                //
+                //templateEngine.reset(target);
+            } else {
+                console.info("Template has no actions");
             }
+            var next = {
+                viewSettings: viewSettings,
+                deferredHolder: deferredHolder
+            };
+            //console.error("next", next.viewSettings.view);
 
-            callStack[target].push(1);
+            callStack[target].push(next);
+            if (callStack[target].length > 1) {
+                //next.viewSettings.animate = false;
+                $.fx.off = true;
+                $(target).stop(true, true);
+                /*
+                 var tempNext = callStack[target][0];
+                 var tempViewSettings = tempNext.viewSettings;
+                 tempViewSettings.animate = false;
+                 */
+
+                return deferredHolder.promises;
+            } else {
+                //console.error("Callstack DROPPED to 0");
+            }
 
             if (typeof view === 'string') {
 
@@ -317,8 +345,10 @@ define(function(require) {
                     var hashChange = viewSettings.hashChange;
 
                     if (containerSettings.animate && !hashChange) {
+                        console.warn("show animate");
                         settings.animateHandler(html, viewSettings);
                     } else {
+                        console.warn("show attach");
                         settings.attachHandler(html, viewSettings);
                     }
 
@@ -378,9 +408,12 @@ define(function(require) {
             }
 
             if (callStack[target].length !== 0) {
-                console.warn("[ViewManager.showHTML] ViewManager is already processing a showView/showHTML request for the target '" + target + "'. Use ViewManager.clear('" + target + "') to force a showView/showHTML request.", callStack[target]);
-                deferredHolder.reject();
-                return deferredHolder.promises;
+                console.warn("ViewSettings.animate", viewSettings.animate);
+                viewSettings.animate = false;
+                console.warn("ViewSettings.animate", viewSettings.animate);
+                //console.warn("[ViewManager.showHTML] ViewManager is already processing a showView/showHTML request for the target '" + target + "'. Use ViewManager.clear('" + target + "') to force a showView/showHTML request.", callStack[target]);
+                //deferredHolder.reject();
+                //return deferredHolder.promises;
             }
 
             if (templateEngine.hasActions()) {
@@ -478,6 +511,8 @@ define(function(require) {
                 console.info("autobinding template actions since templateEngine has unbounded actions. Binding actions of target '" + target
                         + "' took " + total + " milliseconds");
 
+            } else {
+                console.info("really no actions")
             }
         };
         this.viewVisible = function(options) {
@@ -500,6 +535,18 @@ define(function(require) {
 
             that.clear(target);
             removeGlobalErrorHandler(target);
+
+            if (typeof callStack[target] !== 'undefined') {
+                if (callStack[target].length >= 1) {
+                    var next = callStack[target][0];
+                    //console.error("show common", next.viewSettings.view);
+                    that.commonShowView(next.viewSettings.view, next.deferredHolder, next.viewSettings);
+                }
+
+            } else {
+                $.fx.off = false;
+            }
+
         };
         this.attachViewWithAnim = function(html, options) {
 
@@ -510,12 +557,13 @@ define(function(require) {
             }
             var viewAttached = options.viewAttached;
             var viewVisible = options.viewVisible;
-            $target.fadeOut('fast', function() {
+            $target.fadeOut('slow', function() {
 
                 $target.empty();
                 $target.html(html);
                 viewAttached(options);
-                $target.fadeIn('fast', function() {
+
+                $target.fadeIn('slow', function() {
                     viewVisible(options);
                 });
             });
@@ -542,7 +590,8 @@ define(function(require) {
             target = target || settings.target;
             var obj = callStack[target];
             if (obj) {
-                obj.pop();
+                //obj.pop();
+                obj.splice(0, 1);
                 if (obj.length === 0) {
                     delete callStack[target];
                 }
