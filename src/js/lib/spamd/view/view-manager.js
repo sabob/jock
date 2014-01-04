@@ -189,7 +189,7 @@ define(function(require) {
                         var tempNext = callStack[target][i];
                         var tempViewSettings = tempNext.viewSettings;
                         tempViewSettings.overwritten = true;
-                        console.warn("OVERRITTEN")
+                        console.warn("OVERRITTEN");
                     }
                 }
 
@@ -197,6 +197,8 @@ define(function(require) {
             } else {
                 //console.error("Callstack DROPPED to 0");
             }
+            
+            console.warn("hasActions", templateEngine.hasActions());
 
             that.resolveViewAndShow(view, deferredHolder, viewSettings);
 
@@ -241,6 +243,8 @@ define(function(require) {
 
         this.overwrite = function(view, deferredHolder, viewSettings) {
             console.warn("request overwritten -> rejecting deferreds, clearing target");
+            console.warn("resetting template engine");
+            templateEngine.reset();
             deferredHolder.reject();
             var target = viewSettings.target;
             this.clear(target);
