@@ -11,7 +11,7 @@ define(function(require) {
     var Why = require("./views/why/Why");
     var prettify = require("prettify");
     require("domReady!");
-    
+
     setupActiveMenu();
 
     var options = {};
@@ -23,42 +23,31 @@ define(function(require) {
         "why": Why.id
     };
 
+    var cancelled = false;
+
     options.onHashChange = function(view) {
-        var routesByPath = viewManager.getRoutesByPath();
-        var route = routesByPath[view.id];
-        console.log("change", view, view.id, "Route:", route);
-        $("#navbar li.active").removeClass("active");
-
-        if (route == null) {
-            console.warn("View with id '", view.id, "' does not have a route defined. Cannot determine which menu item this view is associated with.");
-            return;
-        }
-        var item = $("#menu-" + route).parent();
-        var location = getActiveMenuLocation(item);
-        item.addClass("active");
-        $("#nav-ind").css(location);
-
+        setActiveMenu(view);
     };
     options.defaultView = Home;
     //options.animate= false;
     //options.target = "#moo";
 
     /*
-    options.animateHandler = function(html, options) {
-        var target = options.target;
-            var $target = $(target);
-            var viewAttached = options.viewAttached;
-            var viewVisible = options.viewVisible;
-            $target.fadeOut(1000, function() {
-
-                $target.empty();
-                $target.html(html);
-                viewAttached(options);
-                $target.fadeIn('fast', function() {
-                    viewVisible(options);
-                });
-            });
-    };*/
+     options.animateHandler = function(html, options) {
+     var target = options.target;
+     var $target = $(target);
+     var viewAttached = options.viewAttached;
+     var viewVisible = options.viewVisible;
+     $target.fadeOut(1000, function() {
+     
+     $target.empty();
+     $target.html(html);
+     viewAttached(options);
+     $target.fadeIn('fast', function() {
+     viewVisible(options);
+     });
+     });
+     };*/
     //options.params = {p1: ["val1", "val2"], p2: "pok"};
     options.globalOnAttached = function(options) {
         prettify.prettyPrint();
@@ -75,8 +64,18 @@ define(function(require) {
         //var right = $('#navbar').width() - $(homeItem).width() - offsetLeft;
         //$('#nav-ind').css({right: right});
 
+        $(viewManager).on("global.cancel", function(e, currentView, cancelledView) {
+            //console.error("cancelled", currentView);
+            cancelled = true;
+            setActiveMenu(currentView);
+        });
+
 
         $('#navbar li').click(function() {
+            if (cancelled) {
+                cancelled = false;
+                return;
+            }
             if (!$(this).hasClass('active')) {
                 $('li.active').removeClass('active');
                 slideToActive($(this));
@@ -84,7 +83,27 @@ define(function(require) {
         });
     }
 
+    function setActiveMenu(view) {
+        if (view == null) {
+            return;
+        }
+        var routesByPath = viewManager.getRoutesByPath();
+        var route = routesByPath[view.id];
+        //console.log("change", view, view.id, "Route:", route);
+        $("#navbar li.active").removeClass("active");
+
+        if (route == null) {
+            //console.warn("View with id '", view.id, "' does not have a route defined. Cannot determine which menu item this view is associated with.");
+            return;
+        }
+        var item = $("#menu-" + route).parent();
+        var location = getActiveMenuLocation(item);
+        item.addClass("active");
+        $("#nav-ind").css(location);
+    }
+
     function slideToActive(li) {
+        console.log("Slide to active");
         $(li).addClass('active');
         //var offsetTop = $(li).offset().top - $('#navbar').offset().top;
         var location = getActiveMenuLocation(li);

@@ -13,7 +13,8 @@ define(function(require) {
         };
 
         this.onInit = function(dom, args) {
-            dom.attach(this.getTemplate()).then(function() {
+            console.log("Cancelling intro")
+            dom.cancel(this.getTemplate()).then(function() {
                 
             });
         };

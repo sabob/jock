@@ -15,11 +15,11 @@ define(function(require) {
         e.preventDefault();
         viewManager.showView({view: Dash,  updateHistory: false});
     });
-
+/*
     $("#intro").click(function(e) {
         e.preventDefault();
         viewManager.showView({view: Intro, params: {"intro1": "intro2"}});
-    });
+    });*/
 
     $("#menu-home").click(function(e) {
         e.preventDefault();
@@ -31,7 +31,10 @@ define(function(require) {
 
     $("#menu-intro").click(function(e) {
         e.preventDefault();
-        viewManager.showView({view: Intro});
+        var promises = viewManager.showView({view: Intro});
+        promises.cancel.then(function() {
+            
+        });
         //var link = e.target;
         //setActiveMenu(link);
     });

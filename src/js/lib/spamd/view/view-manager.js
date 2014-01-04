@@ -28,7 +28,7 @@ define(function(require) {
             bindTemplate: true,
             updateHistory: true
         };
-
+        var currentHash = null;
         var processHashChange = true;
 
         var initialized = false;
@@ -115,9 +115,6 @@ define(function(require) {
                 }
             }
         };
-        this.setGlobalOnAttached = function(callback) {
-            settings.globalOnAttached = callback;
-        };
 
         this.showView = function(options) {
 
@@ -197,7 +194,7 @@ define(function(require) {
             } else {
                 //console.error("Callstack DROPPED to 0");
             }
-            
+
             console.warn("hasActions", templateEngine.hasActions());
 
             that.resolveViewAndShow(view, deferredHolder, viewSettings);
@@ -211,20 +208,27 @@ define(function(require) {
                     mainDeferred.reject();
                     attachedDeferred.reject();
                     visibleDeferred.reject();
+                    cancelDeferred.reject();
+                  $(this).trigger("global.attached.fail");
+                  $(this).trigger("global.visible.fail");
+                  $(this).trigger("global.cancel.fail");
                 }
             };
 
             var mainDeferred = $.Deferred();
             var attachedDeferred = $.Deferred();
             var visibleDeferred = $.Deferred();
+            var cancelDeferred = $.Deferred();
 
             var promises = mainDeferred.promise();
             promises.attached = attachedDeferred.promise();
             promises.visible = visibleDeferred.promise();
+            promises.cancel = cancelDeferred.promise();
 
             deferredHolder.mainDeferred = mainDeferred;
             deferredHolder.attachedDeferred = attachedDeferred;
             deferredHolder.visibleDeferred = visibleDeferred;
+            deferredHolder.cancelDeferred = cancelDeferred;
             deferredHolder.promises = promises;
             return deferredHolder;
         };
@@ -317,7 +321,7 @@ define(function(require) {
             //isMainViewReplaced=true;
 
             var view = viewSettings.view;
-            setCurrentView(view, viewSettings);
+            //setCurrentView(view, viewSettings);
 
             var args = viewSettings.args;
             var deferredHolder = viewSettings.deferredHolder;
@@ -332,6 +336,7 @@ define(function(require) {
             // we don't change the view url, except add new parameters
             if (isMainViewReplaced) {
                 var movedToNewView = this.hasMovedToNewView(route);
+                currentHash = $.spamd.history.hash();
                 //console.log("movedToNewView", movedToNewView);
                 if (movedToNewView) {
                     $.spamd.history.clear();
@@ -358,6 +363,7 @@ define(function(require) {
                         that.overwrite(view, viewSettings.deferredHolder, viewSettings);
                         return deferredHolder.promises.attached;
                     }
+                    setCurrentView(view, viewSettings);
 
                     var containerDefaults = {
                         animate: viewSettings.animate,
@@ -368,6 +374,7 @@ define(function(require) {
 
                     var onAttached = function() {
                         deferredHolder.attachedDeferred.resolve(view);
+                        $(this).trigger("global.attached", [view]);
                         // In case user forgot to bind. TODO this call could be slow if DOM is large, so make autobind configurable
                         if (templateEngine.hasActions()) {
                             if (containerSettings.bindTemplate === false) {
@@ -380,6 +387,7 @@ define(function(require) {
 
                     var onVisible = function() {
                         deferredHolder.visibleDeferred.resolve(view);
+                        $(this).trigger("global.visible", [view]);  
                     };
 
                     viewSettings.onAttached = onAttached;
@@ -414,13 +422,23 @@ define(function(require) {
                     if (viewSettings.overwritten === true) {
                         return that.overwrite(view, viewSettings.deferredHolder, viewSettings);
                     }
-                    var cancelDeferred = $.Deferred();
-                    setTimeout(function() {
+                    processHashChange = false;
+                    $.spamd.history.hash(currentHash);
+                    currentHash = null;
+                    $.spamd.history.update();
+                    processHashChange = true;
+                    
+                    var cancelPromise = deferredHolder.promises.cancel;
+                    var cancelDeferred = deferredHolder.cancelDeferred;
+                    //var cancelDeferred = $.Deferred();
+                    //setTimeout(function() {
                         var target = viewSettings.target;
                         parent.clear(target);
-                        cancelDeferred.resolve(view);
-                    });
-                    return cancelDeferred.promise();
+                        var currentView = that.getCurrentView(target);
+                        cancelDeferred.resolve(currentView, view);
+                        $(that).trigger("global.cancel", [currentView, view]);
+                    //});
+                    return cancelPromise;
                 };
                 return me;
             }();
@@ -439,7 +457,8 @@ define(function(require) {
             }
             view.onInit(container, initOptions);
             //return result;
-        };
+        }
+        ;
 
         this.showHTML = function(options) {
             this.ensureInitialized();
@@ -485,6 +504,7 @@ define(function(require) {
                 //that.clear(options.target);
 
                 deferredHolder.attachedDeferred.resolve(html);
+                $(this).trigger("global.attached", [html]);
                 // In case user forgot to bind. TODO this call could be slow if DOM is large, so make autobind configurable
                 if (templateEngine.hasActions()) {
                     //console.info("autobinding template actions since templateEngine has unbounded actions!");
@@ -494,6 +514,7 @@ define(function(require) {
 
             var onVisible = function() {
                 deferredHolder.visibleDeferred.resolve(html);
+                $(this).trigger("global.visible", [html]);
             };
 
             viewSettings.onAttached = onAttached;
@@ -665,7 +686,7 @@ define(function(require) {
 
         this.getCurrentView = function(target) {
             target = target || settings.target;
-            var currentView = currentViews(target);
+            var currentView = currentViews[target];
             if (currentView) {
                 return currentView.view;
             }
