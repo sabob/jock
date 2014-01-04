@@ -72,9 +72,9 @@ define(function(require) {
             $.spamd.history.init(function(options) {
 
                 //console.log("PROCESS HASH CHANGE OVER", processHashChange);
-                console.log("NEW HASH", options.newHash, "old hash", options.oldHash, "Prcess HASH", processHashChange);
+                //console.log("NEW HASH", options.newHash, "old hash", options.oldHash, "Prcess HASH", processHashChange);
                 var oldPage = params(options.oldHash).get().page;
-                console.info("OLD View", oldPage);
+                //console.info("OLD View", oldPage);
 
                 if (processHashChange) {
 
@@ -82,7 +82,7 @@ define(function(require) {
 
                     var historyParams = $.spamd.history.params();
                     var viewName = historyParams.page;
-                    console.log("BUT VIEWNAME", viewName);
+                    //console.log("BUT VIEWNAME", viewName);
                     var viewPath = routesByName[viewName];
                     if (!viewPath) {
                         viewPath = viewName;
@@ -91,7 +91,7 @@ define(function(require) {
                     if (viewPath) {// ensure path is not blank
                         var viewParams = $.spamd.history.params.get();
                         delete viewParams.page;
-                        console.log("hash shows new view", viewPath, " with params", viewParams);
+                        //console.log("hash shows new view", viewPath, " with params", viewParams);
                         //console.log("2", location.href);
                         that.showView({view: viewPath, params: viewParams, hashChange: true}).then(function(view) {
                             settings.onHashChange(view);
@@ -135,7 +135,8 @@ define(function(require) {
                 args: {},
                 bindTemplate: settings.bindTemplate,
                 animate: settings.animate,
-                updateHistory: settings.updateHistory
+                updateHistory: settings.updateHistory,
+                overwritten: false
             };
             var viewSettings = $.extend({}, defaults, options);
             viewSettings.target = target;
@@ -162,10 +163,10 @@ define(function(require) {
 
             if (templateEngine.hasActions()) {
                 //console.warn("It's been detected that there are unbounded actions in the TemplateEngine! Make sure to call templateEngine.bind() after template is added to DOM!");
-                console.warn("It's been detected that there are unbounded actions in the TemplateEngine! Make sure to call templateEngine.bind() after template is added to DOM. Resetting TemplateEngine to remove memory leaks!");                //
+                //console.warn("It's been detected that there are unbounded actions in the TemplateEngine! Make sure to call templateEngine.bind() after template is added to DOM. Resetting TemplateEngine to remove memory leaks!");                //
                 //templateEngine.reset(target);
             } else {
-                console.info("Template has no actions");
+                //console.info("Template has no actions");
             }
             var next = {
                 viewSettings: viewSettings,
@@ -177,12 +178,20 @@ define(function(require) {
             if (callStack[target].length > 1) {
                 //next.viewSettings.animate = false;
                 $.fx.off = true;
+                //console.warn("o", callStack[target]);
                 $(target).stop(true, true);
-                /*
-                 var tempNext = callStack[target][0];
-                 var tempViewSettings = tempNext.viewSettings;
-                 tempViewSettings.animate = false;
-                 */
+                //console.warn("k", callStack[target]);
+
+                // Cancel all calls except the latest view just added
+                var cs = callStack[target];
+                if (typeof cs !== 'undefined') {
+                    for (var i = 0; i < cs.length - 1; i++) {
+                        var tempNext = callStack[target][i];
+                        var tempViewSettings = tempNext.viewSettings;
+                        tempViewSettings.overwritten = true;
+                        console.warn("OVERRITTEN")
+                    }
+                }
 
                 return deferredHolder.promises;
             } else {
@@ -230,7 +239,27 @@ define(function(require) {
             }
         };
 
+        this.overwrite = function(view, deferredHolder, viewSettings) {
+            console.warn("request overwritten -> rejecting deferreds, clearing target");
+            deferredHolder.reject();
+            var target = viewSettings.target;
+            this.clear(target);
+            console.warn("overwritten done -> exiting");
+
+            if (typeof callStack[target] !== 'undefined') {
+                if (callStack[target].length >= 1) {
+                    var next = callStack[target][0];
+                    //console.error("show common", next.viewSettings.view);
+                    that.resolveViewAndShow(next.viewSettings.view, next.deferredHolder, next.viewSettings);
+                }
+            }
+            return;
+        };
+
         this.commonShowView = function(view, deferredHolder, viewSettings) {
+            if (viewSettings.overwritten === true) {
+                return this.overwrite(view, deferredHolder, viewSettings);
+            }
 
             // Check if invokeWithNew has been set yet
             if (typeof view.invokeWithNew === "undefined") {
@@ -275,6 +304,10 @@ define(function(require) {
         };
 
         this.showViewInstance = function(viewSettings) {
+            if (viewSettings.overwritten === true) {
+                return this.overwrite(view, viewSettings.deferredHolder, viewSettings);
+            }
+
             var target = viewSettings.target;
             var isMainViewReplaced = target === settings.target;
             //isMainViewReplaced=true;
@@ -295,7 +328,7 @@ define(function(require) {
             // we don't change the view url, except add new parameters
             if (isMainViewReplaced) {
                 var movedToNewView = this.hasMovedToNewView(route);
-                console.log("movedToNewView", movedToNewView);
+                //console.log("movedToNewView", movedToNewView);
                 if (movedToNewView) {
                     $.spamd.history.clear();
                 }
@@ -316,6 +349,12 @@ define(function(require) {
                 var me = {};
 
                 me.attach = function(html, containerOptions) {
+                    if (viewSettings.overwritten === true) {
+                        console.warn("likely??");
+                        that.overwrite(view, viewSettings.deferredHolder, viewSettings);
+                        return deferredHolder.promises.attached;
+                    }
+
                     var containerDefaults = {
                         animate: viewSettings.animate,
                         bindTemplate: viewSettings.bindTemplate
@@ -349,10 +388,10 @@ define(function(require) {
                     var hashChange = viewSettings.hashChange;
 
                     if (containerSettings.animate && !hashChange) {
-                        console.warn("show animate");
+                        //console.warn("show animate");
                         settings.animateHandler(html, viewSettings);
                     } else {
-                        console.warn("show attach");
+                        //console.warn("show attach");
                         settings.attachHandler(html, viewSettings);
                     }
 
@@ -367,8 +406,10 @@ define(function(require) {
                     return attachedPromise;
                 };
 
-
                 me.cancel = function() {
+                    if (viewSettings.overwritten === true) {
+                        return that.overwrite(view, viewSettings.deferredHolder, viewSettings);
+                    }
                     var cancelDeferred = $.Deferred();
                     setTimeout(function() {
                         var target = viewSettings.target;
@@ -388,6 +429,10 @@ define(function(require) {
             var viewOptions = {};
             viewOptions.path = route;
             var initOptions = {args: args, params: viewParams, hashChange: viewSettings.hashChange, view: viewOptions};
+
+            if (viewSettings.overwritten === true) {
+                return this.overwrite(view, viewSettings.deferredHolder, viewSettings);
+            }
             view.onInit(container, initOptions);
             //return result;
         };
@@ -397,7 +442,9 @@ define(function(require) {
             var target = options.target || settings.target;
             var defaults = {
                 animate: settings.animate,
-                bindTemplate: settings.bindTemplate};
+                bindTemplate: settings.bindTemplate,
+                overwritten: false
+            };
             var viewSettings = $.extend({}, defaults, options);
             viewSettings._options = options;
             viewSettings.target = target;
@@ -503,20 +550,20 @@ define(function(require) {
                     total = total.toFixed(2);
                     var threshold = 20; // millis
                     if (total > threshold) {
-                        console.warn("Binding the template actions took" + total + " milliseconds. You can optimize TemplateEngine.bind time by" +
-                                " manually binding on a specific target eg. templateEngine.bind('#myTable'). This ensures the whole DOM in the target, '" +
-                                target + "', is not scanned for actions to bind. ");
+                        //console.warn("Binding the template actions took" + total + " milliseconds. You can optimize TemplateEngine.bind time by" +
+                        //      " manually binding on a specific target eg. templateEngine.bind('#myTable'). This ensures the whole DOM in the target, '" +
+                        //     target + "', is not scanned for actions to bind. ");
                     }
 
                 } else {
                     templateEngine.bind(target);
                 }
 
-                console.info("autobinding template actions since templateEngine has unbounded actions. Binding actions of target '" + target
-                        + "' took " + total + " milliseconds");
+                //console.info("autobinding template actions since templateEngine has unbounded actions. Binding actions of target '" + target
+                //      + "' took " + total + " milliseconds");
 
             } else {
-                console.info("really no actions")
+                //console.info("really no actions")
             }
         };
         this.viewVisible = function(options) {
@@ -548,6 +595,7 @@ define(function(require) {
                 }
 
             } else {
+                console.warn("FX.off false");
                 $.fx.off = false;
             }
 
@@ -628,14 +676,14 @@ define(function(require) {
                     + "This sometimes occur because RequireJS loading order is incorrect eg. the file initializing ViewManager is loaded *after* the file using ViewManager!");
         };
 
-        function setCurrentView(newView, options) {
-            var target = options.target;
+        function setCurrentView(newView, viewSettings) {
+            var target = viewSettings.target;
 
             // remove current view at the target
             removeCurrentView(target);
 
             // add new view
-            var currentView = {view: newView, options: options};
+            var currentView = {view: newView, options: viewSettings};
             currentViews[target] = currentView;
         }
         /*
@@ -671,6 +719,12 @@ define(function(require) {
             if (currentView == null) {
                 return;
             }
+            // TODO: we don't know whether the DOM for the overwritten view was added or not. Need to add another status to determine if it
+            // is safe to call onDestroy
+            if (currentView.options.overwritten) {
+                return;
+            }
+
             if (currentView.view && currentView.view.onDestroy) {
 
                 currentView.view.onDestroy(currentView.options);
