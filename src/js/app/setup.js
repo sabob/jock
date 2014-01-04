@@ -9,6 +9,7 @@ define(function(require) {
     var API = require("./views/api/API");
     var Docs = require("./views/docs/Docs");
     var Why = require("./views/why/Why");
+    var Dash = require("./views/dash/Dash");
     var prettify = require("prettify");
     require("domReady!");
 
@@ -20,13 +21,13 @@ define(function(require) {
         "intro": Intro.id,
         "docs": Docs.id,
         "home": Home.id,
-        "why": Why.id
+        "why": Why.id,
+        "dash": Dash.id
     };
-
-    var cancelled = false;
 
     options.onHashChange = function(view) {
         setActiveMenu(view);
+        $('#nav-ind').stop(true, true);
     };
     options.defaultView = Home;
     //options.animate= false;
@@ -64,23 +65,37 @@ define(function(require) {
         //var right = $('#navbar').width() - $(homeItem).width() - offsetLeft;
         //$('#nav-ind').css({right: right});
 
-        $(viewManager).on("global.cancel", function(e, currentView, cancelledView) {
-            //console.error("cancelled", currentView);
-            cancelled = true;
-            setActiveMenu(currentView);
-        });
+        /*$(viewManager).on("global.cancel", function(e, currentView, cancelledView) {
+         //console.error("cancelled", currentView);
+         cancelled = true;
+         setActiveMenu(currentView);
+         });*/
 
+        $(viewManager).on("global.will.attach", function(e, newView) {
+            var routesByPath = viewManager.getRoutesByPath();
+            var route = routesByPath[newView.id];
+            $("#navbar li.active").removeClass("active");
 
-        $('#navbar li').click(function() {
-            if (cancelled) {
-                cancelled = false;
+            if (route == null) {
+                //console.warn("View with id '", view.id, "' does not have a route defined. Cannot determine which menu item this view is associated with.");
                 return;
             }
-            if (!$(this).hasClass('active')) {
-                $('li.active').removeClass('active');
-                slideToActive($(this));
-            }
+            var item = $("#menu-" + route).parent();
+            //setActiveMenu(newView);
+            slideToActive(item);
         });
+
+
+        /*$('#navbar li').click(function() {
+         if (cancelled) {
+         cancelled = false;
+         return;
+         }
+         if (!$(this).hasClass('active')) {
+         $('li.active').removeClass('active');
+         slideToActive($(this));
+         }
+         });*/
     }
 
     function setActiveMenu(view) {

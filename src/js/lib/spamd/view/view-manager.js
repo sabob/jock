@@ -209,9 +209,9 @@ define(function(require) {
                     attachedDeferred.reject();
                     visibleDeferred.reject();
                     cancelDeferred.reject();
-                  $(this).trigger("global.attached.fail");
-                  $(this).trigger("global.visible.fail");
-                  $(this).trigger("global.cancel.fail");
+                    $(this).trigger("global.attached.fail");
+                    $(this).trigger("global.visible.fail");
+                    $(this).trigger("global.cancel.fail");
                 }
             };
 
@@ -374,7 +374,7 @@ define(function(require) {
 
                     var onAttached = function() {
                         deferredHolder.attachedDeferred.resolve(view);
-                        $(this).trigger("global.attached", [view]);
+                        $(that).trigger("global.attached", [view]);
                         // In case user forgot to bind. TODO this call could be slow if DOM is large, so make autobind configurable
                         if (templateEngine.hasActions()) {
                             if (containerSettings.bindTemplate === false) {
@@ -387,7 +387,7 @@ define(function(require) {
 
                     var onVisible = function() {
                         deferredHolder.visibleDeferred.resolve(view);
-                        $(this).trigger("global.visible", [view]);  
+                        $(this).trigger("global.visible", [view]);
                     };
 
                     viewSettings.onAttached = onAttached;
@@ -427,16 +427,16 @@ define(function(require) {
                     currentHash = null;
                     $.spamd.history.update();
                     processHashChange = true;
-                    
+
                     var cancelPromise = deferredHolder.promises.cancel;
                     var cancelDeferred = deferredHolder.cancelDeferred;
                     //var cancelDeferred = $.Deferred();
                     //setTimeout(function() {
-                        var target = viewSettings.target;
-                        parent.clear(target);
-                        var currentView = that.getCurrentView(target);
-                        cancelDeferred.resolve(currentView, view);
-                        $(that).trigger("global.cancel", [currentView, view]);
+                    var target = viewSettings.target;
+                    parent.clear(target);
+                    var currentView = that.getCurrentView(target);
+                    cancelDeferred.resolve(currentView, view);
+                    $(that).trigger("global.cancel", [currentView, view]);
                     //});
                     return cancelPromise;
                 };
@@ -538,6 +538,9 @@ define(function(require) {
             if ($target.length === 0) {
                 throw new Error("The showView/showHTML target '" + target + "' does not exist in the DOM!");
             }
+            if (options.view != null) {
+                $(that).trigger("global.will.attach", [options.view]);
+            }
             $target.empty();
             $target.html(html);
             viewAttached(options);
@@ -632,15 +635,18 @@ define(function(require) {
             if ($target.length === 0) {
                 throw new Error("The showView()/showHTML() target '" + target + "' does not exist in the DOM!");
             }
+            if (options.view != null) {
+                $(that).trigger("global.will.attach", [options.view]);
+            }
             var viewAttached = options.viewAttached;
             var viewVisible = options.viewVisible;
-            $target.fadeOut('slow', function() {
+            $target.fadeOut('fast', function() {
 
                 $target.empty();
                 $target.html(html);
                 viewAttached(options);
 
-                $target.fadeIn('slow', function() {
+                $target.fadeIn('fast', function() {
                     viewVisible(options);
                 });
             });
