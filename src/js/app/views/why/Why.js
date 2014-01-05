@@ -40,14 +40,16 @@ define(function(require) {
                     var url = $.parseUrl(this.href);
                     $.spamd.history.skipEventOnce(true);
                     var id = url.params.id;
-                    scrollIntoView(id);
+                    //scrollIntoView(id);
                 });
             }
 
             function onVisible() {
                 console.log("POS2", $(".toc").position());
                 var id = options.params.id;
-                scrollIntoView(id);
+                if (id) {
+                    //scrollIntoView(id);
+            }
 
                 //domUtils.trackSidebarBottomPosition();
             }

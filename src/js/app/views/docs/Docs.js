@@ -65,8 +65,8 @@ define(function(require) {
                     }
                     console.log("STILL CHANGING");
                     //$.spamd.history.skipEventOnce(true);
-                    $.spamd.history.params.set("scroll", scroll);
-                    $.spamd.history.update({skipEvent: true});
+                    //$.spamd.history.params.set("scroll", scroll);
+                    //$.spamd.history.update({skipEvent: true});
 
                 });
 

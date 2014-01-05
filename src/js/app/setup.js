@@ -71,7 +71,25 @@ define(function(require) {
          setActiveMenu(currentView);
          });*/
 
-        $(viewManager).on("global.will.attach", function(e, newView) {
+        var scrolls = {};
+
+        $(viewManager).on("global.before.remove", function(e, oldView, newView) {
+            if (oldView == null) {
+                return;
+            }
+            var scroll = $(window).scrollTop();
+            scrolls[oldView.id] = scroll;
+            console.log("scroll", scroll, "for id", oldView.id);
+        });
+
+        $(viewManager).on("global.visible", function(e, oldView, newView) {
+            console.log("global.visible ", oldView, newView);
+            var scroll = scrolls[newView.id];
+            $(window).scrollTop(scroll);
+            console.log("restore scroll for ", newView.id, scroll);
+        });
+
+        $(viewManager).on("global.before.attach", function(e, oldView, newView) {
             var routesByPath = viewManager.getRoutesByPath();
             var route = routesByPath[newView.id];
             $("#navbar li.active").removeClass("active");

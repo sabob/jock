@@ -7,7 +7,7 @@ define(function(require) {
     var domUtils = require("app/util/dom-utils");
     var viewManager = require("spamd/view/view-manager");
     require("domReady!");
-    function Intro() {
+    function API() {
 
         var that = this;
         this.getTemplate = function() {
@@ -80,5 +80,5 @@ define(function(require) {
             console.log("API onDestroy args.length", arguments.length);
         };
     }
-    return Intro;
+    return API;
 });

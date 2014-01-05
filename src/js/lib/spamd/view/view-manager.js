@@ -363,7 +363,8 @@ define(function(require) {
                         that.overwrite(view, viewSettings.deferredHolder, viewSettings);
                         return deferredHolder.promises.attached;
                     }
-                    setCurrentView(view, viewSettings);
+                    var previousView = setCurrentView(view, viewSettings);
+                    viewSettings.previousView = previousView;
 
                     var containerDefaults = {
                         animate: viewSettings.animate,
@@ -374,7 +375,7 @@ define(function(require) {
 
                     var onAttached = function() {
                         deferredHolder.attachedDeferred.resolve(view);
-                        $(that).trigger("global.attached", [view]);
+                        $(that).trigger("global.attached", [viewSettings.previousView, view]);
                         // In case user forgot to bind. TODO this call could be slow if DOM is large, so make autobind configurable
                         if (templateEngine.hasActions()) {
                             if (containerSettings.bindTemplate === false) {
@@ -387,7 +388,7 @@ define(function(require) {
 
                     var onVisible = function() {
                         deferredHolder.visibleDeferred.resolve(view);
-                        $(this).trigger("global.visible", [view]);
+                        $(that).trigger("global.visible", [viewSettings.previousView, view]);
                     };
 
                     viewSettings.onAttached = onAttached;
@@ -504,7 +505,7 @@ define(function(require) {
                 //that.clear(options.target);
 
                 deferredHolder.attachedDeferred.resolve(html);
-                $(this).trigger("global.attached", [html]);
+                $(this).trigger("global.html.attached", [null, html]);
                 // In case user forgot to bind. TODO this call could be slow if DOM is large, so make autobind configurable
                 if (templateEngine.hasActions()) {
                     //console.info("autobinding template actions since templateEngine has unbounded actions!");
@@ -514,7 +515,7 @@ define(function(require) {
 
             var onVisible = function() {
                 deferredHolder.visibleDeferred.resolve(html);
-                $(this).trigger("global.visible", [html]);
+                $(this).trigger("global.html.visible", [null, html]);
             };
 
             viewSettings.onAttached = onAttached;
@@ -539,7 +540,9 @@ define(function(require) {
                 throw new Error("The showView/showHTML target '" + target + "' does not exist in the DOM!");
             }
             if (options.view != null) {
-                $(that).trigger("global.will.attach", [options.view]);
+                var currentView = options.previousView;
+                $(that).trigger("global.before.attach", [currentView, options.view]);
+                $(that).trigger("global.before.remove", [currentView, options.view]);
             }
             $target.empty();
             $target.html(html);
@@ -636,7 +639,9 @@ define(function(require) {
                 throw new Error("The showView()/showHTML() target '" + target + "' does not exist in the DOM!");
             }
             if (options.view != null) {
-                $(that).trigger("global.will.attach", [options.view]);
+                var currentView = options.previousView;
+                $(that).trigger("global.before.attach", [currentView, options.view]);
+                $(that).trigger("global.before.remove", [currentView, options.view]);
             }
             var viewAttached = options.viewAttached;
             var viewVisible = options.viewVisible;
@@ -709,6 +714,7 @@ define(function(require) {
 
         function setCurrentView(newView, viewSettings) {
             var target = viewSettings.target;
+            var previousView = that.getCurrentView(target);
 
             // remove current view at the target
             removeCurrentView(target);
@@ -716,6 +722,7 @@ define(function(require) {
             // add new view
             var currentView = {view: newView, options: viewSettings};
             currentViews[target] = currentView;
+            return previousView;
         }
         /*
          function removeCurrentView(target) {
