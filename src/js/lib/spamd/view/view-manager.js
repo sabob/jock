@@ -190,7 +190,7 @@ define(function(require) {
                     }
                 }
 
-                return deferredHolder.promises;
+                //return deferredHolder.promises;
             } else {
                 //console.error("Callstack DROPPED to 0");
             }
@@ -375,7 +375,13 @@ define(function(require) {
 
                     var onAttached = function() {
                         deferredHolder.attachedDeferred.resolve(view);
-                        $(that).trigger("global.attached", [viewSettings.previousView, view]);
+                        var isMainViewReplaced = target === settings.target;
+                        var triggerOptions = {
+                            oldView: viewSettings.previousView,
+                            newView: view,
+                            isMainView: isMainViewReplaced
+                        };
+                        $(that).trigger("global.attached", [triggerOptions]);
                         // In case user forgot to bind. TODO this call could be slow if DOM is large, so make autobind configurable
                         if (templateEngine.hasActions()) {
                             if (containerSettings.bindTemplate === false) {
@@ -388,7 +394,12 @@ define(function(require) {
 
                     var onVisible = function() {
                         deferredHolder.visibleDeferred.resolve(view);
-                        $(that).trigger("global.visible", [viewSettings.previousView, view]);
+                        var triggerOptions = {
+                            oldView: viewSettings.previousView,
+                            newView: view,
+                            isMainView: isMainViewReplaced
+                        };
+                        $(that).trigger("global.visible", [triggerOptions]);
                     };
 
                     viewSettings.onAttached = onAttached;
@@ -437,7 +448,13 @@ define(function(require) {
                     parent.clear(target);
                     var currentView = that.getCurrentView(target);
                     cancelDeferred.resolve(currentView, view);
-                    $(that).trigger("global.cancel", [currentView, view]);
+                    var isMainViewReplaced = target === settings.target;
+                    var triggerOptions = {
+                        oldView: currentView,
+                        newView: view,
+                        isMainView: isMainViewReplaced
+                    };
+                    $(that).trigger("global.cancel", [triggerOptions]);
                     //});
                     return cancelPromise;
                 };
@@ -505,7 +522,11 @@ define(function(require) {
                 //that.clear(options.target);
 
                 deferredHolder.attachedDeferred.resolve(html);
-                $(this).trigger("global.html.attached", [null, html]);
+                var triggerOptions = {
+                    oldHTML: null,
+                    newHTML: html
+                };
+                $(this).trigger("global.html.attached", [triggerOptions]);
                 // In case user forgot to bind. TODO this call could be slow if DOM is large, so make autobind configurable
                 if (templateEngine.hasActions()) {
                     //console.info("autobinding template actions since templateEngine has unbounded actions!");
@@ -515,7 +536,11 @@ define(function(require) {
 
             var onVisible = function() {
                 deferredHolder.visibleDeferred.resolve(html);
-                $(this).trigger("global.html.visible", [null, html]);
+                var triggerOptions = {
+                    oldHTML: null,
+                    newHTML: html
+                };
+                $(this).trigger("global.html.visible", [triggerOptions]);
             };
 
             viewSettings.onAttached = onAttached;
@@ -541,8 +566,14 @@ define(function(require) {
             }
             if (options.view != null) {
                 var currentView = options.previousView;
-                $(that).trigger("global.before.attach", [currentView, options.view]);
-                $(that).trigger("global.before.remove", [currentView, options.view]);
+                var isMainViewReplaced = target === settings.target;
+                var triggerOptions = {
+                    oldView: currentView,
+                    newView: options.view,
+                    isMainView: isMainViewReplaced
+                };
+                $(that).trigger("global.before.attach", [triggerOptions]);
+                $(that).trigger("global.before.remove", [triggerOptions]);
             }
             $target.empty();
             $target.html(html);
@@ -619,12 +650,13 @@ define(function(require) {
             removeGlobalErrorHandler(target);
 
             if (typeof callStack[target] !== 'undefined') {
-                if (callStack[target].length >= 1) {
-                    var next = callStack[target][0];
-                    //console.error("show common", next.viewSettings.view);
-                    that.resolveViewAndShow(next.viewSettings.view, next.deferredHolder, next.viewSettings);
-                }
-
+                /*
+                 if (callStack[target].length >= 1) {
+                 var next = callStack[target][0];
+                 //console.error("show common", next.viewSettings.view);
+                 that.resolveViewAndShow(next.viewSettings.view, next.deferredHolder, next.viewSettings);
+                 }
+                 */
             } else {
                 console.warn("FX.off false");
                 $.fx.off = false;
@@ -640,18 +672,24 @@ define(function(require) {
             }
             if (options.view != null) {
                 var currentView = options.previousView;
-                $(that).trigger("global.before.attach", [currentView, options.view]);
-                $(that).trigger("global.before.remove", [currentView, options.view]);
+                var isMainViewReplaced = target === settings.target;
+                var triggerOptions = {
+                    oldView: currentView,
+                    newView: options.view,
+                    isMainView: isMainViewReplaced
+                };
+                $(that).trigger("global.before.attach", [triggerOptions]);
+                $(that).trigger("global.before.remove", [triggerOptions]);
             }
             var viewAttached = options.viewAttached;
             var viewVisible = options.viewVisible;
-            $target.fadeOut('fast', function() {
+            $target.fadeOut('slow', function() {
 
                 $target.empty();
                 $target.html(html);
                 viewAttached(options);
 
-                $target.fadeIn('fast', function() {
+                $target.fadeIn('slow', function() {
                     viewVisible(options);
                 });
             });

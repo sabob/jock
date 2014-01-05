@@ -73,25 +73,29 @@ define(function(require) {
 
         var scrolls = {};
 
-        $(viewManager).on("global.before.remove", function(e, oldView, newView) {
-            if (oldView == null) {
+        $(viewManager).on("global.before.remove", function(e, options) {
+            if (options.oldView == null) {
                 return;
             }
             var scroll = $(window).scrollTop();
-            scrolls[oldView.id] = scroll;
-            console.log("scroll", scroll, "for id", oldView.id);
+            scrolls[options.oldView.id] = scroll;
+            console.log("scroll", scroll, "for id", options.oldView.id);
         });
 
-        $(viewManager).on("global.visible", function(e, oldView, newView) {
-            console.log("global.visible ", oldView, newView);
-            var scroll = scrolls[newView.id];
+        $(viewManager).on("global.visible", function(e, options) {
+            console.log("global.visible ", options.oldView, options.newView);
+            var scroll = scrolls[options.newView.id];
             $(window).scrollTop(scroll);
-            console.log("restore scroll for ", newView.id, scroll);
+            console.log("restore scroll for ", options.newView.id, scroll);
         });
 
-        $(viewManager).on("global.before.attach", function(e, oldView, newView) {
+        $(viewManager).on("global.before.attach", function(e, options) {
+            //console.error("BEFORE ATTACH", options.newView);
+            if (!options.isMainView) {
+                return;
+            }
             var routesByPath = viewManager.getRoutesByPath();
-            var route = routesByPath[newView.id];
+            var route = routesByPath[options.newView.id];
             $("#navbar li.active").removeClass("active");
 
             if (route == null) {

@@ -7,7 +7,7 @@ define(function(require) {
     var viewManager = require("spamd/view/view-manager");
     require("domReady!");
 
-    function Home() {
+    function Dash() {
 
         // private variables
         var that = this;
@@ -33,6 +33,6 @@ define(function(require) {
         }
     }
 
-    return Home;
+    return Dash;
 
 });
