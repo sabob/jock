@@ -12,7 +12,7 @@ define(function(require) {
     function Docs() {
 
         var that = this;
-        var scroll = null;
+        //var scroll = null;
 
         this.onInit = function(container, options) {
             //console.log("Docs path", options.view.path);
@@ -57,12 +57,14 @@ define(function(require) {
 
                 $(".content a").on("click", function(e) {
                     console.log("1", location.href);
-                    var temp = $.spamd.history.params.get("scroll");
-                    scroll = $(window).scrollTop();
-                    if (temp == scroll) {
-                        console.log("same scroll");
-                        return true;
-                    }
+                    /*
+                     var temp = $.spamd.history.params.get("scroll");
+                     scroll = $(window).scrollTop();
+                     if (temp == scroll) {
+                     console.log("same scroll");
+                     return true;
+                     }
+                     */
                     console.log("STILL CHANGING");
                     //$.spamd.history.skipEventOnce(true);
                     //$.spamd.history.params.set("scroll", scroll);
@@ -70,7 +72,7 @@ define(function(require) {
 
                 });
 
-                console.log("clicked called: scroll", scroll);
+                //console.log("clicked called: scroll", scroll);
                 $(".toc a").on("click", function(e) {
                     var url = $.parseUrl(this.href);
                     $.spamd.history.skipEventOnce(true);
@@ -88,16 +90,20 @@ define(function(require) {
             }
 
             function onVisible() {
-                if (!scroll) {
-                    scroll = options.params.scroll;
-                }
-                if (scroll) {
-                    $("html").scrollTop(scroll);
-                    console.log("SCROLLing", scroll);
-                    return;
-                }
+                /*
+                 if (!scroll) {
+                 scroll = options.params.scroll;
+                 }
+                 if (scroll) {
+                 $("html").scrollTop(scroll);
+                 console.log("SCROLLing", scroll);
+                 return;
+                 }
+                 */
                 var id = options.params.id;
-                scrollIntoView(id);
+                if (id) {
+                    scrollIntoView(id);
+                }
 
                 //domUtils.trackSidebarBottomPosition();
             }
@@ -116,5 +122,5 @@ define(function(require) {
             //$('#f').followTo(250);
         };
     }
-    return new Docs();
+    return Docs;
 });

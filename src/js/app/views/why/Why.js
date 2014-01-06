@@ -48,7 +48,7 @@ define(function(require) {
                 console.log("POS2", $(".toc").position());
                 var id = options.params.id;
                 if (id) {
-                    //scrollIntoView(id);
+                    scrollIntoView(id);
             }
 
                 //domUtils.trackSidebarBottomPosition();
