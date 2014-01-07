@@ -8,11 +8,12 @@ define(function(require) {
     var viewManager = require("spamd/view/view-manager");
     var HelloWorldDemo = require("../demos/hello/HelloWorld");
     var te = require("spamd/template/template-engine");
+    var API = require("../api/API");
     require("domReady!");
     function Docs() {
 
         var that = this;
-        //var scroll = null;
+        var scroll = null;
 
         this.onInit = function(container, options) {
             //console.log("Docs path", options.view.path);
@@ -42,6 +43,7 @@ define(function(require) {
             container.visible.then(onVisible);
 
             function onAttached() {
+                /*
                 var windowUrl = $.spamd.url().removeHashParam("id").toString();
 
                 $(".toc a").each(function(i, elem) {
@@ -54,17 +56,24 @@ define(function(require) {
 
                     $(this).attr("href", href);
                 });
+                */
 
-                $(".content a").on("click", function(e) {
+                $(".content a.link").on("click", function(e) {
+                    e.preventDefault();
+                    var url = $.parseUrl(this.href);
+                    var page = url.params.page;
+                    var id = url.params.id;
+                    viewManager.showView({view: page, animate: false, params: {id: id}});
+                    //viewManager.showView({view: API, params: {id: "viewManager_showView"}});
                     console.log("1", location.href);
-                    /*
-                     var temp = $.spamd.history.params.get("scroll");
-                     scroll = $(window).scrollTop();
-                     if (temp == scroll) {
-                     console.log("same scroll");
-                     return true;
-                     }
-                     */
+                    
+                     //var temp = $.spamd.history.params.get("scroll");
+                     //scroll = $(window).scrollTop();
+                     //if (temp == scroll) {
+                     //console.log("same scroll");
+                     //return true;
+                     //}
+                     
                     console.log("STILL CHANGING");
                     //$.spamd.history.skipEventOnce(true);
                     //$.spamd.history.params.set("scroll", scroll);
@@ -90,16 +99,17 @@ define(function(require) {
             }
 
             function onVisible() {
+                console.log("Inside DOCS: visible", scroll);
                 /*
                  if (!scroll) {
                  scroll = options.params.scroll;
                  }
+                 */
                  if (scroll) {
-                 $("html").scrollTop(scroll);
+                 $(window).scrollTop(scroll);
                  console.log("SCROLLing", scroll);
                  return;
                  }
-                 */
                 var id = options.params.id;
                 if (id) {
                     scrollIntoView(id);
@@ -122,5 +132,5 @@ define(function(require) {
             //$('#f').followTo(250);
         };
     }
-    return Docs;
+    return new Docs();
 });

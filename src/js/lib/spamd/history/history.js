@@ -92,6 +92,7 @@ define(function(require) {
             }
         }
 
+        // TODO update shouldn't fire event by default
         that.update = function(options) {
             options = options || {};
             if (options.skipEvent === true) {

@@ -45,6 +45,8 @@ define(function(require) {
 
     var $ = require("jquery");
 
+    var historyLength = window.history.length;
+
     var createHash = function(window) {
 
         // Import globals
@@ -93,7 +95,8 @@ define(function(require) {
             var options = {
                 newHash: hash,
                 oldHash: hash,
-                initial: true
+                initial: true,
+                external: false
             };
             callback(options);
 
@@ -128,7 +131,8 @@ define(function(require) {
             var options = {
                 newHash: curHash,
                 oldHash: hash,
-                initial: false
+                initial: false,
+                external: false
             };
             hash = curHash;
             //callback(curHash, false);
@@ -141,7 +145,8 @@ define(function(require) {
             var options = {
                 newHash: curHash,
                 oldHash: hash,
-                initial: false
+                initial: false,
+                external: false
             };
             callback(options);
             //callback(curHash, false);
@@ -184,7 +189,8 @@ define(function(require) {
                 var options = {
                     newHash: newHash,
                     oldHash: hash,
-                    initial: false
+                    initial: false,
+                    external: false
                 };
                 window.location.hash = hash = newHash;
                 callback(options);
@@ -197,10 +203,21 @@ define(function(require) {
         function poll() {
             var curHash = getHash();
             if (curHash != hash) {
+
+                //var newHistoryLength = window.history.length;
+                //console.info("history.length", newHistoryLength);
+                //var externalHashChange = true;
+                //if (historyLength !== newHistoryLength) {
+                 //   console.info("history.length changed. was:", historyLength, "now:", newHistoryLength);
+                 //   historyLength = newHistoryLength;
+                 //   externalHashChange = false;
+                //}
+
                 var options = {
                     newHash: curHash,
                     oldHash: hash,
-                    initial: false
+                    initial: false,
+                    external: true
                 };
                 hash = curHash;
                 callback(options);
@@ -272,7 +289,8 @@ define(function(require) {
                         var options = {
                             newHash: curData,
                             oldHash: data,
-                            initial: true
+                            initial: true, // TODO need to test in IE if initial is always true
+                            external: false
                         };
                         data = curData;
                         window.location.hash = hash = curData;
