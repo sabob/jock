@@ -1,5 +1,5 @@
 define(function(require) {
-    console.log("Setup starting!");
+    //console.log("Setup starting!");
 
     var $ = require("jquery");
     require("spamd/spamd");
@@ -91,7 +91,7 @@ define(function(require) {
             //console.log("global.visible ", options.oldView, options.newView);
             var scroll = scrolls[options.newView.id];
             $(window).scrollTop(scroll);
-            console.log("restore scroll for ", options.newView.id, scroll);
+            //console.log("restore scroll for ", options.newView.id, scroll);
         });
 
         $(viewManager).on("global.before.attach", function(e, options) {
@@ -147,7 +147,7 @@ define(function(require) {
     }
 
     function slideToActive(li) {
-        console.log("Slide to active");
+        //console.log("Slide to active");
         $(li).addClass('active');
         //var offsetTop = $(li).offset().top - $('#navbar').offset().top;
         var location = getActiveMenuLocation(li);

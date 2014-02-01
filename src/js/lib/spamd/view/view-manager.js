@@ -118,7 +118,6 @@ define(function(require) {
         };
 
         this.showView = function(options) {
-
             var view = options.view;
             if (!view) {
                 throw new Error("options.view must be specified");
@@ -187,8 +186,23 @@ define(function(require) {
                     for (var i = 0; i < cs.length - 1; i++) {
                         var tempNext = callStack[target][i];
                         var tempViewSettings = tempNext.viewSettings;
-                        tempViewSettings.overwritten = true;
-                        console.warn("OVERRITTEN");
+                        if (tempViewSettings.overwritten === false) {
+                            tempViewSettings.overwritten = true;
+                            console.warn("OVERRITTEN");
+
+                            tempViewSettings.deferredHolder.overwriteDeferred.resolve(tempViewSettings.view);
+
+                            if (tempViewSettings.container) {
+
+                                // TODO turn cancelled into a promise
+                                /*
+                                 if (tempViewSettings.container.cancelled) {
+                                 tempViewSettings.container.cancelled();
+                                 }*/
+                                tempViewSettings.container.cancel();
+                            }
+
+                        }
                     }
                 }
 
@@ -197,7 +211,7 @@ define(function(require) {
                 //console.error("Callstack DROPPED to 0");
             }
 
-            console.warn("hasActions", templateEngine.hasActions());
+            //console.warn("hasActions", templateEngine.hasActions());
 
             that.resolveViewAndShow(view, deferredHolder, viewSettings);
 
@@ -205,32 +219,37 @@ define(function(require) {
         };
 
         this.createDeferreds = function() {
+            var mainDeferred = $.Deferred();
+            var attachedDeferred = $.Deferred();
+            var visibleDeferred = $.Deferred();
+            var cancelDeferred = $.Deferred();
+            var overwriteDeferred = $.Deferred();
+
+            var promises = mainDeferred.promise();
+            promises.attached = attachedDeferred.promise();
+            promises.visible = visibleDeferred.promise();
+            promises.cancel = cancelDeferred.promise();
+            promises.overwrite = overwriteDeferred.promise();
+
             var deferredHolder = {
                 reject: function() {
                     mainDeferred.reject();
                     attachedDeferred.reject();
                     visibleDeferred.reject();
                     cancelDeferred.reject();
+                    overwriteDeferred.reject();
                     $(this).trigger("global.attached.fail");
                     $(this).trigger("global.visible.fail");
                     $(this).trigger("global.cancel.fail");
+                    $(this).trigger("global.overwrite.fail");
                 }
             };
-
-            var mainDeferred = $.Deferred();
-            var attachedDeferred = $.Deferred();
-            var visibleDeferred = $.Deferred();
-            var cancelDeferred = $.Deferred();
-
-            var promises = mainDeferred.promise();
-            promises.attached = attachedDeferred.promise();
-            promises.visible = visibleDeferred.promise();
-            promises.cancel = cancelDeferred.promise();
 
             deferredHolder.mainDeferred = mainDeferred;
             deferredHolder.attachedDeferred = attachedDeferred;
             deferredHolder.visibleDeferred = visibleDeferred;
             deferredHolder.cancelDeferred = cancelDeferred;
+            deferredHolder.overwriteDeferred = overwriteDeferred;
             deferredHolder.promises = promises;
             return deferredHolder;
         };
@@ -250,22 +269,33 @@ define(function(require) {
         };
 
         this.overwrite = function(view, deferredHolder, viewSettings) {
+            if (viewSettings.overwrittenCompleted === true) {
+                //console.log("Already overwritten, returning");
+                return;
+            }
+            viewSettings.overwrittenCompleted = true;
             console.warn("request overwritten -> rejecting deferreds, clearing target");
             console.warn("resetting template engine");
             templateEngine.reset();
-            deferredHolder.reject();
+            //deferredHolder.reject();
             var target = viewSettings.target;
             this.clear(target);
             console.warn("overwritten done -> exiting");
 
-            if (typeof callStack[target] !== 'undefined') {
-                if (callStack[target].length >= 1) {
-                    var next = callStack[target][0];
-                    //console.error("show common", next.viewSettings.view);
-                    that.resolveViewAndShow(next.viewSettings.view, next.deferredHolder, next.viewSettings);
-                }
-            }
-            return;
+            // Process the next showView request
+
+            //TODO test if code below is needed or not
+            /*
+             if (typeof callStack[target] !== 'undefined') {
+             if (callStack[target].length >= 1) {
+             console.log("HUOH");
+             var next = callStack[target][0];
+             //console.error("show common", next.viewSettings.view);
+             that.resolveViewAndShow(next.viewSettings.view, next.deferredHolder, next.viewSettings);
+             }
+             }
+             return;
+             */
         };
 
         this.commonShowView = function(view, deferredHolder, viewSettings) {
@@ -361,6 +391,10 @@ define(function(require) {
                 var parent = that;
                 var me = {};
 
+                me.attached = deferredHolder.promises.attached;
+                me.visible = deferredHolder.promises.visible;
+                me.overwrite = deferredHolder.promises.overwrite;
+
                 me.attach = function(html, containerOptions) {
                     if (viewSettings.overwritten === true) {
                         console.warn("likely??");
@@ -427,15 +461,9 @@ define(function(require) {
                         settings.attachHandler(html, viewSettings);
                     }
 
-                    var attachedPromise = deferredHolder.promises.attached;
-
-                    me.attached = attachedPromise;
-                    me.visible = deferredHolder.promises.visible;
-
-
-                    attachedPromise.visible = me.visible;
-                    attachedPromise.attached = me.attached;
-                    return attachedPromise;
+                    me.attached.visible = me.visible;
+                    me.attached.attached = me.attached;
+                    return me.attached;
                 };
 
                 me.cancel = function() {
@@ -469,11 +497,15 @@ define(function(require) {
                 };
                 return me;
             }();
-
             //console.log("view.oninit", view.onInit);
             if (!view.onInit) {
                 throw new Error("Views must have a public 'onInit' method!");
             }
+
+            if (viewSettings.overwritten === true) {
+                return that.overwrite(view, viewSettings.deferredHolder, viewSettings);
+            }
+            viewSettings.container = container;
 
             var viewOptions = {};
             viewOptions.path = route;
@@ -668,7 +700,7 @@ define(function(require) {
                  }
                  */
             } else {
-                console.warn("FX.off false");
+                //console.warn("FX.off false");
                 $.fx.off = false;
             }
 
@@ -694,16 +726,26 @@ define(function(require) {
             }
             var viewAttached = viewSettings.viewAttached;
             var viewVisible = viewSettings.viewVisible;
-            $target.fadeOut('slow', function() {
+            $target.css({'opacity': 0});
+            //$target.hide();
+            //$target.fadeOut('slow', function() {
+            $target.css({'position': 'relative'});
+                $target.css({'top': '10px'});
 
                 $target.empty();
                 $target.html(html);
                 viewAttached(viewSettings);
 
-                $target.fadeIn('slow', function() {
+                $target.animate({ top: '0px', opacity: 1}, {queue: false, duration: 'slow',  complete: function() {
+                        $target.css({'position': 'static'});
+                    console.log("done1");
                     viewVisible(viewSettings);
-                });
-            });
+                        
+                }});
+                //$target.fadeIn({queue: false, duration: 3000, complete: function() {
+                //}});
+                
+            //});
         };
 
         this.updateHistory = function() {
