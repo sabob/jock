@@ -736,7 +736,7 @@ define(function(require) {
                 $target.html(html);
                 viewAttached(viewSettings);
 
-                $target.animate({ top: '0px', opacity: 1}, {queue: false, duration: 'slow',  complete: function() {
+                $target.animate({ top: '0px', opacity: 1}, {queue: false, duration: 'normal',  complete: function() {
                         $target.css({'position': 'static'});
                     console.log("done1");
                     viewVisible(viewSettings);
