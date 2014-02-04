@@ -23,7 +23,12 @@ define(function(require) {
             actionRegistryLength = 0;
         };
 
-        this.render = function(template, context, options) {
+        this.render = function(template, context, actions, options) {
+            options = options || {};
+            options.data = options.data || {};
+            actions = actions || {};
+            $.extend(options.data, actions);
+            
             var html = template(context, options);
             return html;
         };
