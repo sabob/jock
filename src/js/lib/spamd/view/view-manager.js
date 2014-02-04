@@ -6,6 +6,7 @@ define(function(require) {
     var params = require("spamd/utils/params");
     var utils = require("../utils/utils");
     var templateEngine = require("../template/template-engine");
+    var tweenMax = require("tweenmax");
     function ViewManager() {
 
         var that = this;
@@ -319,6 +320,9 @@ define(function(require) {
                 } else {
                     // Function name is lowercase so invoke without "new"
                     viewSettings.view = view();
+                }
+                if (viewSettings.view.id == null) {
+                    viewSettings.view.id = view.id;
                 }
             } else {
                 // View already instantiated
@@ -646,7 +650,7 @@ define(function(require) {
                 // TODO should we auto bind at all?? Simply warn the user?
 
                 var total = -1;
-                if (performance) {
+                if (typeof performance !== 'undefined') {
                     var t0 = performance.now();
                     templateEngine.bind(target);
                     var t1 = performance.now();
@@ -726,22 +730,29 @@ define(function(require) {
             }
             var viewAttached = viewSettings.viewAttached;
             var viewVisible = viewSettings.viewVisible;
-            $target.css({'opacity': 0});
+            //$target.css({'opacity': 0});
             //$target.hide();
             //$target.fadeOut('slow', function() {
-            $target.css({'position': 'relative'});
-                $target.css({'top': '10px'});
+            $target.css({opacity: 0, position: 'relative', top: '20px'});
 
                 $target.empty();
                 $target.html(html);
                 viewAttached(viewSettings);
-
-                $target.animate({ top: '0px', opacity: 1}, {queue: false, duration: 'normal',  complete: function() {
+                //tweenMax.to($target[0], 0, {opacity:0, top: "10px", position: "relative"});
+                /*
+                tweenMax.to($target[0], 1, {opacity:1, top: "0px", position: "relative", ease:"Expo.easeOut",  onComplete: function() {
+                        $target.css({'position': 'static'});
+                        console.log("done1");
+                        viewVisible(viewSettings);    
+                }});*/
+               
+                $target.animate({ top: '0px', opacity: 1}, {queue: false, duration: 'slow',  complete: function() {
                         $target.css({'position': 'static'});
                     console.log("done1");
                     viewVisible(viewSettings);
                         
                 }});
+            
                 //$target.fadeIn({queue: false, duration: 3000, complete: function() {
                 //}});
                 
