@@ -416,36 +416,43 @@ define(function(require) {
                     var containerSettings = $.extend({}, containerDefaults, containerOptions);
 
                     var onAttached = function() {
-                        deferredHolder.attachedDeferred.resolve(view);
-                        var isMainViewReplaced = target === settings.target;
-                        var triggerOptions = {
-                            oldView: viewSettings.previousView,
-                            newView: view,
-                            isMainView: isMainViewReplaced,
-                            viewSettings: viewSettings
-                        };
-                        $(that).trigger("global.attached", [triggerOptions]);
-                        // In case user forgot to bind. TODO this call could be slow if DOM is large, so make autobind configurable
-                        if (templateEngine.hasActions()) {
-                            if (containerSettings.bindTemplate === false) {
-                                console.info("When rendering the target '" + viewSettings.target + "' it was detected that templateEngine had unbounded Actions. " +
-                                        "Remember to call templateEngine.bind(target) otherwise your actions rendered with Handlebars won't fire!");
-                                return;
+                        setTimeout(function() {
+
+                            deferredHolder.attachedDeferred.resolve(view);
+                            var isMainViewReplaced = target === settings.target;
+                            var triggerOptions = {
+                                oldView: viewSettings.previousView,
+                                newView: view,
+                                isMainView: isMainViewReplaced,
+                                viewSettings: viewSettings
+                            };
+                            $(that).trigger("global.attached", [triggerOptions]);
+                            // In case user forgot to bind. TODO this call could be slow if DOM is large, so make autobind configurable
+                            if (templateEngine.hasActions()) {
+                                if (containerSettings.bindTemplate === false) {
+                                    console.info("When rendering the target '" + viewSettings.target + "' it was detected that templateEngine had unbounded Actions. " +
+                                            "Remember to call templateEngine.bind(target) otherwise your actions rendered with Handlebars won't fire!");
+                                    return;
+                                }
                             }
-                        }
+                        });
                     };
 
                     var onVisible = function() {
-                        var triggerOptions = {
-                            oldView: viewSettings.previousView,
-                            newView: view,
-                            isMainView: isMainViewReplaced,
-                            viewSettings: viewSettings
-                        };
-                        // TODO perhaps a global.before.visible and global.after.visible???
-                        $(that).trigger("global.visible", [triggerOptions]);
 
-                        deferredHolder.visibleDeferred.resolve(view);
+                        setTimeout(function() {
+                            var triggerOptions = {
+                                oldView: viewSettings.previousView,
+                                newView: view,
+                                isMainView: isMainViewReplaced,
+                                viewSettings: viewSettings
+                            };
+                            // TODO perhaps a global.before.visible and global.after.visible???
+                            $(that).trigger("global.visible", [triggerOptions]);
+
+                            deferredHolder.visibleDeferred.resolve(view);
+                        });
+
                     };
 
                     viewSettings.onAttached = onAttached;
@@ -735,27 +742,27 @@ define(function(require) {
             //$target.fadeOut('slow', function() {
             $target.css({opacity: 0, position: 'relative', top: '20px'});
 
-                $target.empty();
-                $target.html(html);
-                viewAttached(viewSettings);
-                //tweenMax.to($target[0], 0, {opacity:0, top: "10px", position: "relative"});
-                /*
-                tweenMax.to($target[0], 1, {opacity:1, top: "0px", position: "relative", ease:"Expo.easeOut",  onComplete: function() {
-                        $target.css({'position': 'static'});
-                        console.log("done1");
-                        viewVisible(viewSettings);    
-                }});*/
-               
-                $target.animate({ top: '0px', opacity: 1}, {queue: false, duration: 'slow',  complete: function() {
-                        $target.css({'position': 'static'});
+            $target.empty();
+            $target.html(html);
+            viewAttached(viewSettings);
+            //tweenMax.to($target[0], 0, {opacity:0, top: "10px", position: "relative"});
+            /*
+             tweenMax.to($target[0], 1, {opacity:1, top: "0px", position: "relative", ease:"Expo.easeOut",  onComplete: function() {
+             $target.css({'position': 'static'});
+             console.log("done1");
+             viewVisible(viewSettings);    
+             }});*/
+
+            $target.animate({top: '0px', opacity: 1}, {queue: false, duration: 'slow', complete: function() {
+                    $target.css({'position': 'static'});
                     console.log("done1");
                     viewVisible(viewSettings);
-                        
+
                 }});
-            
-                //$target.fadeIn({queue: false, duration: 3000, complete: function() {
-                //}});
-                
+
+            //$target.fadeIn({queue: false, duration: 3000, complete: function() {
+            //}});
+
             //});
         };
 
