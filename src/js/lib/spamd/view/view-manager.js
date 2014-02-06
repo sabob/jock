@@ -418,7 +418,6 @@ define(function(require) {
                     var onAttached = function() {
                         setTimeout(function() {
 
-                            deferredHolder.attachedDeferred.resolve(view);
                             var isMainViewReplaced = target === settings.target;
                             var triggerOptions = {
                                 oldView: viewSettings.previousView,
@@ -427,6 +426,9 @@ define(function(require) {
                                 viewSettings: viewSettings
                             };
                             $(that).trigger("global.attached", [triggerOptions]);
+
+                            deferredHolder.attachedDeferred.resolve(view);
+
                             // In case user forgot to bind. TODO this call could be slow if DOM is large, so make autobind configurable
                             if (templateEngine.hasActions()) {
                                 if (containerSettings.bindTemplate === false) {
@@ -571,28 +573,36 @@ define(function(require) {
 
             //setTimeout(function() {
             var onAttached = function() {
-                //that.clear(options.target);
 
-                deferredHolder.attachedDeferred.resolve(html);
-                var triggerOptions = {
-                    oldHTML: null,
-                    newHTML: html
-                };
-                $(this).trigger("global.html.attached", [triggerOptions]);
-                // In case user forgot to bind. TODO this call could be slow if DOM is large, so make autobind configurable
-                if (templateEngine.hasActions()) {
-                    //console.info("autobinding template actions since templateEngine has unbounded actions!");
-                    //templateEngine.bind(target);
-                }
+                setTimeout(function() {
+                    var triggerOptions = {
+                        oldHTML: null,
+                        newHTML: html
+                    };
+                    $(this).trigger("global.html.attached", [triggerOptions]);
+
+                    deferredHolder.attachedDeferred.resolve(html);
+
+                    // In case user forgot to bind. TODO this call could be slow if DOM is large, so make autobind configurable
+                    if (templateEngine.hasActions()) {
+                        //console.info("autobinding template actions since templateEngine has unbounded actions!");
+                        //templateEngine.bind(target);
+                    }
+                });
             };
 
             var onVisible = function() {
-                deferredHolder.visibleDeferred.resolve(html);
-                var triggerOptions = {
-                    oldHTML: null,
-                    newHTML: html
-                };
-                $(this).trigger("global.html.visible", [triggerOptions]);
+
+                setTimeout(function() {
+                    var triggerOptions = {
+                        oldHTML: null,
+                        newHTML: html
+                    };
+
+                    $(this).trigger("global.html.visible", [triggerOptions]);
+
+                    deferredHolder.visibleDeferred.resolve(html);
+                });
             };
 
             viewSettings.onAttached = onAttached;
