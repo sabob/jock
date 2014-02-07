@@ -37,7 +37,7 @@ define(function(require) {
                     }
                 }
             };
-            var html = te.render(template, context, toptions);
+            var html = te.render(template, context, null, toptions);
             container.attach(html, o);
             container.attached.then(onAttached);
             container.visible.then(onVisible);

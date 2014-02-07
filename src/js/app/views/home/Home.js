@@ -71,7 +71,7 @@ define(function(require) {
                         }
                     }
                 };
-                var html = te.render(template, context, options);
+                var html = te.render(template, context, null, options);
 
                 container.attach(html).then(function() {
                     onAttached(args);

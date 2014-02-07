@@ -143,78 +143,82 @@ define(function(require) {
 
             addGlobalErrorHandler(target);
 
+
             if (typeof (callStack[target]) === 'undefined') {
                 callStack[target] = [];
             }
 
             var deferredHolder = that.createDeferreds();
 
+            // The timeout below allows the attached promise to be returned to the caller before running the function.
+            setTimeout(function() {
 
-            if (callStack[target].length !== 0) {
-                //console.warn("ViewSettings.animate", viewSettings.animate);
-                //viewSettings.animate = false;
-                //console.warn("ViewSettings.animate", viewSettings.animate);
+                if (callStack[target].length !== 0) {
+                    //console.warn("ViewSettings.animate", viewSettings.animate);
+                    //viewSettings.animate = false;
+                    //console.warn("ViewSettings.animate", viewSettings.animate);
 
-                //console.warn("[ViewManager.showView] ViewManager is already processing a showView/showHTML request for the target '" + target + "' and options: ", options, ". Use ViewManager.clear('" + target + "') to force a showView/showHTML request.", callStack[target]);
-                //deferredHolder.reject();
-                //return deferredHolder.promises;
-            }
-
-            if (templateEngine.hasActions()) {
-                //console.warn("It's been detected that there are unbounded actions in the TemplateEngine! Make sure to call templateEngine.bind() after template is added to DOM!");
-                //console.warn("It's been detected that there are unbounded actions in the TemplateEngine! Make sure to call templateEngine.bind() after template is added to DOM. Resetting TemplateEngine to remove memory leaks!");                //
-                //templateEngine.reset(target);
-            } else {
-                //console.info("Template has no actions");
-            }
-            var next = {
-                viewSettings: viewSettings,
-                deferredHolder: deferredHolder
-            };
-            //console.error("next", next.viewSettings.view);
-
-            callStack[target].push(next);
-            if (callStack[target].length > 1) {
-                //next.viewSettings.animate = false;
-                $.fx.off = true;
-                //console.warn("o", callStack[target]);
-                $(target).stop(true, true);
-                //console.warn("k", callStack[target]);
-
-                // Cancel all calls except the latest view just added
-                var cs = callStack[target];
-                if (typeof cs !== 'undefined') {
-                    for (var i = 0; i < cs.length - 1; i++) {
-                        var tempNext = callStack[target][i];
-                        var tempViewSettings = tempNext.viewSettings;
-                        if (tempViewSettings.overwritten === false) {
-                            tempViewSettings.overwritten = true;
-                            console.warn("OVERRITTEN");
-
-                            tempViewSettings.deferredHolder.overwriteDeferred.resolve(tempViewSettings.view);
-
-                            if (tempViewSettings.container) {
-
-                                // TODO turn cancelled into a promise
-                                /*
-                                 if (tempViewSettings.container.cancelled) {
-                                 tempViewSettings.container.cancelled();
-                                 }*/
-                                tempViewSettings.container.cancel();
-                            }
-
-                        }
-                    }
+                    //console.warn("[ViewManager.showView] ViewManager is already processing a showView/showHTML request for the target '" + target + "' and options: ", options, ". Use ViewManager.clear('" + target + "') to force a showView/showHTML request.", callStack[target]);
+                    //deferredHolder.reject();
+                    //return deferredHolder.promises;
                 }
 
-                //return deferredHolder.promises;
-            } else {
-                //console.error("Callstack DROPPED to 0");
-            }
+                if (templateEngine.hasActions()) {
+                    //console.warn("It's been detected that there are unbounded actions in the TemplateEngine! Make sure to call templateEngine.bind() after template is added to DOM!");
+                    //console.warn("It's been detected that there are unbounded actions in the TemplateEngine! Make sure to call templateEngine.bind() after template is added to DOM. Resetting TemplateEngine to remove memory leaks!");                //
+                    //templateEngine.reset(target);
+                } else {
+                    //console.info("Template has no actions");
+                }
+                var next = {
+                    viewSettings: viewSettings,
+                    deferredHolder: deferredHolder
+                };
+                //console.error("next", next.viewSettings.view);
 
-            //console.warn("hasActions", templateEngine.hasActions());
+                callStack[target].push(next);
+                if (callStack[target].length > 1) {
+                    //next.viewSettings.animate = false;
+                    $.fx.off = true;
+                    //console.warn("o", callStack[target]);
+                    $(target).stop(true, true);
+                    //console.warn("k", callStack[target]);
 
-            that.resolveViewAndShow(view, deferredHolder, viewSettings);
+                    // Cancel all calls except the latest view just added
+                    var cs = callStack[target];
+                    if (typeof cs !== 'undefined') {
+                        for (var i = 0; i < cs.length - 1; i++) {
+                            var tempNext = callStack[target][i];
+                            var tempViewSettings = tempNext.viewSettings;
+                            if (tempViewSettings.overwritten === false) {
+                                tempViewSettings.overwritten = true;
+                                console.warn("OVERRITTEN");
+
+                                tempViewSettings.deferredHolder.overwriteDeferred.resolve(tempViewSettings.view);
+
+                                if (tempViewSettings.container) {
+
+                                    // TODO turn cancelled into a promise
+                                    /*
+                                     if (tempViewSettings.container.cancelled) {
+                                     tempViewSettings.container.cancelled();
+                                     }*/
+                                    tempViewSettings.container.cancel();
+                                }
+
+                            }
+                        }
+                    }
+
+                    //return deferredHolder.promises;
+                } else {
+                    //console.error("Callstack DROPPED to 0");
+                }
+
+                //console.warn("hasActions", templateEngine.hasActions());
+
+                that.resolveViewAndShow(view, deferredHolder, viewSettings);
+            });
 
             return deferredHolder.promises;
         };
@@ -402,24 +406,28 @@ define(function(require) {
                 me.overwrite = deferredHolder.promises.overwrite;
 
                 me.attach = function(html, containerOptions) {
-                    if (viewSettings.overwritten === true) {
-                        console.warn("likely??");
-                        that.overwrite(view, viewSettings.deferredHolder, viewSettings);
-                        return deferredHolder.promises.attached;
-                    }
-                    var previousView = setCurrentView(view, viewSettings);
-                    viewSettings.previousView = previousView;
 
-                    var containerDefaults = {
-                        animate: viewSettings.animate,
-                        bindTemplate: viewSettings.bindTemplate
-                    };
+                    // The timeout below allows the attached promise to be returned to the caller before running the function.
+                    setTimeout(function() {
+                        if (viewSettings.overwritten === true) {
+                            console.warn("likely??");
+                            that.overwrite(view, viewSettings.deferredHolder, viewSettings);
+                            return deferredHolder.promises.attached;
+                        }
 
-                    var containerSettings = $.extend({}, containerDefaults, containerOptions);
+                        var previousView = setCurrentView(view, viewSettings);
+                        viewSettings.previousView = previousView;
 
-                    var onAttached = function() {
+                        var containerDefaults = {
+                            animate: viewSettings.animate,
+                            bindTemplate: viewSettings.bindTemplate
+                        };
 
-                        setTimeout(function() {
+                        var containerSettings = $.extend({}, containerDefaults, containerOptions);
+
+                        var onAttached = function() {
+
+                            //setTimeout(function() {
                             var isMainViewReplaced = target === settings.target;
                             var triggerOptions = {
                                 oldView: viewSettings.previousView,
@@ -439,11 +447,11 @@ define(function(require) {
                                     return;
                                 }
                             }
-                        });
-                    };
+                            //});
+                        };
 
-                    var onVisible = function() {
-                        setTimeout(function() {
+                        var onVisible = function() {
+                            //setTimeout(function() {
 
                             var triggerOptions = {
                                 oldView: viewSettings.previousView,
@@ -455,31 +463,32 @@ define(function(require) {
                             $(that).trigger("global.visible", [triggerOptions]);
 
                             deferredHolder.visibleDeferred.resolve(view);
-                        });
-                    };
+                            //});
+                        };
 
-                    viewSettings.onAttached = onAttached;
-                    viewSettings.onVisible = onVisible;
-                    viewSettings.viewAttached = parent.viewAttached;
-                    viewSettings.viewVisible = parent.viewVisible;
-                    viewSettings.bindTemplate = containerSettings.bindTemplate;
+                        viewSettings.onAttached = onAttached;
+                        viewSettings.onVisible = onVisible;
+                        viewSettings.viewAttached = parent.viewAttached;
+                        viewSettings.viewVisible = parent.viewVisible;
+                        viewSettings.bindTemplate = containerSettings.bindTemplate;
 
-                    // If showView is result of HashChange we don't do animation
-                    var hashChange = viewSettings.hashChange;
+                        // If showView is result of HashChange we don't do animation
+                        var hashChange = viewSettings.hashChange;
 
-                    if (containerSettings.animate && !hashChange) {
-                        //console.warn("show animate");
-                        //settings.animateHandler(html, viewSettings);
-                        that.commonAttachViewWithAnim(html, viewSettings);
+                        if (containerSettings.animate && !hashChange) {
+                            //console.warn("show animate");
+                            //settings.animateHandler(html, viewSettings);
+                            that.commonAttachViewWithAnim(html, viewSettings);
 
-                    } else {
-                        //console.warn("show attach");
-                        //settings.attachHandler(html, viewSettings);
-                        that.commonAttachView(html, viewSettings);
-                    }
+                        } else {
+                            //console.warn("show attach");
+                            //settings.attachHandler(html, viewSettings);
+                            that.commonAttachView(html, viewSettings);
+                        }
 
-                    me.attached.visible = me.visible;
-                    me.attached.attached = me.attached;
+                        //me.attached.visible = me.visible;
+                        //me.attached.attached = me.attached;
+                    });
                     return me.attached;
                 };
 
@@ -532,8 +541,7 @@ define(function(require) {
             }
             view.onInit(container, initOptions);
             //return result;
-        }
-        ;
+        };
 
         this.showHTML = function(options) {
             this.ensureInitialized();
@@ -550,33 +558,36 @@ define(function(require) {
             addGlobalErrorHandler(target);
 
             var deferredHolder = that.createDeferreds();
-            viewSettings.deferredHolder = deferredHolder;
 
-            if (typeof (callStack[target]) === 'undefined') {
-                callStack[target] = [];
-            }
+            // The timeout below allows the attached promise to be returned to the caller before running the function.
+            setTimeout(function() {
+                viewSettings.deferredHolder = deferredHolder;
 
-            if (callStack[target].length !== 0) {
-                console.warn("ViewSettings.animate", viewSettings.animate);
-                viewSettings.animate = false;
-                console.warn("ViewSettings.animate", viewSettings.animate);
-                //console.warn("[ViewManager.showHTML] ViewManager is already processing a showView/showHTML request for the target '" + target + "'. Use ViewManager.clear('" + target + "') to force a showView/showHTML request.", callStack[target]);
-                //deferredHolder.reject();
-                //return deferredHolder.promises;
-            }
+                if (typeof (callStack[target]) === 'undefined') {
+                    callStack[target] = [];
+                }
 
-            if (templateEngine.hasActions()) {
-                //console.info("It's been detected in showHTML that there are unbounded actions in the TemplateEngine! Make sure to call templateEngine.bind() after template is added to DOM. Resetting to remove memory leaks!");
-                //templateEngine.reset(target);
-            }
+                if (callStack[target].length !== 0) {
+                    console.warn("ViewSettings.animate", viewSettings.animate);
+                    viewSettings.animate = false;
+                    console.warn("ViewSettings.animate", viewSettings.animate);
+                    //console.warn("[ViewManager.showHTML] ViewManager is already processing a showView/showHTML request for the target '" + target + "'. Use ViewManager.clear('" + target + "') to force a showView/showHTML request.", callStack[target]);
+                    //deferredHolder.reject();
+                    //return deferredHolder.promises;
+                }
 
-            var html = viewSettings.html;
+                if (templateEngine.hasActions()) {
+                    //console.info("It's been detected in showHTML that there are unbounded actions in the TemplateEngine! Make sure to call templateEngine.bind() after template is added to DOM. Resetting to remove memory leaks!");
+                    //templateEngine.reset(target);
+                }
 
-            callStack[target].push(1);
+                var html = viewSettings.html;
 
-            var onAttached = function() {
+                callStack[target].push(1);
 
-                setTimeout(function() {
+                var onAttached = function() {
+
+                    //setTimeout(function() {
 
                     var triggerOptions = {
                         oldHTML: null,
@@ -591,12 +602,12 @@ define(function(require) {
                         //console.info("autobinding template actions since templateEngine has unbounded actions!");
                         //templateEngine.bind(target);
                     }
-                });
-            };
+                    //});
+                };
 
-            var onVisible = function() {
+                var onVisible = function() {
 
-                setTimeout(function() {
+                    //setTimeout(function() {
                     var triggerOptions = {
                         oldHTML: null,
                         newHTML: html
@@ -604,19 +615,19 @@ define(function(require) {
                     $(this).trigger("global.html.visible", [triggerOptions]);
 
                     deferredHolder.visibleDeferred.resolve(html);
-                });
-            };
+                    //});
+                };
 
-            viewSettings.onAttached = onAttached;
-            viewSettings.onVisible = onVisible;
-            viewSettings.viewAttached = that.viewAttached;
-            viewSettings.viewVisible = that.viewVisible;
-            if (viewSettings.animate) {
-                //settings.animateHandler(html, viewSettings);
-                that.commonAttachViewWithAnim(html, viewSettings);
-            } else {
-                settings.attachHandler(html, viewSettings);
-            }
+                viewSettings.onAttached = onAttached;
+                viewSettings.onVisible = onVisible;
+                viewSettings.viewAttached = that.viewAttached;
+                viewSettings.viewVisible = that.viewVisible;
+                if (viewSettings.animate) {
+                    that.commonAttachViewWithAnim(html, viewSettings);
+                } else {
+                    that.commonAttachView(html, viewSettings);
+                }
+            });
 
             return deferredHolder.promises;
         };
