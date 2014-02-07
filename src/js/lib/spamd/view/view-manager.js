@@ -321,9 +321,11 @@ define(function(require) {
                     // Function name is lowercase so invoke without "new"
                     viewSettings.view = view();
                 }
+
                 if (viewSettings.view.id == null) {
                     viewSettings.view.id = view.id;
                 }
+
             } else {
                 // View already instantiated
                 viewSettings.view = view;
@@ -416,8 +418,8 @@ define(function(require) {
                     var containerSettings = $.extend({}, containerDefaults, containerOptions);
 
                     var onAttached = function() {
-                        setTimeout(function() {
 
+                        setTimeout(function() {
                             var isMainViewReplaced = target === settings.target;
                             var triggerOptions = {
                                 oldView: viewSettings.previousView,
@@ -441,8 +443,8 @@ define(function(require) {
                     };
 
                     var onVisible = function() {
-
                         setTimeout(function() {
+
                             var triggerOptions = {
                                 oldView: viewSettings.previousView,
                                 newView: view,
@@ -454,7 +456,6 @@ define(function(require) {
 
                             deferredHolder.visibleDeferred.resolve(view);
                         });
-
                     };
 
                     viewSettings.onAttached = onAttached;
@@ -468,10 +469,13 @@ define(function(require) {
 
                     if (containerSettings.animate && !hashChange) {
                         //console.warn("show animate");
-                        settings.animateHandler(html, viewSettings);
+                        //settings.animateHandler(html, viewSettings);
+                        that.commonAttachViewWithAnim(html, viewSettings);
+
                     } else {
                         //console.warn("show attach");
-                        settings.attachHandler(html, viewSettings);
+                        //settings.attachHandler(html, viewSettings);
+                        that.commonAttachView(html, viewSettings);
                     }
 
                     me.attached.visible = me.visible;
@@ -491,8 +495,7 @@ define(function(require) {
 
                     var cancelPromise = deferredHolder.promises.cancel;
                     var cancelDeferred = deferredHolder.cancelDeferred;
-                    //var cancelDeferred = $.Deferred();
-                    //setTimeout(function() {
+
                     var target = viewSettings.target;
                     parent.clear(target);
                     var currentView = that.getCurrentView(target);
@@ -505,7 +508,7 @@ define(function(require) {
                         viewSettings: viewSettings
                     };
                     $(that).trigger("global.cancel", [triggerOptions]);
-                    //});
+
                     return cancelPromise;
                 };
                 return me;
@@ -571,10 +574,10 @@ define(function(require) {
 
             callStack[target].push(1);
 
-            //setTimeout(function() {
             var onAttached = function() {
 
                 setTimeout(function() {
+
                     var triggerOptions = {
                         oldHTML: null,
                         newHTML: html
@@ -598,7 +601,6 @@ define(function(require) {
                         oldHTML: null,
                         newHTML: html
                     };
-
                     $(this).trigger("global.html.visible", [triggerOptions]);
 
                     deferredHolder.visibleDeferred.resolve(html);
@@ -610,7 +612,8 @@ define(function(require) {
             viewSettings.viewAttached = that.viewAttached;
             viewSettings.viewVisible = that.viewVisible;
             if (viewSettings.animate) {
-                settings.animateHandler(html, viewSettings);
+                //settings.animateHandler(html, viewSettings);
+                that.commonAttachViewWithAnim(html, viewSettings);
             } else {
                 settings.attachHandler(html, viewSettings);
             }
@@ -618,10 +621,8 @@ define(function(require) {
             return deferredHolder.promises;
         };
 
-        this.attachView = function(html, viewSettings) {
+        this.commonAttachView = function(html, viewSettings) {
             var target = viewSettings.target;
-            var viewAttached = viewSettings.viewAttached;
-            var viewVisible = viewSettings.viewVisible;
             var $target = $(target);
             if ($target.length === 0) {
                 throw new Error("The showView/showHTML target '" + target + "' does not exist in the DOM!");
@@ -638,11 +639,20 @@ define(function(require) {
                 $(that).trigger("global.before.attach", [triggerOptions]);
                 $(that).trigger("global.before.remove", [triggerOptions]);
             }
+            settings.attachHandler(html, viewSettings);
+        };
+
+        this.attachView = function(html, viewSettings) {
+            var target = viewSettings.target;
+            var $target = $(target);
+            var viewAttached = viewSettings.viewAttached;
+            var viewVisible = viewSettings.viewVisible;
             $target.empty();
             $target.html(html);
             viewAttached(viewSettings);
             viewVisible(viewSettings);
         };
+
         this.viewAttached = function(options) {
             if (settings.globalOnAttached != null) {
                 var origOptions = options._options;
@@ -724,9 +734,9 @@ define(function(require) {
                 //console.warn("FX.off false");
                 $.fx.off = false;
             }
-
         };
-        this.attachViewWithAnim = function(html, viewSettings) {
+
+        this.commonAttachViewWithAnim = function(html, viewSettings) {
 
             var target = viewSettings.target;
             var $target = $(target);
@@ -745,35 +755,39 @@ define(function(require) {
                 $(that).trigger("global.before.attach", [triggerOptions]);
                 $(that).trigger("global.before.remove", [triggerOptions]);
             }
-            var viewAttached = viewSettings.viewAttached;
-            var viewVisible = viewSettings.viewVisible;
             //$target.css({'opacity': 0});
             //$target.hide();
-            //$target.fadeOut('slow', function() {
-            $target.css({opacity: 0, position: 'relative', top: '20px'});
 
-            $target.empty();
-            $target.html(html);
-            viewAttached(viewSettings);
-            //tweenMax.to($target[0], 0, {opacity:0, top: "10px", position: "relative"});
-            /*
-             tweenMax.to($target[0], 1, {opacity:1, top: "0px", position: "relative", ease:"Expo.easeOut",  onComplete: function() {
-             $target.css({'position': 'static'});
-             console.log("done1");
-             viewVisible(viewSettings);    
-             }});*/
+            settings.animateHandler(html, viewSettings);
+        };
 
-            $target.animate({top: '0px', opacity: 1}, {queue: false, duration: 'slow', complete: function() {
-                    $target.css({'position': 'static'});
-                    console.log("done1");
-                    viewVisible(viewSettings);
+        this.attachViewWithAnim = function(html, viewSettings) {
+            var target = viewSettings.target;
+            var $target = $(target);
+            var viewAttached = viewSettings.viewAttached;
+            var viewVisible = viewSettings.viewVisible;
+            $target.fadeOut('slow', function() {
 
-                }});
+                $target.empty();
+                $target.html(html);
+                viewAttached(viewSettings);
+                //tweenMax.to($target[0], 0, {opacity:0, top: "10px", position: "relative"});
+                /*
+                 tweenMax.to($target[0], 1, {opacity:1, top: "0px", position: "relative", ease:"Expo.easeOut",  onComplete: function() {
+                 $target.css({'position': 'static'});
+                 console.log("done1");
+                 viewVisible(viewSettings);    
+                 }});*/
 
-            //$target.fadeIn({queue: false, duration: 3000, complete: function() {
-            //}});
+                $target.fadeIn({queue: false, duration: 'slow', complete: function() {
+                        viewVisible(viewSettings);
+                    }});
 
-            //});
+                //$target.animate({rotateY: "rotateY(10deg)"}, {queue: false, duration: 'fast', complete: function() {
+                //alert("o");
+                // }});
+
+            });
         };
 
         this.updateHistory = function() {
