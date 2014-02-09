@@ -9,16 +9,16 @@
 }(function($) {
 // use $ safely, it's provided either by AMD or module pattern
 
-    var spamd = {};
-    if (!$.spamd) {
-        $.spamd = spamd;
-    }
+    $.spamd = $.spamd || {};
+    /*if (!$.spamd) {
+     $.spamd = spamd;
+     }*/
     $.spamd.showError = function(text, selector) {
         selector = selector || 'body';
         var tmpl = '<div id="kv-overlay" class="overlay"></div><div id="errorDialog"><div id="errorHolder"></div><div class="close bl-close"><a href="#">Close</a></div><div class="close br-close"><a href="#">Close</a></div></div>';
 
         if ($(selector).length == 0) {
-            console.log("selector '" + selector + " not found in the document!");
+            //console.log("selector '" + selector + " not found in the document!");
             return;
         }
         $(tmpl).appendTo(selector);
@@ -149,5 +149,63 @@
             });
         }
     };
-    return spamd;
+
+    // so far supports only Firefox, Chrome and Opera (buggy), Safari (for real exceptions)
+// Later Safari and IE10 are supposed to support error.stack as well
+// See also https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Error/Stack
+    $.spamd.extractStacktrace = function(e, offset) {
+        var fileName="pok.js";
+        offset = offset === undefined ? 0 : offset;
+
+        var stack, include, i;
+
+        if (e.stacktrace) {
+            // Opera
+            return e.stacktrace.split("\n")[ offset + 3 ];
+        } else if (e.stack) {
+            // Firefox, Chrome
+            stack = e.stack.split("\n");
+            if (/^error$/i.test(stack[0])) {
+                stack.shift();
+            }
+            if (fileName) {
+                include = [];
+                for (i = offset; i < stack.length; i++) {
+                    if (stack[ i ].indexOf(fileName) !== -1) {
+                        break;
+                    }
+                    include.push(stack[ i ]);
+                }
+                if (include.length) {
+                    return include.join("\n");
+                }
+            }
+            return stack[ offset ];
+        } else if (e.sourceURL) {
+            // Safari, PhantomJS
+            // hopefully one day Safari provides actual stacktraces
+            // exclude useless self-reference for generated Error objects
+            //console.log("e.sourceURL", e.sourceURL);
+            if (/qunit.js$/.test(e.sourceURL)) {
+                return;
+            }
+            // for actual exceptions, this is useful
+            return e.sourceURL + ":" + e.line;
+        }
+    };
+
+    $.spamd.sourceFromStacktrace = function(offset) {
+        try {
+            throw new Error();
+        } catch (e) {
+            return $.spamd.extractStacktrace(e, offset);
+        }
+    };
+    
+    $.spamd.extractFileName = function() {
+        var fileName = ($.spamd.sourceFromStacktrace( 0 ) || "" ).replace(/(:\d+)+\)?/, "").replace(/.+\//, "");
+        return fileName;
+    };
+
+    return $.spamd;
 }));

@@ -3,7 +3,7 @@ define(['text', 'handlebars'], function(text, handlebars) {
         if (typeof env !== "undefined") {
             print(args);
         }
-        console.log(args);
+        //console.log(args);
     }
 
     var buildCache = {};

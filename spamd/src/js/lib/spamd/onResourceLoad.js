@@ -1,9 +1,5 @@
 require.onResourceLoad = function(context, map, depArray) {
-    //console.log("GRR:::", map);
-    //console.log("GRR:::", map.name);
-    //console.log("CONTEXT:::", context);
     var obj = context.defined[map.name];
-    //console.log("obj", obj);
 
     if (obj) {
         if (obj.prototype) {
@@ -16,10 +12,5 @@ require.onResourceLoad = function(context, map, depArray) {
                 obj.id = map.id;
             }
         }
-        //console.log(obj);
-        //console.log("ID", new obj().id);
     }
-    //require([], function () {
-
-    //});
 };
