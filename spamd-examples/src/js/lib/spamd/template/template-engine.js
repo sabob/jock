@@ -23,19 +23,18 @@ define(function(require) {
             actionRegistryLength = 0;
         };
 
-         this.render = function(template, context, actions, options) {
+        this.render = function(template, context, actions, options) {
             options = options || {};
             options.data = options.data || {};
             actions = actions || {};
             $.extend(options.data, actions);
-            
+
             var html = template(context, options);
             return html;
         };
 
         this.bind = function(target) {
             if (!this.hasActions()) {
-                //console.info("no actions to bind");
                 return;
             }
             target = target || "body";
@@ -45,26 +44,37 @@ define(function(require) {
             $("[data-spamd-action]", target).addBack("[data-spamd-action]").each(function(i, item) {
                 var currentID = this.attributes["data-spamd-action"].value;
 
-                var currentAction = actionRegistry[currentID];
+                var actionArray = actionRegistry[currentID];
                 delete actionRegistry[currentID];
                 actionRegistryLength--;
-                if (currentAction.action == null) {
-                    return true;
+
+                var $node = $(this);
+
+                for (var i = 0; i < actionArray.length; i++) {
+                    var currentAction = actionArray[i];
+
+                    if (currentAction.action == null) {
+                        continue;
+                    }
+                    bindAction(currentAction, $node);
                 }
 
-                var node = $(this);
-                node.on(currentAction.on, function(e) {
-                    if (currentAction.on === "click") {
-                        //e.preventDefault();
-                    }
-
-                    // Bind jQuery this to action
-                    currentAction.action.call(this, e, currentAction.objectRef, currentAction.options);
-                });
                 // remove the action attribute
-                node.removeAttr("data-spamd-action");
+                $node.removeAttr("data-spamd-action");
             });
         };
+
+        function bindAction(action, $node) {
+            $node.on(action.on, function(e) {
+                if (action.on === "click") {
+                    //e.preventDefault();
+                }
+
+                // Bind jQuery this to action
+                action.action.call(this, e, action.objectRef, action.options);
+            });
+
+        }
 
         this.registerHelpers = function() {
             if (registered) {
@@ -73,32 +83,28 @@ define(function(require) {
             registered = true;
 
             checkHelper('action');
-            Handlebars.registerHelper('action', function(action, options) {
-                var on = options.hash.on || "click";
+            Handlebars.registerHelper('action', function(options) {
+                if (options == null || options.hash == null) {
+                    return;
+                }
 
-                var actionRef = action;
-                if (typeof actionRef === "string") {
-                    var target = options.data.target;
-                    actionRef = target[action];
-                    if (!utils.exist(actionRef)) {
-                        actionRef = window[action];
-                        if (utils.exist(actionRef)) {
-                            //console.log("The action name, '" + action + "', was found on the window object. It is not advisable to set actions globally!");
-                        }
+                var actionArray = [];
+                var context = this;
+
+                $.each(options.hash, function(key, value) {
+                    if ($.isFunction(value)) {
+
+                        var actionData = {
+                            on: key,
+                            action: value,
+                            options: options,
+                            objectRef: context
+                        };
+                        actionArray.push(actionData);
                     }
-                }
-                if (actionRef == null) {
-                    //console.warn("The action is '" + actionRef + "' for Action Helper: ", this);
-                }
+                });
 
-                var actionData = {
-                    on: on,
-                    action: actionRef,
-                    options: options,
-                    objectRef: this
-                };
-
-                actionRegistry[actionRegistryLength] = actionData;
+                actionRegistry[actionRegistryLength] = actionArray;
                 actionRegistryLength++;
                 var id = actionRegistryLength - 1;
 

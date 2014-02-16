@@ -31,7 +31,7 @@ define(function(require) {
 
         function onDelete(e, product) {
             e.preventDefault();
-                    //console.log("Delete", product);
+            console.log("Delete", product);
         }
 
         function renderTemplate(products) {

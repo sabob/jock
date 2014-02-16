@@ -11,7 +11,7 @@
             {{#each customers}}
             <tr>
                 <td>{{name}}</td>
-                <td><a href='' {{action @edit}}>Edit</a> | <a href='' {{action @remove}}>Delete</a></td>
+                <td><a href='' {{action click=@edit}}>Edit</a> | <a href='' {{action click=@remove}}>Delete</a></td>
             </tr>
 
             {{/each}}

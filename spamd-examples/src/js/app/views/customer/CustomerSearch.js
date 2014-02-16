@@ -39,7 +39,7 @@ define(function(require) {
 
         function onDelete(e, customer) {
             e.preventDefault();
-            //console.log("Delete", customer);
+            console.log("Delete", customer);
         }
 
         function renderTemplate(customers) {

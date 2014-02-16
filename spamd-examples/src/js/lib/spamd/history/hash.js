@@ -44,6 +44,7 @@
 define(function(require) {
 
     var $ = require("jquery");
+    var params = require("../utils/params");
 
     var historyLength = window.history.length;
 
@@ -65,7 +66,7 @@ define(function(require) {
         var that = function(val) {
             that.ensureInitialized();
 
-            if (typeof val === 'undefined') {
+            if (typeof val === 'undefined' || typeof val === 'function') {
                 return getHash();
 
             } else {
@@ -98,7 +99,7 @@ define(function(require) {
                 initial: true,
                 external: false
             };
-            callback(options);
+            performCallback(options);
 
             if (isHashChangeSupported()) {
                 if (window.addEventListener) {
@@ -124,7 +125,7 @@ define(function(require) {
                 }
             }
         };
-
+        
         that.update = function() {
             that.ensureInitialized();
             var curHash = getHash();
@@ -135,8 +136,7 @@ define(function(require) {
                 external: false
             };
             hash = curHash;
-            //callback(curHash, false);
-            callback(options);
+            performCallback(options);
         };
 
         that.trigger = function() {
@@ -148,9 +148,12 @@ define(function(require) {
                 initial: false,
                 external: false
             };
-            callback(options);
-            //callback(curHash, false);
+            performCallback(options);
         };
+
+        function performCallback(options) {
+            callback(options);
+        }
 
         function getHash() {
             // Internet Explorer 6 (and possibly other browsers) extracts the query
@@ -193,8 +196,7 @@ define(function(require) {
                     external: false
                 };
                 window.location.hash = hash = newHash;
-                callback(options);
-                //callback(newHash, false);
+                performCallback(options);
             }
             return newHash;
         }
@@ -220,8 +222,7 @@ define(function(require) {
                     external: true
                 };
                 hash = curHash;
-                callback(options);
-                //callback(curHash, false);
+                performCallback(options);
             }
         }
 
@@ -294,8 +295,7 @@ define(function(require) {
                         };
                         data = curData;
                         window.location.hash = hash = curData;
-                        callback(options);
-                        //callback(curData, true);
+                        performCallback(options);
                     } else {
                         curHash = getHash();
                         if (curHash != hash)
