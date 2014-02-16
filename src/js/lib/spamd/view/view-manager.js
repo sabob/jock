@@ -92,14 +92,12 @@ define(function(require) {
 
                     if (viewPath) {// ensure path is not blank
                         var movedToNewView = that.hasMovedToNewView(oldPage);
-                        //console.log("moved to new page?", movedToNewView);
                         if (!options.initial && !movedToNewView) {
+
                             //notify hash changes
                             var views = that.getCurrentViews();
                             $.each(views, function(i, view) {
-                                console.log("each", options.hash.id);
                                 $(view.options.hash).trigger("onHashChange", options);
-                                console.log(view.options.hash.id);
                             });
                             processHashChange = true;
                         
