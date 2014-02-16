@@ -5,8 +5,8 @@ define(function(require) {
     require("spamd/history/history");
     var params = require("spamd/utils/params");
     var utils = require("../utils/utils");
+    var hash = require("spamd/history/hash");
     var templateEngine = require("../template/template-engine");
-    var tweenMax = require("tweenmax");
     function ViewManager() {
 
         var that = this;
@@ -76,7 +76,7 @@ define(function(require) {
                 //console.log("PROCESS HASH CHANGE OVER", processHashChange);
                 //console.log("NEW HASH", options.newHash, "old hash", options.oldHash, "Prcess HASH", processHashChange);
                 var oldPage = params(options.oldHash).get().page;
-                //console.info("OLD View", oldPage);
+                console.info("OLD View", oldPage);
 
                 if (processHashChange) {
 
@@ -91,6 +91,23 @@ define(function(require) {
 //                    }
 
                     if (viewPath) {// ensure path is not blank
+                        var movedToNewView = that.hasMovedToNewView(oldPage);
+                        //console.log("moved to new page?", movedToNewView);
+                        if (!options.initial && !movedToNewView) {
+                            //notify hash changes
+                            var views = that.getCurrentViews();
+                            $.each(views, function(i, view) {
+                                console.log("each", options.hash.id);
+                                $(view.options.hash).trigger("onHashChange", options);
+                                console.log(view.options.hash.id);
+                            });
+                            processHashChange = true;
+                        
+                            return;
+                        }
+                        
+                        
+
                         var viewParams = $.spamd.history.params.get();
                         delete viewParams.page;
                         //console.log("hash shows new view", viewPath, " with params", viewParams);
@@ -113,6 +130,8 @@ define(function(require) {
                     options.view = settings.defaultView;
                     this.showView(options).then(function(view) {
                         settings.onHashChange(view);
+                        var hashOptions = {view: view};
+                        $(that).trigger("onHashChange", [hashOptions]);
                     });
                 }
             }
@@ -354,18 +373,19 @@ define(function(require) {
             //console.info("You have moved to a new view. From '" + currentViewName + "' to '" + route + "'");
             return true;
         };
-
+        
         this.showViewInstance = function(viewSettings) {
             if (viewSettings.overwritten === true) {
                 return this.overwrite(view, viewSettings.deferredHolder, viewSettings);
             }
+            
+            viewSettings.hash = {id: Math.random()};
 
             var target = viewSettings.target;
             var isMainViewReplaced = target === settings.target;
             //isMainViewReplaced=true;
 
             var view = viewSettings.view;
-            //setCurrentView(view, viewSettings);
 
             var args = viewSettings.args;
             var deferredHolder = viewSettings.deferredHolder;
@@ -414,7 +434,6 @@ define(function(require) {
                             that.overwrite(view, viewSettings.deferredHolder, viewSettings);
                             return deferredHolder.promises.attached;
                         }
-
                         var previousView = setCurrentView(view, viewSettings);
                         viewSettings.previousView = previousView;
 
@@ -534,11 +553,18 @@ define(function(require) {
 
             var viewOptions = {};
             viewOptions.path = route;
-            var initOptions = {args: args, params: viewParams, hashChange: viewSettings.hashChange, view: viewOptions};
+            var initOptions = {
+                args: args,
+                params: viewParams,
+                hashChange: viewSettings.hashChange,
+                hash: viewSettings.hash,
+                view: viewOptions
+            };
 
             if (viewSettings.overwritten === true) {
                 return this.overwrite(view, viewSettings.deferredHolder, viewSettings);
             }
+
             view.onInit(container, initOptions);
             //return result;
         };
@@ -782,13 +808,6 @@ define(function(require) {
                 $target.empty();
                 $target.html(html);
                 viewAttached(viewSettings);
-                //tweenMax.to($target[0], 0, {opacity:0, top: "10px", position: "relative"});
-                /*
-                 tweenMax.to($target[0], 1, {opacity:1, top: "0px", position: "relative", ease:"Expo.easeOut",  onComplete: function() {
-                 $target.css({'position': 'static'});
-                 console.log("done1");
-                 viewVisible(viewSettings);    
-                 }});*/
 
                 $target.fadeIn({queue: false, duration: 'slow', complete: function() {
                         viewVisible(viewSettings);
