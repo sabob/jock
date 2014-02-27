@@ -35,9 +35,9 @@ app.post('/login', function(req, res) {
     var post = req.body;
     if (post.user == 'test' && post.password == 'test') {
         req.session.user_id = 'test';
-        //res.redirect('/index.html');
+        res.redirect('/index.html');
         // Simulate J2EE server continuing orig request
-        res.redirect('/data/person.json');
+        //res.redirect('/data/person.json');
     } else {
         res.send('Bad user/pass');
     }

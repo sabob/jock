@@ -531,3 +531,17 @@ code.methodSig {
     color: #FFFF00;
 }
 
+.toc a {
+    transition: all 1s;
+}
+
+.toc:hover a {
+    color: #000;
+}
+.toc h2 {
+    transition: all 1s;
+}
+
+.toc:hover h2 {
+    color: #000;
+}
