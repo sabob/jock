@@ -83,6 +83,7 @@ h3{
     clear:both;
 }
 .header a {
+    text-decoration: none;
     text-shadow: none;
     display: block;
 
@@ -243,22 +244,6 @@ span.token, span.token span.pln, span.token span.atv {
     color: #E5053A;
     font-size: 15px;
     margin-right: 3px;
-}
-
-a {
-    color: #E5053A;
-    text-decoration: none;
-}
-
-a:active {
-    color: #E5053A;
-}
-a:hover {
-    color: #E5053A;
-    text-decoration: underline;
-}
-a:visited {
-    color: #E5053A;
 }
 
 .download-content {
@@ -544,4 +529,7 @@ code.methodSig {
 
 .toc:hover h2 {
     color: #000;
+}
+.implicit-api:after {
+    content: " *";
 }

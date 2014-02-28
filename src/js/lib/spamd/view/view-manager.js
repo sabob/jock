@@ -70,13 +70,12 @@ define(function(require) {
 
             this.setRoutes(settings.routes);
 
-            $.spamd.history.init(function(options) {
+            $.spamd.history.init(function(hashOptions) {
                 //console.warn("External?", options.external);
 
                 //console.log("PROCESS HASH CHANGE OVER", processHashChange);
                 //console.log("NEW HASH", options.newHash, "old hash", options.oldHash, "Prcess HASH", processHashChange);
-                var oldPage = params(options.oldHash).get().page;
-                console.info("OLD View", oldPage);
+                var oldPage = params(hashOptions.oldHash).get().page;
 
                 if (processHashChange) {
 
@@ -84,7 +83,6 @@ define(function(require) {
 
                     var historyParams = $.spamd.history.params();
                     var viewName = historyParams.page;
-                    //console.log("BUT VIEWNAME", viewName);
                     var viewPath = routesByName[viewName] || viewName;
                     //if (!viewPath) {
 //                        viewPath = viewName;
@@ -92,12 +90,12 @@ define(function(require) {
 
                     if (viewPath) {// ensure path is not blank
                         var movedToNewView = that.hasMovedToNewView(oldPage);
-                        if (!options.initial && !movedToNewView) {
+                        if (!hashOptions.initial && !movedToNewView) {
 
                             //notify hash changes
                             var views = that.getCurrentViews();
                             $.each(views, function(i, view) {
-                                $(view.options.hash).trigger("onHashChange", options);
+                                $(view.options.hash).trigger("onHashChange", hashOptions);
                             });
                             processHashChange = true;
                         
@@ -110,7 +108,7 @@ define(function(require) {
                         delete viewParams.page;
                         //console.log("hash shows new view", viewPath, " with params", viewParams);
                         //console.log("2", location.href);
-                        that.showView({view: viewPath, params: viewParams, hashChange: true, externalHashChange: options.external}).then(function(view) {
+                        that.showView({view: viewPath, params: viewParams, hashChange: true, externalHashChange: hashOptions.external}).then(function(view) {
                             settings.onHashChange(view);
                             processHashChange = true;
                         });

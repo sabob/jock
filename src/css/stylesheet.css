@@ -56,13 +56,6 @@ body {
   color: #6d6d6d;
 }
 
-a {
-  color: #d5000d;
-}
-a:hover {
-  color: #c5000c;
-}
-
 header {
   padding-top: 35px;
   padding-bottom: 25px;
@@ -236,13 +229,7 @@ p {
   margin-bottom: 20px;
 }
  
-a {
-  text-decoration: none;
-}
 
-p a {
-  font-weight: 400;
-}
 
 blockquote {
   font-size: 1.6em;
