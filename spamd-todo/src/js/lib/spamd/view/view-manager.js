@@ -799,13 +799,13 @@ define(function(require) {
             var $target = $(target);
             var viewAttached = viewSettings.viewAttached;
             var viewVisible = viewSettings.viewVisible;
-            $target.fadeOut('slow', function() {
+            $target.fadeOut('fast', function() {
 
                 $target.empty();
                 $target.html(html);
                 viewAttached(viewSettings);
 
-                $target.fadeIn({queue: false, duration: 'slow', complete: function() {
+                $target.fadeIn({queue: false, duration: 'fast', complete: function() {
                         viewVisible(viewSettings);
                     }});
 
