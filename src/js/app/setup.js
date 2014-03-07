@@ -78,10 +78,11 @@ define(function(require) {
                 return;
             }
             // Only save scroll position if the view was removed from normal Nav, and not from browser back/forward nav
+            console.log("Hash change?" + options.viewSettings.hashChange);
             if (options.viewSettings.hashChange == null) {
                 var scroll = $(window).scrollTop();
                 scrolls[options.oldView.id] = scroll;
-            //console.log("scroll", scroll, "for id", options.oldView.id);
+            console.log("STORE scroll", scroll, "for id", options.oldView.id);
             } else {
                 //console.log("HASH CHANGE, no scroll saved");
             }
@@ -91,7 +92,7 @@ define(function(require) {
             //console.log("global.visible ", options.oldView, options.newView);
             var scroll = scrolls[options.newView.id];
             $(window).scrollTop(scroll);
-            //console.log("restore scroll for ", options.newView.id, scroll);
+            console.log("restore scroll for ", options.newView.id, scroll);
         });
 
         $(viewManager).on("global.before.attach", function(e, options) {

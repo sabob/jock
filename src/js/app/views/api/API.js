@@ -36,7 +36,7 @@ define(function(require) {
 
                 var windowUrl = $.spamd.url().removeHashParam("id").toString();
 
-                $(".toc a").each(function(i, elem) {
+                $(".toc a, a.self").each(function(i, elem) {
                     var href = $(this).attr("href");
                     if (href) {
                         href = windowUrl + "&" + href;
@@ -46,9 +46,9 @@ define(function(require) {
 
                     $(this).attr("href", href);
                 });
-                $(".toc a").on("click", function(e) {
+                $(".toc a, a.self").on("click", function(e) {
                     var url = $.parseUrl(this.href);
-                    $.spamd.history.skipEventOnce(true);
+                    //$.spamd.history.skipEventOnce(true);
                     var id = url.params.id;
                     scrollIntoView(id);
                 });

@@ -533,3 +533,7 @@ code.methodSig {
 .implicit-api:after {
     content: " *";
 }
+pre.prettyprint {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}

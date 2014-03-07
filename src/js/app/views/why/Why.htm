@@ -162,7 +162,7 @@ model.name = "Bob";
                     data binding.
                 </p>
                 <p>
-                    SPAMD doesn't provide data binding. It provides an alternative which for syncing input and models. It is the exact
+                    SPAMD doesn't provide automatic data binding. It provides an alternative which for syncing input and models. It is the exact
                     opposite of data binding. Ready for it? It's called <em>copying</em>. That's right. That age old stalwart you can always
                     rely upon.
                 </p>
@@ -179,7 +179,7 @@ model.name = "Bob";
                     in control of your data flow. Let's see how this is done in SPAMD:
                 </p>
                 <pre class="prettyprint">
-<input name="name" type="text"/>
+&lt;input name="name" type="text"/&gt;
                 </pre>
 
                 <p>and in your JavaScript cotroller:</p>
@@ -187,10 +187,10 @@ model.name = "Bob";
 var model = {};
 model.name = "Bob";
 // Copy values to form
-$("#form").copyFrom(model);
+$("#form").fromObject(model);
                 </pre>
 
-                <p>One line to copy the model to the form. Not so bad is it? Off course this method works because the model and input share
+                <p>One line to copy the model to the form. Not so bad is it? Of course this method works because the model and input share
                     the same <em>name</em>. This is convention over configuration at work here. But this is generally how the model and
                     input controls are named.
                 </p>
@@ -198,13 +198,14 @@ $("#form").copyFrom(model);
                     won't work as it has no way for  the model and input controls to match up.
                 </p>
                 <p>
-                    In this worst scenario case copying will be completely manual, one field at a time.
+                    In this worst case scenario, copying will be completely manual, one field at a time.
                 </p>
                   <pre class="prettyprint">
 var model = {};
 model.name = "Bob";
 // Copy values to form
-$("#form #other").val(model.name); // Copying model.name to input with id of "other"
+$("#form #other").val(model.name); // Copying model.name to input with 
+                                   // the id: "other"
                 </pre>
                 
                 <p>
@@ -212,11 +213,11 @@ $("#form #other").val(model.name); // Copying model.name to input with id of "ot
                     bind each and every field to the model:
                 </p>
                  <pre class="prettyprint">
-<input name="other" type="text" data-bind="{{model.name}}"/>
-<input name="organisation" type="text" data-bind="{{model.company}}"/>
+&lt;input name="other" type="text" data-bind="\{{model.name}}"/&gt;
+&lt;input name="organisation" type="text" data-bind="\{{model.company}}"/&gt;
                 </pre>
                 <p>
-                    Off course automatic data binding is generally two way so it doesn't have to worry about copying values back to the model
+                    Of course automatic data binding is generally two way so it doesn't have to worry about copying values back to the model
                     as explicit copying does.
                 </p>
                 <p>

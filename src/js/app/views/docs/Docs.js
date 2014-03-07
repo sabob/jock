@@ -17,6 +17,9 @@ define(function(require) {
 
         this.onInit = function(container, options) {
             //console.log("Docs path", options.view.path);
+            $(options.hash).on("onHashChange", function() {
+                console.log("change", arguments);
+            });
 
             var animValue = !options.hashChange;
 
@@ -38,6 +41,7 @@ define(function(require) {
                 }
             };
             var html = te.render(template, context, null, toptions);
+            console.log("attach");
             container.attach(html, o);
             container.attached.then(onAttached);
             container.visible.then(onVisible);
@@ -82,7 +86,7 @@ define(function(require) {
                 });
 
                 //console.log("clicked called: scroll", scroll);
-                $(".toc a").on("click", function(e) {
+                $(".toc a, .content a.self").on("click", function(e) {
                     var url = $.parseUrl(this.href);
                     $.spamd.history.skipEventOnce(true);
                     var id = url.params.id;

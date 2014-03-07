@@ -115,7 +115,8 @@
 
                 <p>Views in SPAMD are specified as an AMD module. Views do not extend from a SPAMD specific class or type, instead Views
                     are normal JavaScript <em>Functions</em> or <em>Objects</em>. The only requirement is for the View to provide an
-                    #onInit method. SPAMD invokes the #onInit method to inform the view to initialize itself when needed.
+                    <a href="#page=api&id=onInit" class="link">#onInit</a> method. SPAMD invokes the #onInit method to inform the view to initialize
+                    itself when needed.
                 </p>
 
                 <h3 id="hello-world-example">Hello world example</h3>
@@ -228,7 +229,7 @@ define(function(require) {
                 <p>AMD provides a moduling system for JavaScript applications, so there is no need to include a bunch of &lt;script&gt; tags
                     in your HTML pages. Instead, the JavaScript application is split into modules which are loaded as required.
                 </p>
-                <p>For a good overview on AMD see this <a href="article">article</a>.
+                <p>For a good overview on AMD see this <a href="article" target="_blank">article</a>.
                 </p>
                 <p>To start a SPAMD application you generally need the following setup:
                 </p>
@@ -392,19 +393,19 @@ define(function(require) {
   ...
 }); </pre>
 
-                <p>With SPAMD setup let's look at one of the main concepts in SPAMD and single page applications, switching views.</p>
+                <p>With SPAMD configured let's look at one of the main concepts in SPAMD and single page applications, switching views.</p>
 
                 <h3 id="managing-views">Managing Views</h3>
 
                 <p>
                     Managing Views forms the heart of SPAMD applications. SPAMD provides a simple mechanism to switch between views in a
                     SPA. One of the core utilities is the #ViewManager.
-                    #ViewManager provides a method, #showView for, you guessed it, showing views.
+                    #ViewManager provides a method, #showView for replacing views.
                 </p>
 
                 <p>
-                    Views in SPAMD are AMD modules that contains regular JavaScript code. Views don't extend from any 
-                    SPAMD provided types. The only requirement is that a view must include an #onInit method. 
+                    Views in SPAMD are AMD modules that contains regular JavaScript code. Views do not extend from any 
+                    SPAMD provided types. The only requirement is that a view must include an <a href="#page=api&id=onInit" class="link">#onInit</a> method. 
                 </p>
                 <p>
                     When ViewManager#showView is called, #ViewManager will create the new View (or reuse an existing instance) and invoke
@@ -435,8 +436,9 @@ define(function(require) {
                 <h3 id="ViewManager-life-cycle">The View life cycle</h3>
                 <p>SPAMD provides a well defined <em>life cycle</em> for views, through the #ViewManager.
                 </p>
-                <p>The <em>life cycle</em> consists of an <em>initialization</em> phase and a optional <em>destroy</em> phase. These phases
-                    are implemented by the view through two methods namely, <em>onInit</em> (shown above) and <em>onDestroy</em>.
+                <p>The <em>life cycle</em> consists of an <em>initialization</em> phase and an optional <em>destroy</em> phase. These phases
+                    are implemented by the view through two methods namely, <a href="#page=api&id=onInit" class="link"><em>onInit</em></a> (shown above) and
+                    <a href="#page=api&id=onDestroy" class="link"><em>onDestroy</em></a>.
                 </p>
 
                 <p>The onInit method is invoked by ViewManager on the <em>new</em> view to inform it that there was a #showView request.
@@ -459,7 +461,9 @@ define(function(require) {
                 </p>
 
                 <h3 id="initialize-view-template">Initialize ViewManager</h3>
-                <p>Before using ViewManager, it must be initialized. For example:
+
+                <p>
+                    Before using ViewManager, it must be initialized through it's <a href="#page=api&id=viewManager_init" class="link">init</a> method. For example:
                 </p>
 
                 <code>setup.js</code>
@@ -479,15 +483,231 @@ define(function(require) {
     // now we can invoke viewManage.showView
 });</pre>
                 <p>ViewManager supports many other options to tweak it's behavior such as <em>routing</em>, <em>custom view animation</em>,
-                    <em>default DOM target</em> etc. Click <a href='#page=api&id=ViewManager_options'>here</a> for the full list of options.
+                    <em>default DOM target</em> etc. Click <a href='#page=api&id=viewManager_init' class="link">here</a> for the full list of options.
                 </p>
 
                 <h3 id="view-manager-showView">ViewManager showView</h3>
-                <p><a class="link" href='#page=api&id=viewManager_showView'>showView</a> replaces the current view with the specified view.
-
+                <p><a href='#page=api&id=viewManager_showView' class="link">showView</a> replaces the current view with the specified view.
+                    It also returns a list of <a href='#page=docs&id=viewManager_showView_promises' class='self'>promises</a> 
+                    for callers to be notified of certain events.
                 </p>
 
-                <h3 id="view-manager-showView-promises">ViewManager showView promises</h3>
+                Below we outline the sequence of showView:
+                <ol>
+                    <li>
+                        the view argument is resolved to it's view type. You can read <a href="todo">here</a> how SPAMD resolves views.
+                    </li>
+                    <li>
+                        a new view instance is created by invoking <code>view()</code>.
+                    </li>
+                    <li>
+                        browser history is updated with the new view's route or path.
+                    </li>
+                    <li>
+                        invoke <em>onInit</em> on the new view. passing a <em>container</em> that the view should call when ready to
+                        display it's HTML.
+                    </li>
+                    <li>
+                        The view can now make server requests to load it's data, and render it's associated template. When the view is ready
+                        it calls the container's <code>attach</code> method, passing it's rendered template.
+                    </li>
+
+                    <li>
+                        If present, the current view's <em>onDestroy</em> method is invoked. ViewManager updates it's reference of the
+                        current view to the new view and the previous view is discarded.
+                    </li>
+                    <li>Next the DOM is updated by removing the old view's HTML and inserting the new view's HTML.
+                    </li>
+                    <li>
+                        Any <em>actions</em> specified in the HTML template is <em>binded</em> to it's associated view through a call to
+                        <a href='#page=api&id=templateEngine_bind' class='link'>TemplateEngine.bind</a>.
+                    </li>
+                </ol>
+
+                <code>Basic example:</code>
+
+                <pre class="prettyprint linenums">
+// include productView
+var productView = require("app/views/productView");
+
+// include ViewManager  
+var viewManager = require("spamd/view/view-manager");
+
+// Show the view
+viewManager.showView( {view: personView} );
+                </pre>
+
+                <code>app/views/personView.js:</code>
+                <pre class="prettyprint linenums">
+define(function(require) {
+
+var $ = require("jquery");
+var template = require("hb!./personView.htm");
+var te = require("spamd/template/template-engine");
+var viewManager = require("spamd/view/view-manager");
+
+    function personView() {
+
+        var that = {};
+
+        that.onInit = function(container, options) {
+            var html = te.render(template);
+            container.attach(html);
+        }
+
+        return that;
+    }
+    return personView;
+});
+
+                </pre>
+
+                <h3 id="viewManager_showView_resolve">Resolving views</h3>
+                ViewManager.showView is invoked by passing in <em>options.view</em>. The view argument can be a:
+                <ul>
+                    <li><em>Function</em> (function name must be lower case)</li>
+                    <li><em>Constructor</em> Function (function name be upper case)</li>
+                    <li><em>Object</em> (object must be an instance of an existing View)</li>
+                    <li><em>string</em> (must either refer to the View path or the View route)</li>
+                </ul>
+
+                Let's walk through each of these options.
+                <p>
+                    If a <code>Function</code> is passed in, SPAMD will check if the Function name is upper case or not. If upper case
+                    SPAMD assumes the function is a Constructor and SPAMD will invoke the function with <em>new</em>, otherwise the
+                    function will simply be invoked.
+                </p>
+
+                <code>Function</code> and <code>Constructor</code> examples:
+                <pre class="prettyprint linenums">
+// include personView view, a function
+var personView = require("app/views/personView");
+
+// include ProductView view, a constructor function
+var ProductView = require("app/views/ProductView");
+
+// include ViewManager  
+var viewManager = require("spamd/view/view-manager");
+                    
+// personView starts with a lower case so SPAMD will create an instance
+//  by invoking: var view = personView();
+viewManager.showView( {view: personView} );
+
+// ProductView starts with an upper case so SPAMD will create an instance
+//  by invoking new: var view = new ProductView();
+viewManager.showView( {view: ProductView} );
+                </pre>
+                <p>
+                </p>
+                <p>If an <em>Object</em> is passed as the view argument, SPAMD will assume the object is an existing view, and won't
+                    create a new instance. This is useful if you want to manage view instances yourself.
+                </p>
+
+                <code>Object</code> Example:
+                <pre class="prettyprint linenums">
+// include personView view, a function
+var personView = require("app/views/personView");
+
+// include ViewManager  
+var viewManager = require("spamd/view/view-manager");
+                    
+// Here we create and store a view instance and pass that to showView
+var viewObject = personView();
+viewManager.showView( {view: viewObject} );
+                </pre>
+                <p>
+                </p>
+
+                <p>If a <em>string</em> is passed as the view argument, SPAMD will assume this is the <em>route</em> to the view and
+                    will try and lookup the path for the given route. If a route cannot be found, SPAMD will assume the string is the
+                    <em>path</em> to the view.
+                    Next SPAMD will make a <em>require()</em> call passing in the view path in order to load the view. Once the view is
+                    loaded, SPAMD will follow the rules above on <em>Function</em> resolution.
+                </p>
+
+                <code>string</code> examples:
+                <pre class="prettyprint linenums">
+var viewManager = require("spamd/view/view-manager");
+var personView = require("app/views/personView");
+
+// Setup a route for the personView:
+// "person" -> "app/views/personView"
+var options = {};
+options.routes = {
+    "person": personView.id
+};
+viewManager.init(options);
+
+
+// We show the view by using the path to the view
+viewManager.showView({view: "app/views/personView"});
+
+// Here we show view by using the route of the view 
+viewManager.showView( {view: "person"} );
+                </pre>
+
+                <h3 id="viewManager_showView_promises">ViewManager.showView promises</h3>
+                <p>
+                    <em>ViewManager.showView</em>  returns a <a href="TODO" target="_blank">promise</a> that is resolved when the view has been
+                    shown. This promise provides the caller a callback to perform operations when the new view is rendered.
+                </p>
+                <p>The promise also contains a further list of <a href="TODO" target="_blank">promises</a> for callers to be notified
+                    of events while the new view is rendered.
+                <p>The following promises are returned by calling <em>showView</em>:</p>
+                <ul>
+                    <li><em><b>default:</b></em> the default promise which is returned by the call to <code>viewManager.showView</code>
+                        and occurs after the view has been attached to the DOM and made visible.
+                        <p/>
+                        Sequentially this is the last promise that will occur during the showView call.
+                        <p/>
+                        This is useful when you want to perform an operation or DOM manipulation on the new view<em>after</em> the new view
+                        has been rendered and all other promises resolved.
+                        <p/>
+                    </li>
+                    <li><em><b>attached:</b></em> this promise occurs when the view is attached to the DOM, but before the view is shown (becomes visible).
+                        This is useful when you want to perform an operation or DOM manipulation on the new view<em>before</em> the view is
+                        shown (becomes visible).
+                        <br/>
+                        <b>Note:</b> differentiating between the <em>attached</em> and <em>visible</em> event is only possible 
+                            when <em>animation</em> is enabled. If animation is disabled, the <em>attached</em> and <em>visible</em> events
+                            will occur simultaneously when the view HTML is added to the DOM.
+                        <p/>
+                    </li>
+                    <li><em><b>visible:</b></em> this promise occurs when the view is shown. This is useful when you want to perform an
+                        operation or DOM manipulation on the new view<em>after</em> the view is shown (becomes visible).
+                        <br/>
+                        <b>Note:</b> differentiating between the <em>attached</em> and <em>visible</em> event is only possible 
+                        when <em>animation</em> is enabled. If animation is disabled, the <em>attached</em> and <em>visible</em> events
+                        will occur simultaneously when the view HTML is added to the DOM.
+                        <p/>
+                    </li>
+                    <li><em><b>cancel:</b></em> this promise occurs when the view is cancelled for some reason. Cancelling a view generally
+                        happens when an error occurs while requesting data from the server. The view would invoke <em>cancel</em> on the
+                        <em>container</em> (instead of <em>attach</em>) which in turn resolves the <em>cancel</em> promise. If you are
+                        interested in knowing if a view is cancelled you can use this promise.
+                        <p/>
+                    </li>
+                    <li><em><b>overwrite:</b></em> this promise occurs when a view is <em>overwritten</em> by another showView call.
+                        For example if a <code>viewTemplate.showView</code> call is made and before the view could finish rendering another
+                        call to <code>viewTemplate.showView</code> is made, the first view is <em>overwritten</em> by the second <em>showView</em>
+                        call, and will not be rendered any further. Any animation that was done when the view was overwritten is also
+                        stopped. If you are interested in knowing when a view is overwritten you can use this promise.
+                        <p/>
+                    </li>
+                </ul>
+
+                <p>Let's look at some examples of using these promises:</p>
+
+                <pre class="prettyprint linenums">
+var viewManager = require("spamd/view/view-manager");
+var personView = require("app/views/personView");
+
+var promise = viewManager.showView({view: personView});
+
+                </pre>              
+
+
+
 
                 <h3 id="view-manager-showHTML">ViewManager showHTML</h3>
 
@@ -557,6 +777,8 @@ define(function(require) {
                 </p>
 
                 <p>
+
+                    <strong>container</strong> (documented <a href="#page=docs&id=viewManager_container" class="self">here</a>)
 
                 </p>
 
