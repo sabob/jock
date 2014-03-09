@@ -7,16 +7,15 @@
     removeCombined: true,
     skipDirOptimize: true,
     optimizeCss: 'standard',
-    "mainConfigFile": "../src/js/config.js",
+    "mainConfigFile": "../src/js/app.js",
     paths: {
-        "config": "../config",
         "requireLib": "require",
         "handlebars-runtime": "handlebars.runtime"
     },
     
     modules: [
         {
-            name: "config",
+            name: "app",
             include: [
                 "requireLib",
                 "handlebars-runtime"

@@ -117,7 +117,7 @@ define(function(require) {
 
         function remove(e, todo) {
             var index = $.inArray(todo, model.todos());
-            todos.splice(index, 1);
+            model.todos().splice(index, 1);
             removeRow(e.target);
             $("#main").toggle(model.todos().length > 0);
             renderHeader();
