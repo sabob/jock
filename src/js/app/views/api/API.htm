@@ -37,7 +37,7 @@
 
                     <a href="id=url" class="title">url</a>
                     <ul class="section">
-                        <li><a href="id=view-manager-showView">render</a></li>
+                        <li><a href="id=viewManager-showView">render</a></li>
                     </ul>
 
                     <a href="id=template-engine" class="title">utils</a>
@@ -55,17 +55,29 @@
                         <li><a href="id=template-engine_render">render</a></li>
                     </ul>
 
-                    <a href="id=view-manager" class="title">ViewManager</a>
+                    <a href="id=viewManager" class="title">ViewManager</a>
                     <ul class="section">
-                        <li><a href="id=view-manager_showView">showView</a></li>
-                        <li><a href="id=view-manager_showHTML">showHTML</a></li>
+                        <li><a href="id=viewManager_showView">showView</a>
+                        </li>
+                        <li><a href="id=viewManager_showHTML">showHTML</a></li>
                     </ul>
 
-                    <a href="id=view-manager_container" class="title">ViewManager.Container</a>
+                    <a href="id=viewManager_container" class="title">ViewManager.Container</a>
                     <ul class="section">
-                        <li><a href="id=view-manager_container_showView">attach</a></li>
-                        <li><a href="id=view-manager_container_showHTML">cancel</a></li>
+                        <li><a href="id=viewManager_container_showView">attach</a></li>
+                        <li><a href="id=viewManager_container_showHTML">cancel</a></li>
                     </ul>
+                </li>
+            </ul>
+
+            <ul class="section">
+                <li>
+                    <a href="id=implicit_api" class="title"><em>Implicit APIs</em></a>
+                    <ul class="section">
+
+                        <li><a href="id=onInit">onInit</a></li>
+                        <li><a href="id=onDestroy">onDestroy</a></li>
+                    </ul> 
                 </li>
             </ul>
         </div>
@@ -81,7 +93,7 @@
                     This page lists the complete SPAMD API reference.
 
                 </p>
-                <p id="view-manager">
+                <p id="viewManager">
                 <h2>
                     View Manager
                 </h2>
@@ -95,7 +107,7 @@
                     a well-defined <em>life cycle</em> for views, consisting of an <em>initialize</em> phase and an optional
                     <em>destroy</em> phase.
                 </p>
-                <p>To partake in the life cycle, Views are required to implement the <em>onIinit</em> method and optionally an <em>onDestroy</em>
+                <p>To partake in the life cycle, Views are required to implement the <em>onInit</em> method and optionally an <em>onDestroy</em>
                     method.
                 </p>
                 <p>The main API for ViewManager is the <em>showView</em> and <em>showHTML</em> methods. showView will remove the current view
@@ -114,12 +126,21 @@
                     Next the new view is faded in and becomes visible.
                 </p>
                 <p>It is common after the <em>attached</em> event to enhance certain view components, ie alter a normal table to a
-                    <a href="DataTable">DataTable</a> component. This is best done before the view becomes <em>visible</em> otherwise users
+                    <a href="https://datatables.net/" target="_blank">DataTables</a> component. This is best done before the view becomes <em>visible</em> otherwise users
                     could see the DOM changes where the tables become datatables.
                 </p>
                 <p>The <em>visible</em> event is useful for DOM manipulations which requires the view to be visible such as manipulating the
                     size or positions of elements.
                 </p>
+            </div>
+
+            <div id="viewManager_init" class="method">
+                <span class="methodName">init</span><code class="methodSig">viewManager.init(options)</code>
+                <p>
+                    Initializes the ViewManager with the given options.
+                </p>
+                
+
             </div>
 
             <div id="viewManager_showView" class="method">
@@ -139,7 +160,7 @@
                             <div><code><i>type:</i> Function() or Object</code></div>                            
                             <div>an instance of a view object or a function that creates a view</div>
                         </li>
-                        <li><strong>target</strong> <code>(default: the ViewManager target)</code>
+                        <li><strong>target</strong> <code>(default: the ViewManager's target)</code>
                             <div><code><i>type:</i> String</code></div>
                             <div>a CSS selector where the view must be added to, the current view at the target in the DOM will be removed</div>
                         </li>
@@ -196,8 +217,7 @@ promise.attached.then(function(view) {
 }); </pre>
             </div>
 
-
-            <div id="view-manager_showHTML">
+            <div id="viewManager_showHTML">
                 <h2>
                     showHTML
                 </h2>
@@ -210,9 +230,9 @@ promise.attached.then(function(view) {
                 fds
             </div>
 
-            <div id="view-manager_showHTML">
+            <div id="viewManager_container">
                 <h2>
-                    showHTML
+                    ViewManager.Container
                 </h2>
                 asd
                 f
@@ -222,6 +242,80 @@ promise.attached.then(function(view) {
                 afads
                 fds
             </div>
+
+            <div id="implicit_api">
+                <h2>Implicit APIs</h2>
+                <p>
+                    Here we document SPAMD's implicit APIs. These APIs are functions that SPAMD expects users to implement. This API 
+                    consists of the <code>onInit</code> and <code>onDestroy</code> methods for views.
+                </p>
+
+                <span class="methodName" id="onInit">onInit</span><code class="methodSig">onInit(container, options)</code>
+
+                <p>Views must implement an <em>onInit</em> method that SPAMD will call to inform the view to initialize itself. Once the
+                    view is initialized, it must inform the ViewManager that it is ready and provide the ViewManager with HTML to render.
+                    It does so through the <em>container</em> argument.
+                </p>
+
+                <div><i>Arguments:</i></div>
+                <div class="object">
+                    <strong>container</strong> (documented <a href="id=viewManager_container" class="self">here</a>)
+                    <div><code><i>type:</i> Function</code></div>
+                    <ul>
+                        <li><strong>params</strong><code></code>
+                            <div><code><i>type:</i> Function() or Object</code></div>
+                            <div>an instance of a view object or a function that creates a view</div>
+                        </li>
+                        <li><strong>hash</strong> <code></code>
+                            <div><code><i>type:</i> String</code></div>
+                            <div>hash can be used to listen to hash changes: <br/><code>on(options.hash, "onHashChange", function(e, options) {})</code></div>
+                        </li>
+
+                    </ul>
+                </div>
+                <div class="object">
+                    <strong>options</strong>
+                    <div><code><i>type:</i> Object</code></div>
+                    <ul>
+                        <li><strong>view</strong><code>(required)</code>
+                            <div><code><i>type:</i> Function() or Object</code></div>                            
+                            <div>an instance of a view object or a function that creates a view</div>
+                        </li>
+                        <li><strong>hash</strong> <code></code>
+                            <div><code><i>type:</i> String</code></div>
+                            <div>hash can be used to listen to hash changes: <br/><code>on(options.hash, "onHashChange", function(e, options) {})</code></div>
+                        </li>
+
+                    </ul>
+                </div>
+
+                <span class="methodName" id="onDestroy">onDestroy</span><code class="methodSig">onDestroy(options)</code>
+
+                <p>If views wan to to be informed when they are going to be removed, they can implement <em>onDestroy</em> method. SPAMD will
+                    call this method if available on the view, when the view is to be removed. Views can use the onDestroy method to perform
+                    any cleanup operations, such as storing it's data for later retrieval or unsubscribing listeners etc.
+                </p>
+
+                <div><i>Arguments:</i></div>
+                <div class="object">
+                    <strong>options</strong>
+                    <div><code><i>type:</i> Object</code></div>
+                    <ul>
+                        <li><strong>view</strong><code>(required)</code>
+                            <div><code><i>type:</i> Function() or Object</code></div>                            
+                            <div>an instance of a view object or a function that creates a view</div>
+                        </li>
+                        <li><strong>hash</strong> <code></code>
+                            <div><code><i>type:</i> String</code></div>
+                            <div>hash can be used to listen to hash changes: <br/><code>on(options.hash, "onHashChange", function(e, options) {})</code></div>
+                        </li>
+
+                    </ul>
+                </div>
+
+
+            </div>
+
         </div>
     </div>
 </div>

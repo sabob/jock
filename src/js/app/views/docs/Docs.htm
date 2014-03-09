@@ -197,7 +197,8 @@ define(function(require) {
                     The <em>container</em> represents where the view will be added in the DOM. <em>viewOptions</em> are <em>arguments</em>
                     and <em>URL parameters</em> that are passed to the view.
                 </p>
-                <p>Line 13 uses the <em>container.attach</em> method to <em>adds</em> the HelloWorld <em>template</em> to the DOM. By default
+                <p>Line 13 uses the <a href='#id=viewMmanager_container_attach' class='self'>container.attach</a> method to <em>adds</em> 
+                    the HelloWorld <em>template</em> to the DOM. By default
                     the <em>attach</em> method will use a fadeIn and fadeOut animation when adding views, however this can be turned off,
                     or another animation effect can be specified.
                 </p>
@@ -215,7 +216,8 @@ define(function(require) {
                 </p>
                 <p>Line 11 creates an option, <em>view</em> to pass to ViewManager telling it the name of the view to show. Line 12
                     specifies the <em>target</em>, a CSS selector, where the view must be added to on the DOM. The <em>container</em> object
-                    that was passed into the <em>onInit</em> method uses this <em>target</em> when it's <em>attach</em> method is invoked,
+                    that was passed into the <em>onInit</em> method uses this <em>target</em> when it's 
+                    <a href='#id=viewMmanager_container_attach' class='self'>attach</a> method is invoked,
                     to add the new view. If no <em>target</em> is specified, a default target <em>#container</em> is used.
                 </p>
                 <p>Finally line 13 calls the ViewManager.<em>showView</em> method to display the view.
@@ -491,8 +493,13 @@ define(function(require) {
                     It also returns a list of <a href='#page=docs&id=viewManager_showView_promises' class='self'>promises</a> 
                     for callers to be notified of certain events.
                 </p>
+                
+                <p>showView accepts an <a href="#page=api&id=viewManager_showView" class="link">options</a> argument through which you can
+                    pass the <em>view</em> to render as well as <em>arguments</em> and <em>url parameter</em>. For a full description of the
+                    options see the <a href="#page=api&id=viewManager_showView" class="link">options API</a>.
+                </p>
 
-                Below we outline the sequence of showView:
+                Below we outline the sequence flow for showView:
                 <ol>
                     <li>
                         the view argument is resolved to it's view type. You can read <a href="todo">here</a> how SPAMD resolves views.
@@ -509,7 +516,8 @@ define(function(require) {
                     </li>
                     <li>
                         The view can now make server requests to load it's data, and render it's associated template. When the view is ready
-                        it calls the container's <code>attach</code> method, passing it's rendered template.
+                        it calls the container's <a href='#id=viewMmanager_container_attach' class='self'>container.attach</a> method, 
+                        passing it's rendered template.
                     </li>
 
                     <li>
@@ -527,8 +535,8 @@ define(function(require) {
                 <code>Basic example:</code>
 
                 <pre class="prettyprint linenums">
-// include productView
-var productView = require("app/views/productView");
+// include personView
+var personView = require("app/views/personView");
 
 // include ViewManager  
 var viewManager = require("spamd/view/view-manager");
@@ -553,6 +561,71 @@ var viewManager = require("spamd/view/view-manager");
         that.onInit = function(container, options) {
             var html = te.render(template);
             container.attach(html);
+        }
+
+        return that;
+    }
+    return personView;
+});
+
+                </pre>
+                
+                <code>Passing common options to the view:</code>
+
+                <pre class="prettyprint linenums">
+// include personView
+var personView = require("app/views/personView");
+
+// include ViewManager  
+var viewManager = require("spamd/view/view-manager");
+
+// Create an options object with 'args' and 'params'. The params will
+// automatically be added to the URL hash by SPAMD, for history purposes
+var options = {
+    view: personView,
+    args: {callback: function(view) {
+        // This callback is invoked by the personView, and pass
+        // back an instance of itself
+    }},
+    params: {id: 1}
+}
+
+// Show the view
+viewManager.showView( options );
+                </pre>
+
+                <code>app/views/personView.js:</code>
+                <pre class="prettyprint linenums">
+define(function(require) {
+
+var $ = require("jquery");
+var template = require("hb!./personView.htm");
+var te = require("spamd/template/template-engine");
+var viewManager = require("spamd/view/view-manager");
+
+    function personView() {
+
+        var that = {};
+
+        that.onInit = function(container, options) {
+
+            // retrieve the callback from the options
+            callback = options.args.callback;
+
+            // retrieve the id parameter from the options.
+            // The id parameter will also be added to the URL hash
+            // by SPAMD, thus history will be working automatically
+            var id = options.params.id;
+
+            // Retrieve the person with the given id
+            $.get( "/person", { id: id } ).done(function( data ) {
+                var html = te.render(template, {person: data} );
+                container.attach(html);
+
+                // Invoke the callback passing in an instance
+                // of the personView back
+                callback(this);
+            });
         }
 
         return that;
@@ -698,40 +771,125 @@ viewManager.showView( {view: "person"} );
 
                 <p>Let's look at some examples of using these promises:</p>
 
+                <code>JavaScript showing the promises for showView</code>
                 <pre class="prettyprint linenums">
 var viewManager = require("spamd/view/view-manager");
 var personView = require("app/views/personView");
 
 var promise = viewManager.showView({view: personView});
 
-                </pre>              
+// Default promise shown below will be resolved after the personView
+// is shown
+promise.then(function(view) {
+    // the view argument is a reference to the personView
+    console.log("default promise resolved for ", view);
+});
 
+// The attached promise is resolved when the personView HTML is
+// attached to the DOM
+promise.attached.then(function(view) {
+    // the view argument is a reference to the personView
+    console.log("attached promise resolved for ", view);
+});
 
+// The visible promise is resolved when the personView HTML is
+// made visible
+promise.visible.then(function(view) {
+    // the view argument is a reference to the personView
+    console.log("visible promise resolved for ", view);
+});
 
+// The cancel promise is resolved when the personView is
+// cancelled
+promise.cancel.then(function(view) {
+    // the view argument is a reference to the personView
+    console.log("cancel promise resolved for ", view);
+});
 
-                <h3 id="view-manager-showHTML">ViewManager showHTML</h3>
+// The overwrite promise is resolved when the personView is
+// overwritten by another showView call
+promise.overwrite.then(function(view) {
+    // the view argument is a reference to the personView
+    console.log("overwrite promise resolved for ", view);
+});
+</pre>
+
+<p></p>
+
+<code>personView.js</code>
+<pre class="prettyprint linenums">
+define(function(require) {
+
+    var template = require("hb!./person-view.htm");
+    var te = require("spamd/template/template-engine");
+
+    function personView() {
+
+        // We provide an onInit method
+        this.onInit(container, viewOptions) {
+            $.ajax({
+                url: '/person',
+                data: 'id=1'
+            }).then(function(data) {
+                var html = te.render(template, {person: data} );
+
+                // container.attach will attach the view template to the
+                // DOM. attach() resolves the attached, visible and
+                // default promises, in that order
+                container.attach(html);
+
+            }, function(error) {
+                // container.cancel() will cancel rendering the new view.
+                // cancel() resolves the cancel promise
+                container.cancel();
+            });
+        }
+
+        // We return the View
+        return personView;
+});</pre>
+
+<p/>
+We add a listener for every promise that <em>showView()</em> returns. In <code>personView.js</code>, line 9, we fetch the person from the
+server. If the Ajax call is successful, the then handler on line 13 will be invoked.
+<p/>
+On line 14 the template is rendered as HTML which is then passed to the <em>attach</em> method of the container, online 19.
+<p/>
+In the <em>attach</em> method, assuming default animation behavior,
+SPAMD will fade out (make invisible) the current view before removing it. The new view's HTML will be attach to the DOM all while the view
+is still invisible. Once the new view is <em>atached</em> to the DOM, SPAMD resolves the <em>attached</em> promise.
+<p/>
+Next SPAMD fades in the newly attached view, and once complete, resolves the <em>visible</em> promise.
+<p/>
+Lastly SPAMD will resolve the <em>default</em> promise and the <em>showView</em> call is complete.
+<p/>
+If the ajax call resulted in an error, the error handler on line 21 will be invoked.
+<p/>
+The error handler will instruct SPAMD to <em>cancel</em> the showView call by invoking <em>container.cancel()</em> on line 24.
 
                 <h3 id="view-manager-container">ViewManager.Container</h3>
                 Users <em>must</em> always call either Container.attach or Container.cancel, in order for the ViewManager to resolve any
                 promises made by callers of ViewManager#showView.
 
-                <h3 id="view-manager-container-attach">ViewManager.Container attach</h3>
+                <h3 id="viewMmanager_container_attach">ViewManager.Container attach</h3>
 
-                <h3 id="view-manager-container-attach-promises">ViewManager.Container attach promises</h3>
+                <h3 id="viewManager_container_attach_promises">ViewManager.Container attach promises</h3>
 
-                <h3 id="view-manager-container-cancel">ViewManager.Container cancel</h3>
+                <h3 id="viewManager_container_cancel">ViewManager.Container cancel</h3>
 
-                <h3 id="view-manager-container-custom-animation">ViewManager.Container custom animation</h3>
+                <h3 id="viewManager_container_custom_animation">ViewManager.Container custom animation</h3>
+                
+                <h3 id="view-manager-showHTML">ViewManager showHTML</h3>
 
-                <h3 id="view-manager-double-click-problem">ViewManager double click problem</h3>
+                <h3 id="viewManager_double_click_problem">ViewManager double click problem</h3>
 
-                <h3 id="view-manager-history">ViewManager history</h3>
+                <h3 id="viewManager_history">ViewManager history</h3>
 
-                <h3 id="view-manager-routes">ViewManager routes</h3>
+                <h3 id="viewManager_routes">ViewManager routes</h3>
 
-                <h3 id="url-utility">URL utility</h3>
+                <h3 id="urlUtility">URL utility</h3>
 
-                <h3 id="template-engine">Template Engine</h3>
+                <h3 id="templateEngine">Template Engine</h3>
 
                 <h3 id="template-engine-helpers">Template Engine Helpers</h3>
 
@@ -771,7 +929,7 @@ define(function(require) {
                     <em>hb!</em> syntax in the <em>require</em> argument on line 4.
                 </p>
                 <p>The <em>hb</em> plugin will load the person-view template and then compile the template using the Handlebars compiler.
-                    The result of the compilation step is a <em>function</em> which can be executed by the Handlebars runtime. In other
+                        The result of the compilation step is a <em>function</em> which can be executed by the Handlebars runtime. In other
                     words on line <em>4</em> above, the variable <em>template</em> will be assigned a Handlebars compiled template
                     <em>function</em>. The <em>template</em> variable is not assigned a string.
                 </p>
