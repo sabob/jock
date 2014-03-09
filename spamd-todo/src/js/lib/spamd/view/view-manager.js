@@ -98,11 +98,9 @@ define(function(require) {
                                 $(view.options.hash).trigger("onHashChange", hashOptions);
                             });
                             processHashChange = true;
-                        
+
                             return;
                         }
-                        
-                        
 
                         var viewParams = $.spamd.history.params.get();
                         delete viewParams.page;
@@ -141,42 +139,42 @@ define(function(require) {
 
             this.ensureInitialized();
 
-            var target = options.target || settings.target;
-            // Make copy
-            var defaults = {
-                params: {},
-                args: {},
-                bindTemplate: settings.bindTemplate,
-                animate: settings.animate,
-                updateHistory: settings.updateHistory,
-                overwritten: false,
-                externalHashChange: false
-            };
-            var viewSettings = $.extend({}, defaults, options);
-            viewSettings.target = target;
-            viewSettings._options = options;
-
-            addGlobalErrorHandler(target);
-
-
-            if (typeof (callStack[target]) === 'undefined') {
-                callStack[target] = [];
-            }
-
             var deferredHolder = that.createDeferreds();
 
             // The timeout below allows the attached promise to be returned to the caller before running the function.
             setTimeout(function() {
+                var target = options.target || settings.target;
+                // Make copy
+                var defaults = {
+                    params: {},
+                    args: {},
+                    bindTemplate: settings.bindTemplate,
+                    animate: settings.animate,
+                    updateHistory: settings.updateHistory,
+                    overwritten: false,
+                    externalHashChange: false
+                };
+                var viewSettings = $.extend({}, defaults, options);
+                viewSettings.target = target;
+                viewSettings._options = options;
 
-                if (callStack[target].length !== 0) {
-                    //console.warn("ViewSettings.animate", viewSettings.animate);
-                    //viewSettings.animate = false;
-                    //console.warn("ViewSettings.animate", viewSettings.animate);
+                addGlobalErrorHandler(target);
 
-                    //console.warn("[ViewManager.showView] ViewManager is already processing a showView/showHTML request for the target '" + target + "' and options: ", options, ". Use ViewManager.clear('" + target + "') to force a showView/showHTML request.", callStack[target]);
-                    //deferredHolder.reject();
-                    //return deferredHolder.promises;
+
+                if (typeof (callStack[target]) === 'undefined') {
+                    callStack[target] = [];
                 }
+
+                /*
+                 if (callStack[target].length !== 0) {
+                 //console.warn("ViewSettings.animate", viewSettings.animate);
+                 //viewSettings.animate = false;
+                 //console.warn("ViewSettings.animate", viewSettings.animate);
+                 
+                 //console.warn("[ViewManager.showView] ViewManager is already processing a showView/showHTML request for the target '" + target + "' and options: ", options, ". Use ViewManager.clear('" + target + "') to force a showView/showHTML request.", callStack[target]);
+                 //deferredHolder.reject();
+                 //return deferredHolder.promises;
+                 }*/
 
                 if (templateEngine.hasActions()) {
                     //console.warn("It's been detected that there are unbounded actions in the TemplateEngine! Make sure to call templateEngine.bind() after template is added to DOM!");
@@ -369,12 +367,12 @@ define(function(require) {
             //console.info("You have moved to a new view. From '" + currentViewName + "' to '" + route + "'");
             return true;
         };
-        
+
         this.showViewInstance = function(viewSettings) {
             if (viewSettings.overwritten === true) {
                 return this.overwrite(view, viewSettings.deferredHolder, viewSettings);
             }
-            
+
             viewSettings.hash = {id: Math.random()};
 
             var target = viewSettings.target;
@@ -567,22 +565,24 @@ define(function(require) {
 
         this.showHTML = function(options) {
             this.ensureInitialized();
-            var target = options.target || settings.target;
-            var defaults = {
-                animate: settings.animate,
-                bindTemplate: settings.bindTemplate,
-                overwritten: false
-            };
-            var viewSettings = $.extend({}, defaults, options);
-            viewSettings._options = options;
-            viewSettings.target = target;
-
-            addGlobalErrorHandler(target);
 
             var deferredHolder = that.createDeferreds();
 
             // The timeout below allows the attached promise to be returned to the caller before running the function.
             setTimeout(function() {
+
+                var target = options.target || settings.target;
+                var defaults = {
+                    animate: settings.animate,
+                    bindTemplate: settings.bindTemplate,
+                    overwritten: false
+                };
+                var viewSettings = $.extend({}, defaults, options);
+                viewSettings._options = options;
+                viewSettings.target = target;
+
+                addGlobalErrorHandler(target);
+
                 viewSettings.deferredHolder = deferredHolder;
 
                 if (typeof (callStack[target]) === 'undefined') {
