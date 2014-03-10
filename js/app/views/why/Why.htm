@@ -1,0 +1,321 @@
+<div class="container">
+    <div class="api">
+        <div class="toc" id="toc">
+            <h2 class="title header">Table of contents</h2>
+            <ul class="section">
+                <li>
+
+                    <a href="" class="title">Why SPAMD</a>
+
+                    <a href="id=errorUtils" class="title">errorUtils</a>
+                    <ul class="section">
+                        <li><a href="id=errorUtils_showError">showError</a></li>
+                    </ul>
+
+                    <a href="id=hash" class="title">hash</a>
+                    <ul class="section">
+                        <li><a href="id=hash_hash">hash</a></li>
+                        <li><a href="id=hash_init">init</a></li>
+                        <li><a href="id=hash_update">update</a></li>
+                        <li><a href="id=hash_trigger">trigger</a></li>
+                    </ul>
+
+                    <a href="id=template-engine" class="title">history</a>
+                    <ul class="section">
+                        <li><a href="id=template-engine_render">render</a></li>
+                    </ul>
+
+                    <a href="id=template-engine" class="title">params</a>
+                    <ul class="section">
+                        <li><a href="id=template-engine_render">render</a></li>
+                    </ul>
+
+                    <a href="id=template-engine" class="title">string</a>
+                    <ul class="section">
+                        <li><a href="id=template-engine_render">render</a></li>
+                    </ul>
+
+                    <a href="id=url" class="title">url</a>
+                    <ul class="section">
+                        <li><a href="id=view-manager-showView">render</a></li>
+                    </ul>
+
+                    <a href="id=template-engine" class="title">utils</a>
+                    <ul class="section">
+                        <li><a href="id=template-engine_render">render</a></li>
+                    </ul>
+
+                    <a href="id=template-engine" class="title">TemplateEngine</a>
+                    <ul class="section">
+                        <li><a href="id=template-engine_render">render</a></li>
+                    </ul>
+
+                    <a href="id=template-engine" class="title">validator</a>
+                    <ul class="section">
+                        <li><a href="id=template-engine_render">render</a></li>
+                    </ul>
+
+                    <a href="id=view-manager" class="title">ViewManager</a>
+                    <ul class="section">
+                        <li><a href="id=view-manager_showView">showView</a></li>
+                        <li><a href="id=view-manager_showHTML">showHTML</a></li>
+                    </ul>
+
+                    <a href="id=view-manager_container" class="title">ViewManager.Container</a>
+                    <ul class="section">
+                        <li><a href="id=view-manager_container_showView">attach</a></li>
+                        <li><a href="id=view-manager_container_showHTML">cancel</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="content">
+
+            <div>
+                <h2>Why SPAMD</h2>
+                <p>
+                    SPAMD provides the best-of-breed components with a small and simple set of utilities for building single page applications (SPA).
+                </p>
+                <p>
+                    Here is a Hello World example in SPAMD:
+                </p>
+                <p>
+                    There are a myriad of JavaScript MVC frameworks to choose from for writing SPA, so why SPAMD?
+                </p>
+                <p>
+                    JavaScript together with HTML and JSON already provides a well defined MVC separation to your code. The real question
+                    should be, Why use a framework at all?
+                </p>
+                <p>
+                    One commonality found in all JavaScript frameworks is a feature called automatic data <em>binding</em>. This technique
+                    was made popular by Adobe's Flex but was also mentioned by Martin Fowler in his Presentation Model pattern here:
+                    <a href="http://martinfowler.com/eaaDev/PresentationModel.html">Presentation Model</a>.
+                <p>
+                    SPAMD provides no binding support and this is a good thing.
+                </p>
+                <p>
+                    The case against data binding.
+                </p>
+                <p>
+                    Data binding is based on the Observer pattern as popularized by the book, Design Patterns. The observer pattern
+                    allows observers to be notified of changes to an underlying event, such as events that fire or data that changes
+                    etc. While obviously useful for enabling separation of concerns it does have a cost in that it also hides a
+                    programs logical flow. In other words it becomes difficult to track how data flows through the system, because
+                    the Observer pattern provides a black box wherein things will automatically (implicitly) "happen" without you
+                    having any say in it.</p>
+
+                <p>"Well duh, that's the point.!" Sure, but implicit code bases are weak code bases when it
+                    comes to maintenance. When someone has to figure out why some event isn't firing or some trigger point never
+                    fired it is very difficult to debug and understand the flow because of the Observer pattern "magic". It creates
+                    doubt as to weather the event was registered correctly, or if the event is firing or even worse if there is
+                    another configuration option which alters the observer behavior in some way such as disabling the triggering of the
+                    event in specific circumstances etc. With the observer pattern your code cannot explicitly communicate your intent,
+                    rather behavior is hidden by the observer. Please note, the observer pattern is useful and important, but there is no
+                    free lunch here, there is a cost involved.
+                </p>
+                <p>As mentioned before, data binding is based on the observer pattern. Sounds good at first glance. You want to copy the 
+                    <em>name</em> property from the input control to the model and back? No problem. In your view you might do something
+                    like this:
+                </p>
+
+                <pre class="prettyprint">
+&ltinput name="name" type="text" data-bind="{{model.name}}"/&gt;
+                </pre>
+
+                <p>and in your JavaScript cotroller:</p>
+                <pre class="prettyprint">
+var model = {};
+model.name = "Bob";
+                </pre>
+                <p>
+                    Great, your model and view are now bound and data flows back and forth as the user enters data into the input control. But
+                    when exactly is the data pushed to the model? When the user hits the <em>submit</em> button or when the input control loses
+                    focus? Or on each keystroke? See the issue here? You have lost control of your data flow.
+                </p>
+                <p>
+                    But let's continue with the example above. Let's say on every keystroke the input is sync'd to the model. When the user
+                    clicks the <em>save</em> button the model will be persisted on the server. But what if the user entered invalid data? You
+                    wouldn't want to store invalid data on the server now would you. No sir, not this soldier! 
+                </p>
+                <p>
+                    So with data binding there will inevitably come a validation framework as well to stop invalid data from entering your
+                    model. But what if you decide that your users should always be able to store their data even if it is invalid. Perhaps
+                    they can come back later and complete the missing detail?
+                </p>
+                <p>
+                    "Darn it , are you trying to be hard headed?"
+                </p>
+                <p>
+                    Not really, real world applications throw all kinds of illogical requirements at us. The point is that data binding
+                    is simply a feature with pros and cons, it ain't all rosy and there is a price to pay.
+                </p>
+                <p>
+                    Now most frameworks will provide options to solve most use cases such as forcing a sync between the input and model to
+                    allow invalid data to enter the model to persist on the server. Most will also provide the ability to tweak when data
+                    will be pushed to the model. The important point to understand is that you have given control to your data flow over to
+                    a framework.
+                </p>
+                <p>
+                    There are alternative UI patterns to the Presentation Model which relies on data binding. Martin Fowler also talks about
+                    the <a href="http://martinfowler.com/eaaDev/PassiveScreen.html">Passive Screen pattern</a> which doesn't use automatic
+                    data binding.
+                </p>
+                <p>
+                    SPAMD doesn't provide automatic data binding. It provides an alternative which for syncing input and models. It is the exact
+                    opposite of data binding. Ready for it? It's called <em>copying</em>. That's right. That age old stalwart you can always
+                    rely upon.
+                </p>
+                <p>
+                    How does it compare with automatic data binding?
+                </p>
+                <p>
+                    First off it is explicit code that is viewable by anyone. Explicit code leads to strong code bases even if there are
+                    mode lines of code.
+                </p>
+                <p>
+                    Off course we wouldn't want to copy each and every field back and forth in our code either. It's enough that there is
+                    <em>one</em> line of code which explicitly states what is going on. That one line of code puts you, the programmer, back
+                    in control of your data flow. Let's see how this is done in SPAMD:
+                </p>
+                <pre class="prettyprint">
+&lt;input name="name" type="text"/&gt;
+                </pre>
+
+                <p>and in your JavaScript cotroller:</p>
+                <pre class="prettyprint">
+var model = {};
+model.name = "Bob";
+// Copy values to form
+$("#form").fromObject(model);
+                </pre>
+
+                <p>One line to copy the model to the form. Not so bad is it? Of course this method works because the model and input share
+                    the same <em>name</em>. This is convention over configuration at work here. But this is generally how the model and
+                    input controls are named.
+                </p>
+                <p>If for some reason the model or input control is named differently the <code>codeFrom</code>
+                    won't work as it has no way for  the model and input controls to match up.
+                </p>
+                <p>
+                    In this worst case scenario, copying will be completely manual, one field at a time.
+                </p>
+                  <pre class="prettyprint">
+var model = {};
+model.name = "Bob";
+// Copy values to form
+$("#form #other").val(model.name); // Copying model.name to input with 
+                                   // the id: "other"
+                </pre>
+                
+                <p>
+                    Every input will have to be copied in this fashion. Not ideal but keep in mind that with data binding you also have to
+                    bind each and every field to the model:
+                </p>
+                 <pre class="prettyprint">
+&lt;input name="other" type="text" data-bind="\{{model.name}}"/&gt;
+&lt;input name="organisation" type="text" data-bind="\{{model.company}}"/&gt;
+                </pre>
+                <p>
+                    Of course automatic data binding is generally two way so it doesn't have to worry about copying values back to the model
+                    as explicit copying does.
+                </p>
+                <p>
+                    That is true but is it worth the price of not being in control of your data flow? With explicit copying you are in control
+                    when data should be copied to the the model and back. Should copying occur when user hits <em>submit</em> or onblur?
+                    Your choice. Do you want invalid data stored on the server so your users don't loose their incomplete
+                    data? Your choice. No need to think or reason about it, just put it in plain code for everybody to see.
+                </p>
+                <p>
+                    Now it is easy to reason over your codebase because it explicitly states behavior. If something goes wrong you can
+                    put a breakpoint anywhere on one of those copy methods and see what is happening.
+                </p>
+                
+                <p>
+                    But the biggest drawback of automatic data binding in a SPA setting, is that it cannot allow for DOM manipulation. Why? Because
+                    that would break the automatic data binding since event listeners registered on the input controls would be destroyed
+                    and the model won't be notified of changes. Another reason why DOM manipulation won't be allowed by data binding frameworks
+                    is that new elements added to the DOM won't be known to the framework, hence it cannot bind to them. Instead framework
+                    specific avenues will have to be followed to inform the framework when you want to perform any DOM manipulation.
+                </p>
+                <p>
+                    This is a major drawback. Not allowing DOM manipulation, which is a core browser function, effectively
+                    detaches the framework from the web! No external JavaScript code that touches the DOM will work out of the box in such
+                    an environment. No jQuery plugin will work as documented on it's site. Instead it will have to be "ported" to the framework so that the
+                    external code can play nice with the framework's data binding. So plugins have to be written for <em>plugins</em>. When
+                    a new version of the plugin is released it will have to ported again.
+                </p>
+                <p>
+                    
+                </p>
+                
+                <p id="view-manager">
+                <h2>
+                    View Manager
+                </h2>
+                asd
+                f
+                asdf
+                asd
+                fds
+                afads
+                fds
+                f
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+            </div>
+
+            <div id="view-manager_showView">
+                <h2>
+                    showView
+                </h2>
+                asd
+                f
+                asdf
+                asd
+                fds
+                afads
+                fds
+            </div>
+
+
+            <div id="view-manager_showHTML">
+                <h2>
+                    showHTML
+                </h2>
+                asd
+                f
+                asdf
+                asd
+                fds
+                afads
+                fds
+            </div>
+
+            <div id="view-manager_showHTML">
+                <h2>
+                    showHTML
+                </h2>
+                asd
+                f
+                asdf
+                asd
+                fds
+                afads
+                fds
+            </div>
+        </div>
+    </div>
+</div>

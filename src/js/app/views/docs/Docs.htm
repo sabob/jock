@@ -505,7 +505,7 @@ define(function(require) {
                         the view argument is resolved to it's view type. You can read <a href="todo">here</a> how SPAMD resolves views.
                     </li>
                     <li>
-                        a new view instance is created by invoking <code>view()</code>.
+                        a new view instance is created by invoking <code>new view()</code>.
                     </li>
                     <li>
                         browser history is updated with the new view's route or path.
@@ -638,17 +638,15 @@ var viewManager = require("spamd/view/view-manager");
                 <h3 id="viewManager_showView_resolve">Resolving views</h3>
                 ViewManager.showView is invoked by passing in <em>options.view</em>. The view argument can be a:
                 <ul>
-                    <li><em>Function</em> (function name must be lower case)</li>
-                    <li><em>Constructor</em> Function (function name be upper case)</li>
+                    <li><em>Function (or Constructor Function)</em></li>
                     <li><em>Object</em> (object must be an instance of an existing View)</li>
                     <li><em>string</em> (must either refer to the View path or the View route)</li>
                 </ul>
 
                 Let's walk through each of these options.
                 <p>
-                    If a <code>Function</code> is passed in, SPAMD will check if the Function name is upper case or not. If upper case
-                    SPAMD assumes the function is a Constructor and SPAMD will invoke the function with <em>new</em>, otherwise the
-                    function will simply be invoked.
+                    If a <code>Function or Constructor Function</code> is passed in, SPAMD will invoke the function with
+                    <em>new</em>, as in <em>new View()</em>.
                 </p>
 
                 <code>Function</code> and <code>Constructor</code> examples:
@@ -659,15 +657,15 @@ var personView = require("app/views/personView");
 // include ProductView view, a constructor function
 var ProductView = require("app/views/ProductView");
 
-// include ViewManager  
+// include ViewManager
 var viewManager = require("spamd/view/view-manager");
                     
-// personView starts with a lower case so SPAMD will create an instance
-//  by invoking: var view = personView();
+// personView is a normal JavaScript Function so SPAMD will create an instance
+//  by invoking: var view = new personView();
 viewManager.showView( {view: personView} );
 
-// ProductView starts with an upper case so SPAMD will create an instance
-//  by invoking new: var view = new ProductView();
+// ProductView is a Constructor Function so SPAMD will create an instance
+//  by invoking: var view = new ProductView();
 viewManager.showView( {view: ProductView} );
                 </pre>
                 <p>

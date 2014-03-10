@@ -12,10 +12,9 @@ define(function(require) {
     require("domReady!");
     function Docs() {
 
-        var that = this;
-        var scroll = null;
+        var that = {};
 
-        this.onInit = function(container, options) {
+        that.onInit = function(container, options) {
             //console.log("Docs path", options.view.path);
             $(options.hash).on("onHashChange", function() {
                 console.log("change", arguments);
@@ -68,24 +67,8 @@ define(function(require) {
                     var page = url.params.page;
                     var id = url.params.id;
                     viewManager.showView({view: page, animate: false, params: {id: id}});
-                    //viewManager.showView({view: API, params: {id: "viewManager_showView"}});
-                    console.log("1", location.href);
-                    
-                     //var temp = $.spamd.history.params.get("scroll");
-                     //scroll = $(window).scrollTop();
-                     //if (temp == scroll) {
-                     //console.log("same scroll");
-                     //return true;
-                     //}
-                     
-                    console.log("STILL CHANGING");
-                    //$.spamd.history.skipEventOnce(true);
-                    //$.spamd.history.params.set("scroll", scroll);
-                    //$.spamd.history.update({skipEvent: true});
-
                 });
 
-                //console.log("clicked called: scroll", scroll);
                 $(".toc a, .content a.self").on("click", function(e) {
                     var url = $.parseUrl(this.href);
                     $.spamd.history.skipEventOnce(true);
@@ -103,23 +86,11 @@ define(function(require) {
             }
 
             function onVisible() {
-                console.log("Inside DOCS: visible", scroll);
-                /*
-                 if (!scroll) {
-                 scroll = options.params.scroll;
-                 }
-                 */
-                 if (scroll) {
-                 $(window).scrollTop(scroll);
-                 console.log("SCROLLing", scroll);
-                 return;
-                 }
                 var id = options.params.id;
                 if (id) {
                     scrollIntoView(id);
                 }
 
-                //domUtils.trackSidebarBottomPosition();
             }
 
             function scrollIntoView(id) {
@@ -132,9 +103,9 @@ define(function(require) {
                 }
                 $(window).scrollTop(top);
             }
-
-            //$('#f').followTo(250);
         };
+        
+        return that;
     }
-    return new Docs();
+    return Docs;
 });

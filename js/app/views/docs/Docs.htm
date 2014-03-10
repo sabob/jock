@@ -1,51 +1,956 @@
 <div class="container">
+    <div class="api">
+        <div class="toc" id="toc">
+            <h2 class="title header">Table of contents</h2>
+            <ul class="section">
+                <li>
 
-    <h1>Introduction to Ratel</h1>
+                    <a href="" class="title">SPAMD</a>
 
-    <p>1. Add ratel.jar to your classpath.</p>
+                    <a href="id=errorUtils" class="title">errorUtils</a>
+                    <ul class="section">
+                        <li><a href="id=errorUtils_showError">showError</a></li>
+                    </ul>
 
-    <p>2. Add <span class="symbol">RatelFilter</span> to your web.xml and map it for all 
-        (<span class="symbol">/*</span>) requests:</p>
+                    <a href="id=hash" class="title">hash</a>
+                    <ul class="section">
+                        <li><a href="id=hash_hash">hash</a></li>
+                        <li><a href="id=hash_init">init</a></li>
+                        <li><a href="id=hash_update">update</a></li>
+                        <li><a href="id=hash_trigger">trigger</a></li>
+                    </ul>
 
-    <pre class="prettyprint programlisting linenums">
-&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;web-app&gt;
-    &lt;filter&gt;
-        &lt;filter-name&gt;ratelFilter&lt;/filter-name&gt;
-        &lt;filter-class&gt;<span class="symbol">com.google.ratel.RatelFilter</span>&lt;/filter-class&gt;
-        &lt;init-param&gt;
-            &lt;param-name&gt;packageNames&lt;/param-name&gt;
-            &lt;param-value&gt;com.mycorp.service&lt;/param-value&gt;
-        &lt;/init-param&gt;
-    &lt;/filter&gt;
-    
-    &lt;filter-mapping&gt;
-        &lt;filter-name&gt;ratelFilter&lt;/filter-name&gt;
-        &lt;url-pattern&gt;<span class="symbol">/*</span>&lt;/url-pattern&gt;
-    &lt;/filter-mapping&gt;
-&lt;/web-app&gt;
-    </pre>
+                    <a href="id=template-engine" class="title">history</a>
+                    <ul class="section">
+                        <li><a href="id=template-engine_render">render</a></li>
+                    </ul>
 
-    <p>3. Create a Ratel service to handle incoming requests (A Ratel service is a POJO annotated with <span class="symbol">@RatelService</span>:</p>
+                    <a href="id=template-engine" class="title">params</a>
+                    <ul class="section">
+                        <li><a href="id=template-engine_render">render</a></li>
+                    </ul>
 
-    <pre class="prettyprint programlisting linenums">
-package com.mycorp.service;
+                    <a href="id=template-engine" class="title">string</a>
+                    <ul class="section">
+                        <li><a href="id=template-engine_render">render</a></li>
+                    </ul>
 
-  <span class="symbol">@RatelService</span>
-  public class MyService {
+                    <a href="id=url" class="title">url</a>
+                    <ul class="section">
+                        <li><a href="id=view-manager-showView">render</a></li>
+                    </ul>
 
-    public Sting myMethod() {
-  
-      var json = "{\"message\": \"Hello World\"}";
-      return json;
+                    <a href="id=template-engine" class="title">utils</a>
+                    <ul class="section">
+                        <li><a href="id=template-engine_render">render</a></li>
+                    </ul>
+
+                    <a href="id=template-engine" class="title">TemplateEngine</a>
+                    <ul class="section">
+                        <li><a href="id=template-engine_render">render</a></li>
+                    </ul>
+
+                    <a href="id=template-engine" class="title">validator</a>
+                    <ul class="section">
+                        <li><a href="id=template-engine_render">render</a></li>
+                    </ul>
+
+                    <a href="id=view-manager" class="title">ViewManager</a>
+                    <ul class="section">
+                        <li><a href="id=view-manager_showView">showView</a></li>
+                        <li><a href="id=view-manager_showHTML">showHTML</a></li>
+                    </ul>
+
+                    <a href="id=view-manager_container" class="title">ViewManager.Container</a>
+                    <ul class="section">
+                        <li><a href="id=view-manager_container_showView">attach</a></li>
+                        <li><a href="id=view-manager_container_showHTML">cancel</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="content">
+
+            <div>
+                <h2>SPAMD Documentation</h2>
+
+                <h3 id="intro">Introduction</h3>
+
+                <p>
+                    SPAMD provides the best-of-breed components and some simple utilities to build Single Page Applications (SPA) using a
+                    structured MVC approach.
+                </p>
+                <p>
+                    SPAMD is built on three major building blocks: <a target="_blank" href="http://jquery.com/">jQuery</a> for DOM manipulation and events,
+                    <a target="_blank" href="http://requirejs.org/">RequireJS (AMD)</a> for modularization and 
+                    <a target="_blank" href="http://requirejs.org/">Handlebars</a>
+                    for HTML templates.
+                </p>
+                <p>
+                    SPAMD is based on the following core principles:
+                </p>
+                <ul>
+                    <li>
+                        The developer knows best how to organize and structure the code. SPAMD must not get in your way.
+                        SPAMD is not a framework and should not dictate how to write your views. SPAMD
+                        should perform a task and then hand control back to you.
+                    </li>
+                    <li>SPAMD must play nice with the web. If you want to use a JavaScript utility or jQuery plugin
+                        it should work as you would expect, no extra work should be required from your side.</li>
+                    <li>
+                        SPAMD does not interfere with DOM manipulation. You can perform any DOM manipulation you want, SPAMD doesn't care.
+                    </li>
+                    <li>
+                        HTML templates must consist of HTML, no proprietary extensions.
+                    </li>
+                    <li>
+                        SPAMD should be simple and easy to learn. One should be able to learn SPAMD in a couple of hours.
+                    </li>
+                </ul>
+
+                <h3 id="the-view">The View</h3>
+                <p>The primary use case in SPAMD is to navigate between views, replacing the current view with a new view.
+                </p>
+
+                <p>Views in SPAMD are specified as an AMD module. Views do not extend from a SPAMD specific class or type, instead Views
+                    are normal JavaScript <em>Functions</em> or <em>Objects</em>. The only requirement is for the View to provide an
+                    <a href="#page=api&id=onInit" class="link">#onInit</a> method. SPAMD invokes the #onInit method to inform the view to initialize
+                    itself when needed.
+                </p>
+
+                <h3 id="hello-world-example">Hello world example</h3>
+                <p>Let's look at a  Hello World example in SPAMD which we will discuss in detail below.
+                </p>
+                <p>First let's look at the HelloWorld JavaScript file.
+                </p>
+                <code>HelloWorld.js</code>
+
+                <pre class="prettyprint linenums">
+// We define an AMD module
+define(function(require) {
+
+    // We include the HelloWorld Handblebars template
+    var template = require("hb!./hello-world.htm");
+
+    function HelloWorld () {
+
+        // We provide an onInit method
+        this.onInit(container, viewOptions) {
+            // We tell the container argument to attach the
+            // view's template to the DOM
+           container.attach(template);
+        }
+
+        // We return the View
+        return HelloWorld;
+});</pre>
+
+                <p>Next is the hello-world HTML template file.</p>
+
+                <code>hello-world.htm</code>
+                <pre class="prettyprint">&lt;h1&gt;Hello World!&lt;/h1&gt;</pre>
+
+                <p>Lastly we show an application to run the Hello World demo.</p>
+
+                <code>main.js</code>
+
+                <pre class="prettyprint linenums">
+define(function(require) {
+
+    // include the HelloWorld view
+    var helloWorldView = require("app/views/HelloWorld");
+
+    // include ViewManager
+    var viewManager = require("spamd/view/view-manager");
+
+    // Target specifies the ID of the HTML element where views
+    // will be placed
+    var options = {view: HelloWorldView,
+                   target: '#hello-world-demo'};
+    viewManager.showView(options);
+});</pre>
+
+                Click <a href="#" id="link-hello-world-demo">here</a> to run the Hello World Demo below.
+
+                <div id="hello-world-demo" class="demo" style="height: 50px">
+                </div>
+
+                <p>Let's go through the <em>HelloWorld</em> example in more detail.
+                </p>
+
+                <p>In <em>HelloWorld.js</em> line 2 we define a basic AMD module. If you are not familiar with AMD, the <em>define</em>
+                    function is used to define a module.
+                </p>
+
+                <p>On line 5 we <em>import</em> the <span class="typ">HelloWorld</span> View's
+                    associated template, <em>hello-world.htm</em>. Note the <em>hb!</em> prefix before the template path,
+                    <em>"hb!./hello-world.htm"</em>.This is an AMD plugin provided by SPAMD to load and compile Handlebars
+                    templates. The <em>template</em> variable in line 5, will in fact be a compiled Handlebars function,
+                    not a string. For those familiar with AMD, one can also use the AMD <em>text</em> plugin to load Handlebars templates,
+                    but one will then have to compile them manually.
+
+                <p>Line 7 declares the <em>HelloWorld</em> View as a function and on line 17, the View is
+                    returned as the result of the AMD module.
+                </p>
+                <p>On line 10 the onInit method is implemented which accepts two arguments, <em>container</em> and <em>viewOptions</em>.
+                    The <em>container</em> represents where the view will be added in the DOM. <em>viewOptions</em> are <em>arguments</em>
+                    and <em>URL parameters</em> that are passed to the view.
+                </p>
+                <p>Line 13 uses the <a href='#id=viewMmanager_container_attach' class='self'>container.attach</a> method to <em>adds</em> 
+                    the HelloWorld <em>template</em> to the DOM. By default
+                    the <em>attach</em> method will use a fadeIn and fadeOut animation when adding views, however this can be turned off,
+                    or another animation effect can be specified.
+                </p>
+
+                <p>The next section shows the view's associated template, <em>hello-world.htm</em>. The template contains a simple header
+                    with the text Hello World!.
+                </p>
+                <p>The last section, <em>main.js</em>, shows how to display the HelloWorld view.
+                </p>
+                <p>On line 1, we define <em>main</em> as another AMD module. On line 4 we <em>import</em> the HelloWorld view using AMD's
+                    <em>require</em> function. If you are not familiar with AMD you will note that there is no need for <em>&lt;script&gt;</em>
+                    tags to include JavaScript files in your application.
+                </p>
+                <p>Line 7 imports SPAMD's <em>ViewManager</em>, a mechanism for showing views. We will discuss ViewManager in detail below.
+                </p>
+                <p>Line 11 creates an option, <em>view</em> to pass to ViewManager telling it the name of the view to show. Line 12
+                    specifies the <em>target</em>, a CSS selector, where the view must be added to on the DOM. The <em>container</em> object
+                    that was passed into the <em>onInit</em> method uses this <em>target</em> when it's 
+                    <a href='#id=viewMmanager_container_attach' class='self'>attach</a> method is invoked,
+                    to add the new view. If no <em>target</em> is specified, a default target <em>#container</em> is used.
+                </p>
+                <p>Finally line 13 calls the ViewManager.<em>showView</em> method to display the view.
+
+                </p>
+
+                <h3 id="spamd-configuration">SPAMD configuration</h3>
+                <p>
+                    Since SPAMD is based on AMD, it should be familiar to anyone with AMD experience.
+                </p>
+                <p>AMD provides a moduling system for JavaScript applications, so there is no need to include a bunch of &lt;script&gt; tags
+                    in your HTML pages. Instead, the JavaScript application is split into modules which are loaded as required.
+                </p>
+                <p>For a good overview on AMD see this <a href="article" target="_blank">article</a>.
+                </p>
+                <p>To start a SPAMD application you generally need the following setup:
+                </p>
+                <ul>
+                    <li>an index.html to bootstrap <code>require.js</code>.</li>
+                    <li>a <code>config.js</code> to configure <code>requirejs</code> to the needs of your application, SPAMD and other libraries.
+                        NOTE: config.js does not include application specific configuration, that is done through the <code>setup.js</code> script.</li>
+                    <li><code>main.js</code>, the entry point to your application, invoked from <code>config.js</code> above. Here you start
+                        configuring your application, such as navigation menus and events. You can also configure SPAMD in main.js, although it
+                        is common to push this configuration to a separate file, setup.js</li>
+                    <li><code>setup.js</code> is sometimes used to hold application specific configuration instead of cluttering main.js</li>
+                </ul>
+
+                <p>Let's go through the setup of a typical application.</p>
+
+                <p>We start with our <code>index.html</code> below.
+                </p>
+                <code>index.html</code>
+                <pre class="prettyprint linenums">
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;css/site.css&quot;/&gt;
+    &lt;script data-main=&quot;js/config&quot; src=&quot;js/lib/require.js&quot;&gt;
+&lt;/script&gt;
+  &lt;/head&gt;
+
+  &lt;body&gt;
+
+    &lt;!-- Basic navigation menu --&gt;
+    &lt;div class=&quot;header&quot;&gt;
+      &lt;ul id=&quot;navbar&quot;&gt;
+        &lt;li&gt;&lt;a href=&quot;#&quot; id=&quot;home-menu&quot;&gt;Home&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&quot;#&quot; id=&quot;customers-menu&quot;&gt;Customers&lt;/a&gt;&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/div&gt;
+
+    &lt;div id=&quot;container&quot;&gt;
+      &lt;!-- Our views will be placed here --&gt;
+    &lt;/div&gt;
+
+  &lt;/body&gt;
+&lt;/html&gt; </pre>
+
+                <p>On line 5, we include require.js. Notice the <em>data-main</em> attribute with the value <em>js/config</em>. This points
+                    to a script to configure requirejs, which will be loaded next. Let's look at <code>config.js</code>.
+                </p>
+
+                <code>config.js</code>
+                <pre class="prettyprint linenums">
+requirejs.config({
+    "baseUrl": "js/lib", // root location of JS libraries
+    "paths": {
+        "app": "../app", // path to our application
+        "hb": "spamd/hb", // path to the AMD Handlebars plugin
+        "moment": "moment",
+        "numeral": "numeral"
+    },
+    "shim": {
+        "handlebars": {exports: "Handlebars"}
     }
+});
 
+// onResourceLoad is a requirejs extension to manipulate modules
+// being loaded. Here we add the module ID (which is also the
+// path to the module location) as an attribute on the module
+// itself
+requirejs.onResourceLoad = function(context, map, depArray) {
+    var obj = context.defined[map.name];
+
+    if (obj) {
+        if (obj.prototype) {
+            if (!obj.prototype.id) {
+                obj.prototype.id = map.id;
+                obj.id = map.id;
+            }
+        } else {
+            if (!obj.id) {
+                obj.id = map.id;
+            }
+        }
+    }
+};
+
+// Load the main app module to start the application
+requirejs(["app/main"]); </pre>
+
+                <p>With RequireJS now configured, it's time to load our application. Line 36 loads our application entry point,
+                    <em>main.js</em> which resides in the <em>app</em> folder.
+                </p>
+
+                <p><em>main.js</em> is shown below:
+                </p>
+
+                <code>main.js</code>
+
+                <pre class="prettyprint linenums">
+define(function(require) {
+  var $ = require("jquery"); // load jquery
+  require("spamd/spamd"); // load SPAMD bootstrap module
+  var viewManager = require("spamd/view/view-manager");
+  var Home = require("./views/home/Home"); //Home View
+  var Customer = require("./views/cust/Customers");
+
+  var options = { 
+    defaultView : Home
   }
-    </pre>
 
-    Ratel maps this service to the URL:
-    <pre class="prettyprint programlisting">
-http://localhost/MyService/MyMethod
-    </pre>
+  viewManager.init(options); // ViewManager is ready to use
 
-</div>
+  // Use jQuery to wire up the menu items to show the proper View
+  $("#home-menu").click(function(e) {
+    e.preventDefault();
+    viewManager.showView({view: Home});
+  });
+  $("#customers-menu").click(function(e) {
+    e.preventDefault();
+    viewManager.showView({view: Customers});
+  });
+});</pre>
+                <p>The application is now setup and will load the <em>Home</em> view when visiting the url: <em>http://hostname/</em>
+                </p>
+                <p>Note line 3, we load the <em>spamd</em> bootstrap module. This module is provided by SPAMD to load all of SPAMD
+                    required plugins and extra jQuery plugins. Without including this module, you will run into errors where certain of the
+                    documented API under the SPAMD or jQuery namespace doesn't work, as they haven't been loaded. So always include this
+                    module in your <em>main.js</em> or <em>setup.js</em> module. 
+                </p>
+
+                <p>You could also move your application setup code into a module of it's own, for example:</p>
+
+                <code>setup.js</code>
+                <pre class="prettyprint">
+define(function(require) {
+  var viewManager = require("spamd/view/view-manager");
+  var Home = require("./views/home/Home"); //Home View
+
+  var options = {
+    defaultView : Home
+  }
+
+  viewManager.init(options); // ViewManager is ready to use
+}); </pre>
+
+                <p>Now <em>main.js</em> can be changed as follows:
+                </p>
+
+                <code>main.js</code>
+                <pre class="prettyprint">
+define(function(require) {
+  require("./setup"); // Load the setup file
+  var viewManager = require("spamd/view/view-manager");
+  var Home = require("./views/home/Home"); //Home View
+  ...
+
+  // No need to setup ViewManager as that is done in setup.js
+  $("#home-menu").click(function(e) {
+    e.preventDefault();
+    viewManager.showView({view: Home});
+  });
+
+  ...
+}); </pre>
+
+                <p>With SPAMD configured let's look at one of the main concepts in SPAMD and single page applications, switching views.</p>
+
+                <h3 id="managing-views">Managing Views</h3>
+
+                <p>
+                    Managing Views forms the heart of SPAMD applications. SPAMD provides a simple mechanism to switch between views in a
+                    SPA. One of the core utilities is the #ViewManager.
+                    #ViewManager provides a method, #showView for replacing views.
+                </p>
+
+                <p>
+                    Views in SPAMD are AMD modules that contains regular JavaScript code. Views do not extend from any 
+                    SPAMD provided types. The only requirement is that a view must include an <a href="#page=api&id=onInit" class="link">#onInit</a> method. 
+                </p>
+                <p>
+                    When ViewManager#showView is called, #ViewManager will create the new View (or reuse an existing instance) and invoke
+                    #onInit on that view. The #onInit method allows the view to initialize itself. During onInit the View could make Ajax
+                    calls to fetch data and render it's HTML template.
+                </p>
+
+                <h3 id="basic-view-example">Basic View example</h3>
+                <p>
+                    An example AMD module for a SPAMD view:
+                </p>
+                <pre class="prettyprint linenums">
+define(function(require) {
+    
+    function PersonView () {
+        
+        // Note: onInit accepts a container and viewOptions object
+        this.onInit(container, viewOptions) {
+        }
+
+        // The optional onDestroy accepts a viewOptions object
+        this.onDestroy(viewOptions) {
+        }
+    }
+    return PersonView;
+});</pre>
+
+                <h3 id="ViewManager-life-cycle">The View life cycle</h3>
+                <p>SPAMD provides a well defined <em>life cycle</em> for views, through the #ViewManager.
+                </p>
+                <p>The <em>life cycle</em> consists of an <em>initialization</em> phase and an optional <em>destroy</em> phase. These phases
+                    are implemented by the view through two methods namely, <a href="#page=api&id=onInit" class="link"><em>onInit</em></a> (shown above) and
+                    <a href="#page=api&id=onDestroy" class="link"><em>onDestroy</em></a>.
+                </p>
+
+                <p>The onInit method is invoked by ViewManager on the <em>new</em> view to inform it that there was a #showView request.
+                    The view gets a chance to initialize itself during the <em>onInit</em> phase. During <em>onInit</em>, the view will
+                    typically make Ajax requests to fetch it's data, render it's associated template and attach the template to the DOM.
+                </p>
+
+                <p>The onDestroy method is invoked by ViewManager on the <em>current</em> view shown to notify it that it is about to be
+                    removed from the DOM. Depending on application needs, during the <em>onDestroy</em> phase the view can perform 
+                    cleanup tasks such as storing the current view data so that it does not have to fetch it later when the view is
+                    shown again. Or in the case of splitting a large form over multiple views, one can use the onDestroy phase to store
+                    the current view's data until the whole form is completed before posting all the views data to the server.
+                </p>
+
+                <p>Note: when the application loads the first time there is no current view to invoke onDestroy on.
+                </p>
+
+                <p>The destroy phase is optional, views do not have to implement the <em>onDestroy</em> method if they don't care about
+                    this phase.
+                </p>
+
+                <h3 id="initialize-view-template">Initialize ViewManager</h3>
+
+                <p>
+                    Before using ViewManager, it must be initialized through it's <a href="#page=api&id=viewManager_init" class="link">init</a> method. For example:
+                </p>
+
+                <code>setup.js</code>
+                <pre class="prettyprint linenums">
+define(function(require) {
+
+    var viewManager = require("spamd/view/view-manager");
+    var Home = require("./views/home/Home");
+
+    var options = {
+        // set a default view to load for the url '/'
+        defaultView : Home,
+    };
+    // Initialize viewManager
+    viewManager.init(options);
+
+    // now we can invoke viewManage.showView
+});</pre>
+                <p>ViewManager supports many other options to tweak it's behavior such as <em>routing</em>, <em>custom view animation</em>,
+                    <em>default DOM target</em> etc. Click <a href='#page=api&id=viewManager_init' class="link">here</a> for the full list of options.
+                </p>
+
+                <h3 id="view-manager-showView">ViewManager showView</h3>
+                <p><a href='#page=api&id=viewManager_showView' class="link">showView</a> replaces the current view with the specified view.
+                    It also returns a list of <a href='#page=docs&id=viewManager_showView_promises' class='self'>promises</a> 
+                    for callers to be notified of certain events.
+                </p>
+                
+                <p>showView accepts an <a href="#page=api&id=viewManager_showView" class="link">options</a> argument through which you can
+                    pass the <em>view</em> to render as well as <em>arguments</em> and <em>url parameter</em>. For a full description of the
+                    options see the <a href="#page=api&id=viewManager_showView" class="link">options API</a>.
+                </p>
+
+                Below we outline the sequence flow for showView:
+                <ol>
+                    <li>
+                        the view argument is resolved to it's view type. You can read <a href="todo">here</a> how SPAMD resolves views.
+                    </li>
+                    <li>
+                        a new view instance is created by invoking <code>new view()</code>.
+                    </li>
+                    <li>
+                        browser history is updated with the new view's route or path.
+                    </li>
+                    <li>
+                        invoke <em>onInit</em> on the new view. passing a <em>container</em> that the view should call when ready to
+                        display it's HTML.
+                    </li>
+                    <li>
+                        The view can now make server requests to load it's data, and render it's associated template. When the view is ready
+                        it calls the container's <a href='#id=viewMmanager_container_attach' class='self'>container.attach</a> method, 
+                        passing it's rendered template.
+                    </li>
+
+                    <li>
+                        If present, the current view's <em>onDestroy</em> method is invoked. ViewManager updates it's reference of the
+                        current view to the new view and the previous view is discarded.
+                    </li>
+                    <li>Next the DOM is updated by removing the old view's HTML and inserting the new view's HTML.
+                    </li>
+                    <li>
+                        Any <em>actions</em> specified in the HTML template is <em>binded</em> to it's associated view through a call to
+                        <a href='#page=api&id=templateEngine_bind' class='link'>TemplateEngine.bind</a>.
+                    </li>
+                </ol>
+
+                <code>Basic example:</code>
+
+                <pre class="prettyprint linenums">
+// include personView
+var personView = require("app/views/personView");
+
+// include ViewManager  
+var viewManager = require("spamd/view/view-manager");
+
+// Show the view
+viewManager.showView( {view: personView} );
+                </pre>
+
+                <code>app/views/personView.js:</code>
+                <pre class="prettyprint linenums">
+define(function(require) {
+
+var $ = require("jquery");
+var template = require("hb!./personView.htm");
+var te = require("spamd/template/template-engine");
+var viewManager = require("spamd/view/view-manager");
+
+    function personView() {
+
+        var that = {};
+
+        that.onInit = function(container, options) {
+            var html = te.render(template);
+            container.attach(html);
+        }
+
+        return that;
+    }
+    return personView;
+});
+
+                </pre>
+                
+                <code>Passing common options to the view:</code>
+
+                <pre class="prettyprint linenums">
+// include personView
+var personView = require("app/views/personView");
+
+// include ViewManager  
+var viewManager = require("spamd/view/view-manager");
+
+// Create an options object with 'args' and 'params'. The params will
+// automatically be added to the URL hash by SPAMD, for history purposes
+var options = {
+    view: personView,
+    args: {callback: function(view) {
+        // This callback is invoked by the personView, and pass
+        // back an instance of itself
+    }},
+    params: {id: 1}
+}
+
+// Show the view
+viewManager.showView( options );
+                </pre>
+
+                <code>app/views/personView.js:</code>
+                <pre class="prettyprint linenums">
+define(function(require) {
+
+var $ = require("jquery");
+var template = require("hb!./personView.htm");
+var te = require("spamd/template/template-engine");
+var viewManager = require("spamd/view/view-manager");
+
+    function personView() {
+
+        var that = {};
+
+        that.onInit = function(container, options) {
+
+            // retrieve the callback from the options
+            callback = options.args.callback;
+
+            // retrieve the id parameter from the options.
+            // The id parameter will also be added to the URL hash
+            // by SPAMD, thus history will be working automatically
+            var id = options.params.id;
+
+            // Retrieve the person with the given id
+            $.get( "/person", { id: id } ).done(function( data ) {
+                var html = te.render(template, {person: data} );
+                container.attach(html);
+
+                // Invoke the callback passing in an instance
+                // of the personView back
+                callback(this);
+            });
+        }
+
+        return that;
+    }
+    return personView;
+});
+
+                </pre>
+
+                <h3 id="viewManager_showView_resolve">Resolving views</h3>
+                ViewManager.showView is invoked by passing in <em>options.view</em>. The view argument can be a:
+                <ul>
+                    <li><em>Function (or Constructor Function)</em></li>
+                    <li><em>Object</em> (object must be an instance of an existing View)</li>
+                    <li><em>string</em> (must either refer to the View path or the View route)</li>
+                </ul>
+
+                Let's walk through each of these options.
+                <p>
+                    If a <code>Function or Constructor Function</code> is passed in, SPAMD will invoke the function with
+                    <em>new</em>, as in <em>new View()</em>.
+                </p>
+
+                <code>Function</code> and <code>Constructor</code> examples:
+                <pre class="prettyprint linenums">
+// include personView view, a function
+var personView = require("app/views/personView");
+
+// include ProductView view, a constructor function
+var ProductView = require("app/views/ProductView");
+
+// include ViewManager
+var viewManager = require("spamd/view/view-manager");
+                    
+// personView is a normal JavaScript Function so SPAMD will create an instance
+//  by invoking: var view = new personView();
+viewManager.showView( {view: personView} );
+
+// ProductView is a Constructor Function so SPAMD will create an instance
+//  by invoking: var view = new ProductView();
+viewManager.showView( {view: ProductView} );
+                </pre>
+                <p>
+                </p>
+                <p>If an <em>Object</em> is passed as the view argument, SPAMD will assume the object is an existing view, and won't
+                    create a new instance. This is useful if you want to manage view instances yourself.
+                </p>
+
+                <code>Object</code> Example:
+                <pre class="prettyprint linenums">
+// include personView view, a function
+var personView = require("app/views/personView");
+
+// include ViewManager  
+var viewManager = require("spamd/view/view-manager");
+                    
+// Here we create and store a view instance and pass that to showView
+var viewObject = personView();
+viewManager.showView( {view: viewObject} );
+                </pre>
+                <p>
+                </p>
+
+                <p>If a <em>string</em> is passed as the view argument, SPAMD will assume this is the <em>route</em> to the view and
+                    will try and lookup the path for the given route. If a route cannot be found, SPAMD will assume the string is the
+                    <em>path</em> to the view.
+                    Next SPAMD will make a <em>require()</em> call passing in the view path in order to load the view. Once the view is
+                    loaded, SPAMD will follow the rules above on <em>Function</em> resolution.
+                </p>
+
+                <code>string</code> examples:
+                <pre class="prettyprint linenums">
+var viewManager = require("spamd/view/view-manager");
+var personView = require("app/views/personView");
+
+// Setup a route for the personView:
+// "person" -> "app/views/personView"
+var options = {};
+options.routes = {
+    "person": personView.id
+};
+viewManager.init(options);
+
+
+// We show the view by using the path to the view
+viewManager.showView({view: "app/views/personView"});
+
+// Here we show view by using the route of the view 
+viewManager.showView( {view: "person"} );
+                </pre>
+
+                <h3 id="viewManager_showView_promises">ViewManager.showView promises</h3>
+                <p>
+                    <em>ViewManager.showView</em>  returns a <a href="TODO" target="_blank">promise</a> that is resolved when the view has been
+                    shown. This promise provides the caller a callback to perform operations when the new view is rendered.
+                </p>
+                <p>The promise also contains a further list of <a href="TODO" target="_blank">promises</a> for callers to be notified
+                    of events while the new view is rendered.
+                <p>The following promises are returned by calling <em>showView</em>:</p>
+                <ul>
+                    <li><em><b>default:</b></em> the default promise which is returned by the call to <code>viewManager.showView</code>
+                        and occurs after the view has been attached to the DOM and made visible.
+                        <p/>
+                        Sequentially this is the last promise that will occur during the showView call.
+                        <p/>
+                        This is useful when you want to perform an operation or DOM manipulation on the new view<em>after</em> the new view
+                        has been rendered and all other promises resolved.
+                        <p/>
+                    </li>
+                    <li><em><b>attached:</b></em> this promise occurs when the view is attached to the DOM, but before the view is shown (becomes visible).
+                        This is useful when you want to perform an operation or DOM manipulation on the new view<em>before</em> the view is
+                        shown (becomes visible).
+                        <br/>
+                        <b>Note:</b> differentiating between the <em>attached</em> and <em>visible</em> event is only possible 
+                            when <em>animation</em> is enabled. If animation is disabled, the <em>attached</em> and <em>visible</em> events
+                            will occur simultaneously when the view HTML is added to the DOM.
+                        <p/>
+                    </li>
+                    <li><em><b>visible:</b></em> this promise occurs when the view is shown. This is useful when you want to perform an
+                        operation or DOM manipulation on the new view<em>after</em> the view is shown (becomes visible).
+                        <br/>
+                        <b>Note:</b> differentiating between the <em>attached</em> and <em>visible</em> event is only possible 
+                        when <em>animation</em> is enabled. If animation is disabled, the <em>attached</em> and <em>visible</em> events
+                        will occur simultaneously when the view HTML is added to the DOM.
+                        <p/>
+                    </li>
+                    <li><em><b>cancel:</b></em> this promise occurs when the view is cancelled for some reason. Cancelling a view generally
+                        happens when an error occurs while requesting data from the server. The view would invoke <em>cancel</em> on the
+                        <em>container</em> (instead of <em>attach</em>) which in turn resolves the <em>cancel</em> promise. If you are
+                        interested in knowing if a view is cancelled you can use this promise.
+                        <p/>
+                    </li>
+                    <li><em><b>overwrite:</b></em> this promise occurs when a view is <em>overwritten</em> by another showView call.
+                        For example if a <code>viewTemplate.showView</code> call is made and before the view could finish rendering another
+                        call to <code>viewTemplate.showView</code> is made, the first view is <em>overwritten</em> by the second <em>showView</em>
+                        call, and will not be rendered any further. Any animation that was done when the view was overwritten is also
+                        stopped. If you are interested in knowing when a view is overwritten you can use this promise.
+                        <p/>
+                    </li>
+                </ul>
+
+                <p>Let's look at some examples of using these promises:</p>
+
+                <code>JavaScript showing the promises for showView</code>
+                <pre class="prettyprint linenums">
+var viewManager = require("spamd/view/view-manager");
+var personView = require("app/views/personView");
+
+var promise = viewManager.showView({view: personView});
+
+// Default promise shown below will be resolved after the personView
+// is shown
+promise.then(function(view) {
+    // the view argument is a reference to the personView
+    console.log("default promise resolved for ", view);
+});
+
+// The attached promise is resolved when the personView HTML is
+// attached to the DOM
+promise.attached.then(function(view) {
+    // the view argument is a reference to the personView
+    console.log("attached promise resolved for ", view);
+});
+
+// The visible promise is resolved when the personView HTML is
+// made visible
+promise.visible.then(function(view) {
+    // the view argument is a reference to the personView
+    console.log("visible promise resolved for ", view);
+});
+
+// The cancel promise is resolved when the personView is
+// cancelled
+promise.cancel.then(function(view) {
+    // the view argument is a reference to the personView
+    console.log("cancel promise resolved for ", view);
+});
+
+// The overwrite promise is resolved when the personView is
+// overwritten by another showView call
+promise.overwrite.then(function(view) {
+    // the view argument is a reference to the personView
+    console.log("overwrite promise resolved for ", view);
+});
+</pre>
+
+<p></p>
+
+<code>personView.js</code>
+<pre class="prettyprint linenums">
+define(function(require) {
+
+    var template = require("hb!./person-view.htm");
+    var te = require("spamd/template/template-engine");
+
+    function personView() {
+
+        // We provide an onInit method
+        this.onInit(container, viewOptions) {
+            $.ajax({
+                url: '/person',
+                data: 'id=1'
+            }).then(function(data) {
+                var html = te.render(template, {person: data} );
+
+                // container.attach will attach the view template to the
+                // DOM. attach() resolves the attached, visible and
+                // default promises, in that order
+                container.attach(html);
+
+            }, function(error) {
+                // container.cancel() will cancel rendering the new view.
+                // cancel() resolves the cancel promise
+                container.cancel();
+            });
+        }
+
+        // We return the View
+        return personView;
+});</pre>
+
+<p/>
+We add a listener for every promise that <em>showView()</em> returns. In <code>personView.js</code>, line 9, we fetch the person from the
+server. If the Ajax call is successful, the then handler on line 13 will be invoked.
+<p/>
+On line 14 the template is rendered as HTML which is then passed to the <em>attach</em> method of the container, online 19.
+<p/>
+In the <em>attach</em> method, assuming default animation behavior,
+SPAMD will fade out (make invisible) the current view before removing it. The new view's HTML will be attach to the DOM all while the view
+is still invisible. Once the new view is <em>atached</em> to the DOM, SPAMD resolves the <em>attached</em> promise.
+<p/>
+Next SPAMD fades in the newly attached view, and once complete, resolves the <em>visible</em> promise.
+<p/>
+Lastly SPAMD will resolve the <em>default</em> promise and the <em>showView</em> call is complete.
+<p/>
+If the ajax call resulted in an error, the error handler on line 21 will be invoked.
+<p/>
+The error handler will instruct SPAMD to <em>cancel</em> the showView call by invoking <em>container.cancel()</em> on line 24.
+
+                <h3 id="view-manager-container">ViewManager.Container</h3>
+                Users <em>must</em> always call either Container.attach or Container.cancel, in order for the ViewManager to resolve any
+                promises made by callers of ViewManager#showView.
+
+                <h3 id="viewMmanager_container_attach">ViewManager.Container attach</h3>
+
+                <h3 id="viewManager_container_attach_promises">ViewManager.Container attach promises</h3>
+
+                <h3 id="viewManager_container_cancel">ViewManager.Container cancel</h3>
+
+                <h3 id="viewManager_container_custom_animation">ViewManager.Container custom animation</h3>
+                
+                <h3 id="view-manager-showHTML">ViewManager showHTML</h3>
+
+                <h3 id="viewManager_double_click_problem">ViewManager double click problem</h3>
+
+                <h3 id="viewManager_history">ViewManager history</h3>
+
+                <h3 id="viewManager_routes">ViewManager routes</h3>
+
+                <h3 id="urlUtility">URL utility</h3>
+
+                <h3 id="templateEngine">Template Engine</h3>
+
+                <h3 id="template-engine-helpers">Template Engine Helpers</h3>
+
+                <h3 id="action-helper">action Helper</h3>
+
+                <h3 id="template-engine-bind">Template Engine Bind</h3>
+
+                <h3 id="formatDate-helper">formatDate helper</h3>
+
+                <h3 id="formatNumber-helper">formatNumber helper</h3>
+
+
+                <h3 id="validation">Validation</h3>
+
+                <h3 id="build">Build</h3>
+
+                <h3 id="view-template">View Template</h3>
+
+                <p>
+                    In this example we show how to <em>include</em> the view's external HTML <em>template</em> file, called
+                    <em>person-view.htm</em>.
+                    We will discuss the example in detail below.
+                </p>
+
+                <pre class="prettyprint linenums">
+define(function(require) {
+
+    // include the PersonView Handblebars template
+    var template = require("hb!./person-view.htm");
+    
+    function PersonView () {
+    ...
+                </pre>
+                <p>In line <em>4</em> we use RequireJS to include the view template, <em>person-view.htm</em>. 
+                </p>
+                <p>This is a Handlebars template so we use a special AMD Handlebars plugin called <em>hb</em>, to load the template. Note the
+                    <em>hb!</em> syntax in the <em>require</em> argument on line 4.
+                </p>
+                <p>The <em>hb</em> plugin will load the person-view template and then compile the template using the Handlebars compiler.
+                        The result of the compilation step is a <em>function</em> which can be executed by the Handlebars runtime. In other
+                    words on line <em>4</em> above, the variable <em>template</em> will be assigned a Handlebars compiled template
+                    <em>function</em>. The <em>template</em> variable is not assigned a string.
+                </p>
+
+                <p>
+
+                    <strong>container</strong> (documented <a href="#page=docs&id=viewManager_container" class="self">here</a>)
+
+                </p>
+
+                <p>
+                    Note the view does not attach it's HTML template to the DOM,
+                    instead it delegates this task back to the #ViewManager through the <em>container</em> that is passed in to the #onInit
+                    method.
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+    <div id='global' >
+        <a href='' {{action click=@clk1}}>click</a>
+    </div>
+    <div id='inner' style='margin-bottom: 200px'>
+        <a href='' {{action click=@clk2}}>click2</a>
+    </div>

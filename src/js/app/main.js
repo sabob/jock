@@ -22,6 +22,7 @@ define(function(require) {
      });*/
 
     $("#menu-home").click(function(e) {
+        console.log("HOME");
         e.preventDefault();
         viewManager.showView({view: Home});
         //var link = e.target;

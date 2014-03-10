@@ -10,11 +10,11 @@ define(function(require) {
     function Home() {
 
         // private variables
-        var that = this;
+        var that = {};
 
         // priviledged methods
 
-        this.onInit = function(container, args) {
+        that.onInit = function(container, args) {
             var jqXhr = $.ajax("/data/person.json");
 
             container.overwrite.then(function(view) {
@@ -22,12 +22,12 @@ define(function(require) {
                 console.error("Cancelled", view);
                 jqXhr.abort();
             });
-          
+
             var loginAware = function(promise) {
                 var dfd = $.Deferred();
                 promise.then(function(data) {
                     if (typeof data === 'string' && data.indexOf("<" === 0)) {
-                        $.post("/login", { user: "test", password: "test" } ).then(function(data) {
+                        $.post("/login", {user: "test", password: "test"}).then(function(data) {
                             //console.log("LOGIN DONE", data);
                             dfd.resolve(arguments);
                         });
@@ -40,7 +40,7 @@ define(function(require) {
                 });
                 return dfd.promise();
             };
-            
+
             var promise = loginAware(jqXhr);
 
             promise.then(function(data) {
@@ -79,12 +79,8 @@ define(function(require) {
             });
         };
 
-        this.onDestroy = function(viewOptions) {
+        that.onDestroy = function(viewOptions) {
             //console.error("Home onDestroy args.length", arguments.length);
-        };
-
-        this.getTemplate = function() {
-            return template;
         };
 
         // private methods
@@ -92,6 +88,7 @@ define(function(require) {
             //testContains();
             //testClosest();
         }
+        return that;
     }
     return Home;
 

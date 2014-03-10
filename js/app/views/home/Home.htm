@@ -9,22 +9,34 @@
         <a href="#" id="intro" class="button"><span>Intro</span></a>
     </section>
     -->
+    <div id="parent">
+        Parent
+        <div id="child">
+            child
+            <div id="subchild">
+            subchild
+        </div>
+        </div>
+    </div>
+    <div id="sibling">
+            sibling
+        </div>
     <ul id="features">
         <li>
             <div>
-                <h4>Features</h4>
+                <h4>Features</h4> 
                 <ul class="feature-list">
                     <li>
                         <span class="icon icon-ok-sign"></span>
-                        Exceptional performance
+                        Support Dom manipulation
                     </li>
                     <li>
                         <span class="icon icon-ok-sign"></span>
-                        URL auto-mapping
+                        Includes best-of-breed MVC components
                     </li>
                     <li>
                         <span class="icon icon-ok-sign"></span>
-                        Supports transparent file uploads
+                        Modular through AMD
                     </li>
                 </ul>
                 <a href="#">link</a>
@@ -118,4 +130,10 @@ package com.mycorp.service;
 http://localhost/MyService/MyMethod
     </pre>
 
+    <div id='global' >
+        <a href='' {{action click=@clk1}}>click</a>
+    </div>
+    <div id='inner' style='margin-bottom: 200px'>
+        <a href='' {{action click=@clk2}}>click2</a>
+    </div>
 </div>

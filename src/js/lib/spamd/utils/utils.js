@@ -1,6 +1,5 @@
 define(function(require) {
     var $ = require("jquery");
-    var string = require("./string");
     require("domReady!");
 
     function Utils() {
@@ -20,6 +19,7 @@ define(function(require) {
         };
 
         this.toObject = function(jqueryOrSelector, options) {
+            options = options || {};
 
             var $form = jqueryOrSelector;
             var disabled;
@@ -54,6 +54,7 @@ define(function(require) {
         };
 
         this.fromObject = function(jqueryOrSelector, obj, options) {
+            options = options || {};
             var $form = jqueryOrSelector;
             var disabled;
 
@@ -95,11 +96,6 @@ define(function(require) {
             }
 
             return 0 === $.trim(str).length;
-        };
-
-        this.isInvokeFunctionWithNew = function(fn) {
-            var functionName = this.getFunctionName(fn);
-            return string.isCapitalized(functionName);
         };
 
         this.getFunctionName = function(view) {
@@ -147,7 +143,7 @@ define(function(require) {
         console.warn("There is already a jQuery plugin called 'toJson'. SPAMD won't override this plugin, instead use $.spamd.toJson");
 
     } else {
-        $.fn.toJson = function(jqueryOrSelector, options) {
+        $.fn.toJson = function(options) {
             return utils.toJson(this, options);
         };
     }

@@ -9,11 +9,9 @@ define(function(require) {
     require("domReady!");
     function API() {
 
-        var that = this;
-        this.getTemplate = function() {
-            return template;
-        };
-        this.onInit = function(container, options) {
+        var that = {};
+
+        that.onInit = function(container, options) {
             console.log("API path", options.view.path);
 
             var animValue = !options.hashChange;
@@ -22,7 +20,7 @@ define(function(require) {
                 containerOptions.animate = animValue;
             };
 
-            container.attach(this.getTemplate(), containerOptions);
+            container.attach(template, containerOptions);
             container.attached.then(onAttached);
             container.visible.then(onVisible);
 
@@ -76,9 +74,10 @@ define(function(require) {
            //$('#f').followTo(250);
         };
         
-        this.onDestroy = function(viewOptions) {
+        that.onDestroy = function(viewOptions) {
             console.log("API onDestroy args.length", arguments.length);
         };
+        return that;
     }
     return API;
 });
