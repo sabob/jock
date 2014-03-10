@@ -321,30 +321,16 @@ define(function(require) {
                 return this.overwrite(view, deferredHolder, viewSettings);
             }
 
-            // Check if invokeWithNew has been set yet
-            if (typeof view.invokeWithNew === "undefined") {
-
-                var invokewithNew = utils.isInvokeFunctionWithNew(view);
-                view.invokeWithNew = invokewithNew;
-            }
-
             if (view instanceof Function) {
-                // View must be instantiated
-                if (view.invokeWithNew) {
-                    // Function name starts with uppercase so invoke with "new"
-                    viewSettings.view = new view();
-
-                } else {
-                    // Function name is lowercase so invoke without "new"
-                    viewSettings.view = view();
-                }
+                // Instantiate new view
+                viewSettings.view = new view();
 
                 if (viewSettings.view.id == null) {
                     viewSettings.view.id = view.id;
                 }
 
             } else {
-                // View already instantiated
+                // View is not a Function, so assume it is an object and thus already instantiated
                 viewSettings.view = view;
             }
             //viewSettings.view._created = true;

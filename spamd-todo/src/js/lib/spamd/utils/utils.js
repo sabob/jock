@@ -1,6 +1,5 @@
 define(function(require) {
     var $ = require("jquery");
-    var string = require("./string");
     require("domReady!");
 
     function Utils() {
@@ -97,11 +96,6 @@ define(function(require) {
             }
 
             return 0 === $.trim(str).length;
-        };
-
-        this.isInvokeFunctionWithNew = function(fn) {
-            var functionName = this.getFunctionName(fn);
-            return string.isCapitalized(functionName);
         };
 
         this.getFunctionName = function(view) {

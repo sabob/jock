@@ -1,0 +1,13 @@
+	<span id="todo-count"><strong>{{activeTodoCount}}</strong> {{activeTodoWord}} left</span>
+<ul id="filters">
+<li>
+<a {{#is filter 'all'}}class="selected"{{/is}} href="#page=todo&filter=all">All</a>
+</li>
+<li>
+<a {{#is filter 'active'}}class="selected"{{/is}}href="#page=todo&filter=active">Active</a>
+</li>
+<li>
+<a {{#is filter 'completed'}}class="selected"{{/is}}href="#page=todo&filter=completed">Completed</a>
+</li>
+</ul>
+{{#if completedTodos}}<button id="clear-completed" {{action click=@removeCompleted}}>Clear completed ({{completedTodos}})</button>{{/if}}
