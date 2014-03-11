@@ -660,12 +660,12 @@ var ProductView = require("app/views/ProductView");
 // include ViewManager
 var viewManager = require("spamd/view/view-manager");
                     
-// personView is a normal JavaScript Function so SPAMD will create an instance
-//  by invoking: var view = new personView();
+// personView is a normal JavaScript Function so SPAMD will create an
+// instance by invoking: var view = new personView();
 viewManager.showView( {view: personView} );
 
-// ProductView is a Constructor Function so SPAMD will create an instance
-//  by invoking: var view = new ProductView();
+// ProductView is a Constructor Function so SPAMD will create an
+// instance by invoking: var view = new ProductView();
 viewManager.showView( {view: ProductView} );
                 </pre>
                 <p>
