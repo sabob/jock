@@ -941,8 +941,113 @@ define(function(require) {
                 as register a <em>click</em> handler on the button with the id <em>"my-button"</em>. The click handler will invoke the
                 <em>performSearch</em> function to perform a search on the server based on the user search input.
                 
-                <h3 id="container_attach_promises">Container attach promises</h3>
-                TODO
+                <h3 id="container_attach_promises">Container.attach promises</h3>
+                <p>
+                    <em>Container.attach</em>  returns a <a href="TODO" target="_blank">promise</a> that is resolved when the view's HTML
+                    has been <em>attached</em> to the DOM.. This promise provides the caller a callback to perform operations when the new
+                    view is attached.
+                </p>
+                <p>The promise also contains a further list of <a href="TODO" target="_blank">promises</a> for callers to be notified
+                    of events while the new view is rendered.
+                <p>The following promises are returned by calling <em>attach</em>:</p>
+                <ul>
+                    <li><em><b>default:</b></em> the default promise which is returned by the call to <code>container.attach</code>
+                        and occurs <em>after</em> the view html has been attached to the DOM.
+                        <p/>
+                        This is useful when you want to add events or perform DOM manipulation on the new view<em>after</em> the new view's
+                        HTML has been added to the DOM.
+                        <p/>
+                        <b>Note:</b> if animation is enabled, this promise occurs <em>before</em> the view becomes visible (is shown).
+                        <p/>
+                    </li>
+                    <li><em><b>attached:</b></em> this promise is synonymous with the default promise above.
+                        <br/>
+                        <b>Note:</b> differentiating between the <em>attached</em> and <em>visible</em> event is only possible 
+                        when <em>animation</em> is enabled. If animation is disabled, the <em>attached</em> and <em>visible</em> events
+                        will occur simultaneously when the view HTML is added to the DOM.
+                        <p/>
+                    </li>
+                    <li><em><b>visible:</b></em> this promise occurs when the view is shown. This is useful when you want to perform an
+                        operation or DOM manipulation on the new view<em>after</em> the view is shown (becomes visible).
+                        <br/>
+                        <b>Note:</b> differentiating between the <em>attached</em> and <em>visible</em> event is only possible 
+                        when <em>animation</em> is enabled. If animation is disabled, the <em>attached</em> and <em>visible</em> events
+                        will occur simultaneously when the view HTML is added to the DOM.
+                        <p/>
+                    </li>
+                    <li><em><b>overwrite:</b></em> this promise occurs when a view is <em>overwritten</em> by another showView call.
+                        For example if a <code>viewTemplate.showView</code> call is made and before the view could finish rendering another
+                        call to <code>viewTemplate.showView</code> is made, the first view is <em>overwritten</em> by the second <em>showView</em>
+                        call, and will not be rendered any further. Any animation that was done when the view was overwritten is also
+                        stopped. If you are interested in knowing when a view is overwritten you can use this promise.
+                        <p/>
+                    </li>
+                </ul>
+
+                <p>Let's look at some examples of using these promises:</p>
+                
+                 <code>personView.js</code>
+                <pre class="prettyprint linenums">
+define(function(require) {
+
+    var template = require("hb!./person-view.htm");
+    var te = require("spamd/template/template-engine");
+
+    function personView() {
+
+        // We provide an onInit method
+        this.onInit(container, viewOptions) {
+            $.ajax({
+                url: '/person',
+                data: 'id=1'
+            }).then(function(data) {
+                var html = te.render(template, {person: data} );
+
+                // container.attach will attach the view template to the
+                // DOM and return promises to hook into the view life
+                // cycle.
+                var promises = container.attach(html);
+
+                // add default promise which is resolved when the view's
+                // HTML is attached to the DOM. The argument passed to
+                // the resolved promise is an instance of this view
+
+                promise.then(function(view) {
+                    // Here we can add event handlers and perform DOM
+                    // manipulation
+                    $("#my-button").on("click", function() {
+                        alert("my-button clicked");
+                    {);
+
+                    // Convert the my-table into a Datatable.
+                    $("#my-table").datatables();
+                };
+
+                promise.attached.then(function(view) {
+                    // This promise is the same as the default above
+                    // but might be considered semantically clearer.
+                });
+
+                promise.visible.then(function(view) {
+                    // This promise is resolved when the view
+                    // becomes visible
+                });
+
+                promise.overwrite.then(function(view) {
+                    // This promise is resolved when the view
+                    // is overwritten. This could be used
+                    // to perform cleanup if needed
+                });
+
+            }, function(error) {
+                // container.cancel() will cancel rendering the new view.
+                container.cancel();
+            });
+        }
+
+        // We return the View
+        return personView;
+});</pre>
 
                 <h3 id="viewManager_container_cancel">Cancel view</h3>
                 It is possible to cancel a view from displaying by invoking the <em>cancel</em> method on the <em>container</em> which is
