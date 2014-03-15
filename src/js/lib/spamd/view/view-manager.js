@@ -485,8 +485,6 @@ define(function(require) {
                             that.commonAttachView(html, viewSettings);
                         }
 
-                        //me.attached.visible = me.visible;
-                        //me.attached.attached = me.attached;
                     });
                     return me.attached;
                 };
@@ -791,14 +789,9 @@ define(function(require) {
                 $target.html(html);
                 viewAttached(viewSettings);
 
-                $target.fadeIn({queue: false, duration: 'fast', complete: function() {
+                $target.fadeIn({duration: 'fast', complete: function() {
                         viewVisible(viewSettings);
                     }});
-
-                //$target.animate({rotateY: "rotateY(10deg)"}, {queue: false, duration: 'fast', complete: function() {
-                //alert("o");
-                // }});
-
             });
         };
 

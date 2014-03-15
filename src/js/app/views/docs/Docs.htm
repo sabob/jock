@@ -61,7 +61,7 @@
                         <li><a href="id=view-manager_showHTML">showHTML</a></li>
                     </ul>
 
-                    <a href="id=view-manager_container" class="title">ViewManager.Container</a>
+                    <a href="id=viewManager_container" class="title">ViewManager.Container</a>
                     <ul class="section">
                         <li><a href="id=view-manager_container_showView">attach</a></li>
                         <li><a href="id=view-manager_container_showHTML">cancel</a></li>
@@ -493,7 +493,7 @@ define(function(require) {
                     It also returns a list of <a href='#page=docs&id=viewManager_showView_promises' class='self'>promises</a> 
                     for callers to be notified of certain events.
                 </p>
-                
+
                 <p>showView accepts an <a href="#page=api&id=viewManager_showView" class="link">options</a> argument through which you can
                     pass the <em>view</em> to render as well as <em>arguments</em> and <em>url parameter</em>. For a full description of the
                     options see the <a href="#page=api&id=viewManager_showView" class="link">options API</a>.
@@ -569,7 +569,7 @@ var viewManager = require("spamd/view/view-manager");
 });
 
                 </pre>
-                
+
                 <code>Passing common options to the view:</code>
 
                 <pre class="prettyprint linenums">
@@ -740,8 +740,8 @@ viewManager.showView( {view: "person"} );
                         shown (becomes visible).
                         <br/>
                         <b>Note:</b> differentiating between the <em>attached</em> and <em>visible</em> event is only possible 
-                            when <em>animation</em> is enabled. If animation is disabled, the <em>attached</em> and <em>visible</em> events
-                            will occur simultaneously when the view HTML is added to the DOM.
+                        when <em>animation</em> is enabled. If animation is disabled, the <em>attached</em> and <em>visible</em> events
+                        will occur simultaneously when the view HTML is added to the DOM.
                         <p/>
                     </li>
                     <li><em><b>visible:</b></em> this promise occurs when the view is shown. This is useful when you want to perform an
@@ -810,12 +810,12 @@ promise.overwrite.then(function(view) {
     // the view argument is a reference to the personView
     console.log("overwrite promise resolved for ", view);
 });
-</pre>
+                </pre>
 
-<p></p>
+                <p></p>
 
-<code>personView.js</code>
-<pre class="prettyprint linenums">
+                <code>personView.js</code>
+                <pre class="prettyprint linenums">
 define(function(require) {
 
     var template = require("hb!./person-view.htm");
@@ -847,39 +847,302 @@ define(function(require) {
         return personView;
 });</pre>
 
-<p/>
-We add a listener for every promise that <em>showView()</em> returns. In <code>personView.js</code>, line 9, we fetch the person from the
-server. If the Ajax call is successful, the then handler on line 13 will be invoked.
-<p/>
-On line 14 the template is rendered as HTML which is then passed to the <em>attach</em> method of the container, online 19.
-<p/>
-In the <em>attach</em> method, assuming default animation behavior,
-SPAMD will fade out (make invisible) the current view before removing it. The new view's HTML will be attach to the DOM all while the view
-is still invisible. Once the new view is <em>atached</em> to the DOM, SPAMD resolves the <em>attached</em> promise.
-<p/>
-Next SPAMD fades in the newly attached view, and once complete, resolves the <em>visible</em> promise.
-<p/>
-Lastly SPAMD will resolve the <em>default</em> promise and the <em>showView</em> call is complete.
-<p/>
-If the ajax call resulted in an error, the error handler on line 21 will be invoked.
-<p/>
-The error handler will instruct SPAMD to <em>cancel</em> the showView call by invoking <em>container.cancel()</em> on line 24.
+                <p/>
+                We add a listener for every promise that <em>showView()</em> returns. In <code>personView.js</code>, line 9, we fetch the person from the
+                server. If the Ajax call is successful, the then handler on line 13 will be invoked.
+                <p/>
+                On line 14 the template is rendered as HTML which is then passed to the <em>attach</em> method of the container, online 19.
+                <p/>
+                In the <em>attach</em> method, assuming default animation behavior,
+                SPAMD will fade out (make invisible) the current view before removing it. The new view's HTML will be attach to the DOM all while the view
+                is still invisible. Once the new view is <em>atached</em> to the DOM, SPAMD resolves the <em>attached</em> promise.
+                <p/>
+                Next SPAMD fades in the newly attached view, and once complete, resolves the <em>visible</em> promise.
+                <p/>
+                Lastly SPAMD will resolve the <em>default</em> promise and the <em>showView</em> call is complete.
+                <p/>
+                If the ajax call resulted in an error, the error handler on line 21 will be invoked.
+                <p/>
+                The error handler will instruct SPAMD to <em>cancel</em> the showView call by invoking <em>container.cancel()</em> on line 24.
 
-                <h3 id="view-manager-container">ViewManager.Container</h3>
-                Users <em>must</em> always call either Container.attach or Container.cancel, in order for the ViewManager to resolve any
-                promises made by callers of ViewManager#showView.
+                <h3 id="viewManager_container">The ViewManager Container passed to onInit</h3>
+                The view's <em>onInit</em> method receives two arguments, a <em>container</em> and a viewOptions object. Here we will look
+                in detail at the <em>container</em>.
+                <p></p>
+                When implementing the view's onInit method, you <em>must</em> invoke either <code>container.attach</code> or
+                <code>container.cancel</code>, in order for the ViewManager to resolve any promises made by callers of ViewManager#showView.
+                <p></p>
+                Container.attach accepts two parameters, <em>html</em> and a <em>containerOptions</em>.
+                <p></p>
+                The <em>html</em> argument is the view's HTML string to add to the DOM.
+                <p></p>
+                The <a href="#page=api&id=viewManager_container" class="link">containerOptions</a> are instructions passed to the <em>attach</em> method, for
+                example you can pass <em>animate</em> options to enable or disable animation for the view.
+                <p></p>
+                Container.attach returns a list of <a href='#page=docs&id=container_attach_promises' class='self'>promises</a> 
+                    for callers to be notified of certain events. These promise allows one to add events handlers and manipulate the DOM
+                    of the new view.
+                <p/>
+                Let's look at an example view:
+                <p/>
+                <code>personSearchView.js</code>
+                <pre class="prettyprint linenums">
+// We define an AMD module
+define(function(require) {
 
-                <h3 id="viewMmanager_container_attach">ViewManager.Container attach</h3>
+    var template = require("hb!./person-search.htm");
 
-                <h3 id="viewManager_container_attach_promises">ViewManager.Container attach promises</h3>
+    function personSearchView () {
 
-                <h3 id="viewManager_container_cancel">ViewManager.Container cancel</h3>
-
-                <h3 id="viewManager_container_custom_animation">ViewManager.Container custom animation</h3>
+        // The onInit method
+        this.onInit(container, viewOptions) {
                 
+            // Render the view template
+            var html = te.render(template);
+
+            // Instruct the container to attach the rendered HTML to
+            // the DOM. The attach call returns a promise.
+            var attachPromise = container.attach(html)
+
+            // We add a handler to the attach promise so
+            // we can be notified when the view's HTML is added to
+            // the DOM.
+            attachPromise.then(function() {
+                    
+                // Inside the promise we can add event listeners and
+                // do further DOM manipulations
+                    
+                // Here we use the jQuery DataTable plugin to enhance
+                // our table
+                $("table").datatable();
+
+                // Here we add an event listener to the search button
+                $("my-button").on("click", performSearch);
+            });
+        }
+
+        function performSearch() {
+            var search = $("searchInput").val();
+            // Here we can do an ajax call to fetch the persons based
+            // on the 'search' input
+            ...
+        }
+
+        // We return the View
+        return personSearchView;
+});</pre>
+
+                In line 9 we define the <em>onInit</em> method passing in the container. We then render the template in line 12 and
+                <em>attach</em> the HTML to the container which returns a promise.
+                <p/>
+                On line 21 we attach a handler to the promise which informs us once the HTML has been attached to the DOM.
+                <p/>
+                Inside the promise handler we use the <a href="https://datatables.net/" target="_blank">DataTables</a> jQuery plugin to enhance our table as well
+                as register a <em>click</em> handler on the button with the id <em>"my-button"</em>. The click handler will invoke the
+                <em>performSearch</em> function to perform a search on the server based on the user search input.
+                
+                <h3 id="container_attach_promises">Container attach promises</h3>
+                TODO
+
+                <h3 id="viewManager_container_cancel">Cancel view</h3>
+                It is possible to cancel a view from displaying by invoking the <em>cancel</em> method on the <em>container</em> which is
+                passed to <em>onInit</em>.
+                <p/>
+                When <em>cancel</em> is called, <em>ViewManager</em> won't render the new view, and instead keep the currently displayed
+                view active.
+                <p/>
+                We will expand on our previous example below:
+                <p/>
+                <code>personSearchView.js</code>
+                <pre class="prettyprint linenums">
+// We define an AMD module
+define(function(require) {
+
+    var template = require("hb!./person-search.htm");
+
+    function personSearchView () {
+
+        // The onInit method
+        this.onInit(container, viewOptions) {
+
+            // Perform and Ajax request to fetch the persons
+            $.get("/persons").then(function(personsArray) {
+                // Render the view template passing in the persons
+                // received from the server
+                var html = te.render(template, {persons, personsArray});
+
+                // Instruct the container to attach the rendered HTML to
+                // the DOM. The attach call returns a promise.
+                var attachPromise = container.attach(html)
+
+                // We add a handler to the attach promise so
+                // we can be notified when the view's HTML is added to
+                // the DOM.
+                attachPromise.then(function() {
+                    
+                    // Inside the promise we can add event listeners and
+                    // do further DOM manipulations
+                    
+                    // Here we use the jQuery DataTable plugin to enhance
+                    // our table
+                    $("table").datatable();
+
+                    // Here we add an event listener to the search button
+                    $("my-button").on("click", performSearch);
+                });
+            },
+            function(error) {
+                // The ajax error handler cancels the new view
+                container.cancel();
+            });
+        }
+
+        function performSearch() {
+            var search = $("searchInput").val();
+            // Here we can do an ajax call to fetch the persons based
+            // on the 'search' input
+            ...
+        }
+
+        // We return the View
+        return personSearchView;
+});</pre>
+                In this example we added an ajax request to fetch all the persons from the server. If the request is successful, the function
+                on line 12 will execute with the returned persons as an array. The persons will be rendered by the view and attached to the
+                DOM on line 19.
+                <p/>
+                If the ajax request fails the error routine of the ajax request will be invoked which is the function on line 37. On line 39
+                the rendering of the new view is cancelled with the code <em>container.cancel()</em>.
+                
+                <h3 id="control_animation">Control animation</h3>
+                ViewManager has a default fade animation but can easily be switched off globally or per showView call.
+                <p/>
+                To switch off animation globally pass <code>{animate=false}</code> to
+                                <a href="#page=api&id=viewManager_init" class="link">ViewManage.init(options)</a>.
+                <p/>
+                You can also bypass animation for a specific showView call by passing <code>{animate=false}</code> to
+                                <a href="#page=api&id=viewManager_showView" class="link">ViewManage.showView(options)</a>.
+                <p/>
+                Another way to bypass animation per view is by passing <code>{animate=false}</code> to
+                                <a href="#page=api&id=viewManager_container_attach" class="link">container.attach(options)</a>. Calls
+                                to show this view won't be animated.
+                                <p/>
+                                SPAMD automatically switches off animation when users use the browser history to navigate between views.
+                                <p/>
+                                SPAMD also automatically switches off animation when users <a href='#page=docs&id=overwrite' class="self">overwrite</a>
+                                a view through multiple showView invocations while a showView is still busy processing. In such a case,
+                                animation is switched off to switch between views as quickly as possible. Animation is switched on again
+                                as soon as the showView completes.
+
+                <h3 id="custom_animation">Custom animation</h3>
+                By default SPAMD provides a <em>fade</em> animation when switching views. This animation will fade out the current view,
+                remove the current view's DOM, add the new view's DOM and fade in the new view.
+                <p/>
+                You can also provide your own animation implementation by passing in an <code>{animateHandler: function}</code> option to
+                <a href="#page=api&id=viewManager_init" class="link">ViewManage.init</a>.
+                <p/>
+                When implementing your own animation handler there are two important ViewManage methods that need to called during the animation.
+                <p/>
+                When the new view HTML is <em>attached</em> to the DOM, the ViewManager method <em>viewAttached</em> must be called to allow
+                the ViewManager to process this event and resolve the
+                <a class='self' href='#page=docs&id=viewManager_showView_promises'>attach promise</a>.
+                <p/>
+                When the new view HTML becomes <em>visible</em> to the DOM, the ViewManager method <em>viewVisible</em> must be called to allow
+                the ViewManager to process this event and resolve the
+                <a class='self' href='#page=docs&id=viewManager_showView_promises'>visible promise</a>.
+                <p/>
+                Let's look at the default animation handler of ViewManager in it's entirety below:
+                <p/>
+                
+                <pre class="prettyprint linenums">
+function attachViewWithAnim(html, viewSettings) {
+    var $target = $(viewSettings.target);
+    var viewAttached = viewSettings.viewAttached;
+    var viewVisible = viewSettings.viewVisible;
+    $target.fadeOut('fast', function() {
+
+        $target.empty();
+        $target.html(html);
+        viewAttached(viewSettings);
+
+        $target.fadeIn({duration: 'fast', complete: function() {
+            viewVisible(viewSettings);
+        }});
+    });
+};
+</pre>
+                The animation handler is passed a <em>viewSettings</em> object which contains the <em>target</em>, a CSS selector where the
+                new view should be added to. This is shown on line 2.
+                <p/>
+                On line 3 and 4 the <em>viewAttached</em> and <em>viewVisible</em> is retrieved from the <em>viewSettings</em>. These are
+                the two functions that the animation handler must invoke while animating the new view.
+                <p/>
+                On line 5 jQuery's <em>fadeOut</em> is used to fade out the current view. Line 7 and 8 jQuery's <em>empty</em> and <em>html</em>
+                methods are used to remove the current view and attach the new view's html.
+                <p/>
+                Line 9 is important. Here we invoke the <em>viewAttached</em> method to inform ViewManager that the new view has been attached.
+                <p/>
+                Line 11 we use jQuery's <em>fadeIn</em> to show the new view.
+                And importantly on line 12 we invoke the <em>viewVisible</em> method to inform ViewManager that the new view is visible.
+                <p/>
+                Next let's take a look at implementing a custom animation handler.
+                <p/>
+                We want the views to slide from left to right. Below we show the code.
+                
+                <code>Custom animation handler</code>
+                
+                <pre class="prettyprint linenums">
+function slideAnimator(html, viewSettings) {
+    var $target = $(viewSettings.target);
+    var viewAttached = viewSettings.viewAttached;
+    var viewVisible = viewSettings.viewVisible;
+
+    $target.fadeOut('fast', function() {
+
+        $target.empty();
+        $target.html(html);
+        viewAttached(viewSettings);
+
+        $target.fadeIn({duration: 'fast', complete: function() {
+            viewVisible(viewSettings);
+        }});
+    });
+};
+</pre>
+
+In the example above, we move the existing view's DOM onto a new container which is absolutely positioned above the current container.
+We then copy the new view's HTML in the current container's DOM and also position it absolutely, offscreen.
+<p/>
+<b>Note:</b> both views are present on the DOM at the same time. This can create issues where two views share duplicate IDs, as this is
+not allowed by HTML.
+<p/>
+The problem with using duplicate IDs is that CSS selector behavior won't be predictable. For example add an event to the button with ID
+<em>"my-button</em> might not add the event listener to the new view, but instead add it to the current view.
+<p/>
+Some options to deal with duplicate IDs are:
+<ul>
+    <li>ensure IDs are unique across the application. Easiest to do this is to prefix view IDs with a common ID.</li>
+    <li>do not invoke <em>viewAttached</em> and <em>viewVisible</em> until after the current view is removed from the DOM.</li>
+    <li>in your views, limit the jQuery selectors to the current view.
+        Here is a simple way of achieving this:
+                <pre class="prettyprint linenums">
+// We use a proxy to create a global context to limit searching to
+// the div with id '#myView'.
+var $v = $.proxy($.fn.find, $("div#myView"));
+var button = $v(".my-button");
+</pre>
+        
+    </li>
+</ul>
+<p/>
+We then use jQuery's slideTo method to slide the old container to the right off screen, and slide the new container to the right onscreen.
+<p/>
+Only then do we invoke the <em>viewAttached</em> and <em>viewVisible</em> methods.
+<p/>
+
                 <h3 id="view-manager-showHTML">ViewManager showHTML</h3>
 
-                <h3 id="viewManager_double_click_problem">ViewManager double click problem</h3>
+                <h3 id="viewManager_double_click_problem">ViewManager double click behavior</h3>
 
                 <h3 id="viewManager_history">ViewManager history</h3>
 
@@ -927,7 +1190,7 @@ define(function(require) {
                     <em>hb!</em> syntax in the <em>require</em> argument on line 4.
                 </p>
                 <p>The <em>hb</em> plugin will load the person-view template and then compile the template using the Handlebars compiler.
-                        The result of the compilation step is a <em>function</em> which can be executed by the Handlebars runtime. In other
+                    The result of the compilation step is a <em>function</em> which can be executed by the Handlebars runtime. In other
                     words on line <em>4</em> above, the variable <em>template</em> will be assigned a Handlebars compiled template
                     <em>function</em>. The <em>template</em> variable is not assigned a string.
                 </p>

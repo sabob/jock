@@ -30,33 +30,15 @@ define(function(require) {
         $('#nav-ind').stop(true, true);
     };
     options.defaultView = Home;
-    //options.animate= false;
-    //options.target = "#moo";
-
-    /*
-     options.animateHandler = function(html, options) {
-     var target = options.target;
-     var $target = $(target);
-     var viewAttached = options.viewAttached;
-     var viewVisible = options.viewVisible;
-     $target.fadeOut(1000, function() {
-     
-     $target.empty();
-     $target.html(html);
-     viewAttached(options);
-     $target.fadeIn('fast', function() {
-     viewVisible(options);
-     });
-     });
-     };*/
-    //options.params = {p1: ["val1", "val2"], p2: "pok"};
-    options.globalOnAttached = function(options) {
+   
+    $(viewManager).on("global.attached", function(e, options) {
         prettify.prettyPrint();
-    };
+    });
+
+    //TODO
+    //setupAnimation(options);
 
     console.log("calling viewManager.init");
-    // Move main code to here???
-    //options.bindTemplate = false;
     viewManager.init(options);
     console.log("viewManager.init called");
 
@@ -126,6 +108,69 @@ define(function(require) {
          slideToActive($(this));
          }
          });*/
+    }
+    
+    function setupAnimation(options) {
+        
+    var $c = $(".container");
+    var pos = $c.position();
+    var left = pos.left;
+    $(".gutter").append("<div class='left'></div>");
+    var $left = $(".left");
+    $left.css({width: left + "px"});
+    //$left.css({height: "100%"});
+    $left.css({bottom: "50px", top: "61px", "z-index": -1});
+    
+    $(".gutter").append("<div class='right'></div>");
+    var $right = $(".right");
+    $right.css({width: left + "px"});
+    $right.css({right: 0});
+    $right.css({bottom: "50px", top: "61px", "z-index": -1});
+
+    options.animateHandler = function(html, viewSettings) {
+          var target = viewSettings.target;
+            var $target = $(target);
+            var $viewContainer = $(".container", target);
+            var viewAttached = viewSettings.viewAttached;
+            var viewVisible = viewSettings.viewVisible;
+            var $holder = $("<div></div>");
+            $('body').append($holder);
+            //alert($target.html());
+            var targetPosition = $viewContainer.offset();
+            console.log("pos", targetPosition);
+            $holder.html($target.html());
+            $target.empty();
+            $holder.css({position: 'absolute'});
+            $holder.css(targetPosition);
+            //holder$.css({border: '1px solid red'});
+            $holder.css({'z-index': '-10'});
+            //alert("DONE");
+            //holder$.css({position: 'static'});
+            //return;
+            
+             $holder.animate({'left': '-' + $holder.width() + 'px'},'slow', function() {
+                var targetPosition = $holder.offset();
+                $holder.remove();
+                
+                $target.css({position: 'absolute'});
+                $target.css({'z-index': '-10'});
+                $target.html(html);
+                $target.css(targetPosition);
+                $target.css({left: "1200px"});
+                        viewAttached(viewSettings);
+                
+
+                $target.animate({'left': '350px'},'slow', function() {
+                        $target.css({position: 'static'});
+                        viewVisible(viewSettings);
+                        
+                    });
+             });
+            
+            //$holder.slideUp('slow', function() {
+            //});
+        
+    };
     }
 
     function setActiveMenu(view) {

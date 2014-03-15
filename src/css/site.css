@@ -537,3 +537,13 @@ pre.prettyprint {
     padding-top: 10px;
     padding-bottom: 10px;
 }
+.left, .right {
+    background-color: yellow;
+    position: absolute;
+}
+.right {
+    
+}
+body {
+     overflow-x: hidden;
+}
