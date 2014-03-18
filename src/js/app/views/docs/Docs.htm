@@ -1216,7 +1216,11 @@ function slideAnimator(html, viewSettings) {
 </pre>
 
 In the example above, we move the existing view's DOM onto a new container which is absolutely positioned above the current container.
-We then copy the new view's HTML in the current container's DOM and also position it absolutely, offscreen.
+We copy the new view's HTML in the current container's DOM and also position it absolutely, offscreen.
+<p/>
+Next the <em>viewAttached</em> and <em>viewVisible</em> methods are invoked which binds events and perform DOM manipulation.
+<p/>
+We use jQuery's slideTo method to slide the old container to the right off screen, and slide the new container to the right onscreen.
 <p/>
 <b>Note:</b> both views are present on the DOM at the same time. This can create issues where two views share duplicate IDs, as this is
 not allowed by HTML.
@@ -1239,11 +1243,6 @@ var button = $v(".my-button");
         
     </li>
 </ul>
-<p/>
-We then use jQuery's slideTo method to slide the old container to the right off screen, and slide the new container to the right onscreen.
-<p/>
-Only then do we invoke the <em>viewAttached</em> and <em>viewVisible</em> methods.
-<p/>
 
                 <h3 id="view-manager-showHTML">ViewManager showHTML</h3>
 
