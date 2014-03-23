@@ -15,7 +15,7 @@ define(function(require) {
         // priviledged methods
 
         that.onInit = function(container, args) {
-            var jqXhr = $.ajax("/data/person.json");
+            var jqXhr = $.ajax("data/person.json");
 
             container.overwrite.then(function(view) {
 
