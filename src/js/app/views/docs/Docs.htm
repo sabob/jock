@@ -1192,46 +1192,91 @@ function attachViewWithAnim(html, viewSettings) {
                 <p/>
                 Next let's take a look at implementing a custom animation handler.
                 <p/>
-                We want the views to slide from left to right. Below we show the code.
+                We want the current view to slide up, and then slide down the new view.
+                Below we show the code.
                 
                 <code>Custom animation handler</code>
                 
                 <pre class="prettyprint linenums">
-function slideAnimator(html, viewSettings) {
-    var $target = $(viewSettings.target);
-    var viewAttached = viewSettings.viewAttached;
-    var viewVisible = viewSettings.viewVisible;
+define(function(require) {
 
-    $target.fadeOut('fast', function() {
+    var viewManager = require("spamd/view/view-manager");
 
-        $target.empty();
-        $target.html(html);
-        viewAttached(viewSettings);
+    // ViewManager options
+    var options = {
+        animateHandler = slideAnimator
+    };
 
-        $target.fadeIn({duration: 'fast', complete: function() {
-            viewVisible(viewSettings);
-        }});
-    });
-};
+    // Initialize viewManager with new animateHandler
+    viewManager.init(options);
+
+    // custom animation function
+    function slideAnimator(html, viewSettings) {
+        var target = viewSettings.target;
+        var $target = $(target);
+        var viewAttached = viewSettings.viewAttached;
+        var viewVisible = viewSettings.viewVisible;
+
+        // Use jQuery's slideUp function to slide the current view out
+        $target.slideUp('normal', function() {
+            
+            // When complete, we clear the removed view
+            $target.empty();
+            
+            // Next we add the new view's HTML to the DOM
+            $target.html(html);
+            
+            // We fire the viewAttached callback
+            // to inform ViewManager that the view is now attached
+            viewAttached(viewSettings);
+
+            // Next we slide the new view down
+            $target.slideDown('normal', function() {
+
+                // Once complete we invoke the viewVisible callback
+                // to inform ViewManager that the view is now visible
+                viewVisible(viewSettings);
+            });
+        });
+    };
+});
+
+
 </pre>
 
-In the example above, we move the existing view's DOM onto a new container which is absolutely positioned above the current container.
-We copy the new view's HTML in the current container's DOM and also position it absolutely, offscreen.
+In the example above, we use jQuery's <em>slideUp</em> and <em>slideDown</em> functions to slide the current view up and offscreen.
+Upon completion the slideUp function invokes it's <em>complete</em> callback on line 21.
+
 <p/>
-Next the <em>viewAttached</em> and <em>viewVisible</em> methods are invoked which binds events and perform DOM manipulation.
+Line 24 removes the current view from the DOM and line 27 adds the new view's HTML to the DOM.
 <p/>
-We use jQuery's slideTo method to slide the old container to the right off screen, and slide the new container to the right onscreen.
+On line 31 <em>viewAttached</em> is invoked which informs ViewManager that the new view HTML is attached to the DOM.
+ViewManager can now resolve the <em>attached</em> promise which allows the new view to bind events and perform DOM manipulation.
 <p/>
-<b>Note:</b> both views are present on the DOM at the same time. This can create issues where two views share duplicate IDs, as this is
+Line 34 uses jQuery's <em>slideDown</em> method to slide the new view down, onscreen.
+<p/>
+Once complete the <em>viewVisible</em> method is invoked to inform ViewManager that the new view is now visible. ViewManager can now
+resolve the <em>visible</em> promise which allows the new view to perform further DOM manipulations on the visible view.
+<p/>
+<b>Warning:</b> depending on the type of animation you need you could end up with both views present on the DOM at the same time. For example
+if you want to slide in a new view while simultaneously sliding out the old view you might add both views to the DOM, next to each other
+and then slide both views to bring the new view onscreen.
+<p/>
+such a scenario can create issues where the two views have duplicate IDs for elements, as this is
 not allowed by HTML.
 <p/>
 The problem with using duplicate IDs is that CSS selector behavior won't be predictable. For example add an event to the button with ID
 <em>"my-button</em> might not add the event listener to the new view, but instead add it to the current view.
 <p/>
 Some options to deal with duplicate IDs are:
+<p/>
 <ul>
-    <li>ensure IDs are unique across the application. Easiest to do this is to prefix view IDs with a common ID.</li>
-    <li>do not invoke <em>viewAttached</em> and <em>viewVisible</em> until after the current view is removed from the DOM.</li>
+    <li>ensure IDs are unique across the application. Easiest to do this is to prefix view IDs with a common ID.
+    </li>
+    <li>do not invoke <em>viewAttached</em> and <em>viewVisible</em> until after the current view is removed from the DOM. One problem with
+        this approach is that the new view is already visible and users will notice DOM manipulations performed on the new view such as
+        tables or lists being enhanced and transformed.
+    </li>
     <li>in your views, limit the jQuery selectors to the current view.
         Here is a simple way of achieving this:
                 <pre class="prettyprint linenums">
@@ -1259,6 +1304,98 @@ var button = $v(".my-button");
                 <h3 id="template-engine-helpers">Template Engine Helpers</h3>
 
                 <h3 id="action-helper">action Helper</h3>
+                The <em>action</em> helper provides an easy way to bind event handlers to the template. Binding event handlers can also be
+                achieved through jQuery's <a href="https://api.jquery.com/on/" target="_blank">on</a> method.
+                <p/>
+                The advantage of using the <em>action</em> helper is it makes it easy to pass data instances being rendered to the event
+                handler. Using jQuery's event handling mechanism you would need some way to associate the DOM element with the data
+                instance, ie. using jQuery's <a href="https://api.jquery.com/jQuery.data/" target="_blank">data</a>. This will become
+                clearer in the examples below.
+                <p/>
+                The action helper syntax is as follows:
+                <p/>
+                <code>\{{action event = @eventHandler}}</code>
+                
+                For example, let's look at a Handlebars template rendering a table for a list of <em>person</em> instances:
+                <p/>
+                <code>person-view.htm</code>
+                <pre class="prettyprint linenums">
+&lt;table&gt;
+    &lt;tr&gt;
+        &lt;th&gt;Firstname&lt;/th&gt;
+        &lt;th&gt;Lastname&lt;/th&gt;
+        &lt;th&gt;Age&lt;/th&gt;
+        &lt;th&gt;Action&lt;/th&gt;
+    &lt;/tr&gt;
+\{{#each persons}}
+&lt;tr&gt;
+    &lt;td&gt;\{{firstname}}&lt;/td&gt;
+    &lt;td&gt;\{{lastname}}&lt;/td&gt;
+    &lt;td&gt;\{{age}}&lt;/td&gt;
+    &lt;td&gt;
+        &lt;a href='#' \{{action click=@edit}}&gt;Edit&lt;/a&gt; | 
+        &lt;a href='#' \{{action click=@remove}}&gt;Remove&lt;/a&gt;
+    &lt;/td&gt;
+&lt;/tr&gt;
+\{{/each}}
+&lt;/table&gt;
+});</pre>
+                Each row renders the person information, while the <em>action</em> column renders two links, for <em>editing</em> and <em>deleting</em>
+                person instances.
+                <p/>
+                The <em>edit</em> action is a click event which fires an event handler called <em>edit</em>. The <em>action</em> helper will
+                automatically pass the current context object (in this case the current person) to the event handler. There is no need to
+                store or lookup the person instance or the person ID etc.
+                
+                The <em>remove</em> action
+                is a click event which fires an event handler called <em>remove</em>. The <em>action</em> helper will
+                automatically pass the current context object (in this case the current person) to the event handler. There is no need to
+                store or lookup the person instance or the person ID etc.
+                <p/>
+                Next let's look at the template view where the event handlers are defined and passed to the template.
+                <p/>
+                <code>person-view.js</code>
+                <pre class="prettyprint linenums">
+define(function(require) {
+    var te = require("spamd/template/template-engine");
+    var template = require("hb!./person-view.htm");
+
+    function personView () {
+
+        var that ={};
+
+        that.onInit(container, viewOptions) {
+
+                // Define actions, one for edit and one for remove.
+                // edit action handler refers to  editPerson function
+                // remove action handler refers to deletePerson function
+            var actions = {
+                edit: editPerson
+                remove: deletePerson
+            }
+
+            // Render the person-view template
+            var html = te.render(template, {persons: persons}, actions);
+           container.attach(template);
+        }
+
+        // Person edit handler. Note that the person instance to edit
+        // is automatically passed to this function from the template
+        // through the action handler
+        function editPerson(person) {
+        }
+        
+        // Person delete handler. Note that the person instance to delete
+        // is automatically passed to this function from the template
+        // through the action handler
+        function deletePerson(person) {
+        }
+
+        return that;
+    }
+
+    return personView;
+});</pre>                
 
                 <h3 id="template-engine-bind">Template Engine Bind</h3>
 

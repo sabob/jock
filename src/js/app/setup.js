@@ -1,5 +1,5 @@
 define(function(require) {
-    //console.log("Setup starting!");
+//console.log("Setup starting!");
 
     var $ = require("jquery");
     require("spamd/spamd");
@@ -12,9 +12,7 @@ define(function(require) {
     var Dash = require("./views/dash/Dash");
     var prettify = require("prettify");
     require("domReady!");
-
     setupActiveMenu();
-
     var options = {};
     options.routes = {
         "api": API.id,
@@ -24,24 +22,18 @@ define(function(require) {
         "why": Why.id,
         "dash": Dash.id
     };
-
     options.onHashChange = function(view) {
         setActiveMenu(view);
         $('#nav-ind').stop(true, true);
     };
     options.defaultView = Home;
-   
     $(viewManager).on("global.attached", function(e, options) {
         prettify.prettyPrint();
     });
-
-    //TODO
     //setupAnimation(options);
-
     console.log("calling viewManager.init");
     viewManager.init(options);
     console.log("viewManager.init called");
-
     function setupActiveMenu() {
         //var offsetLeft = $(homeItem).offset().left - $('#navbar').offset().left;
         //var right = $('#navbar').width() - $(homeItem).width() - offsetLeft;
@@ -54,7 +46,6 @@ define(function(require) {
          });*/
 
         var scrolls = {};
-
         $(viewManager).on("global.before.remove", function(e, options) {
             if (options.oldView == null) {
                 return;
@@ -64,19 +55,17 @@ define(function(require) {
             if (options.viewSettings.hashChange == null) {
                 var scroll = $(window).scrollTop();
                 scrolls[options.oldView.id] = scroll;
-            console.log("STORE scroll", scroll, "for id", options.oldView.id);
+                console.log("STORE scroll", scroll, "for id", options.oldView.id);
             } else {
                 //console.log("HASH CHANGE, no scroll saved");
             }
         });
-
         $(viewManager).on("global.visible", function(e, options) {
             //console.log("global.visible ", options.oldView, options.newView);
             var scroll = scrolls[options.newView.id];
             $(window).scrollTop(scroll);
             console.log("restore scroll for ", options.newView.id, scroll);
         });
-
         $(viewManager).on("global.before.attach", function(e, options) {
             //var scroll = scrolls[options.newView.id];
             //$(window).scrollTop(scroll);
@@ -87,7 +76,6 @@ define(function(require) {
             var routesByPath = viewManager.getRoutesByPath();
             var route = routesByPath[options.newView.id];
             $("#navbar li.active").removeClass("active");
-
             if (route == null) {
                 //console.warn("View with id '", view.id, "' does not have a route defined. Cannot determine which menu item this view is associated with.");
                 return;
@@ -96,8 +84,6 @@ define(function(require) {
             //setActiveMenu(newView);
             slideToActive(item);
         });
-
-
         /*$('#navbar li').click(function() {
          if (cancelled) {
          cancelled = false;
@@ -109,69 +95,72 @@ define(function(require) {
          }
          });*/
     }
-    
-    function setupAnimation(options) {
-        
-    var $c = $(".container");
-    var pos = $c.position();
-    var left = pos.left;
-    $(".gutter").append("<div class='left'></div>");
-    var $left = $(".left");
-    $left.css({width: left + "px"});
-    //$left.css({height: "100%"});
-    $left.css({bottom: "50px", top: "61px", "z-index": -1});
-    
-    $(".gutter").append("<div class='right'></div>");
-    var $right = $(".right");
-    $right.css({width: left + "px"});
-    $right.css({right: 0});
-    $right.css({bottom: "50px", top: "61px", "z-index": -1});
 
-    options.animateHandler = function(html, viewSettings) {
-          var target = viewSettings.target;
+    function setupAnimation(options) {
+
+        options.animateHandler = function(html, viewSettings) {
+            var target = viewSettings.target;
             var $target = $(target);
-            var $viewContainer = $(".container", target);
             var viewAttached = viewSettings.viewAttached;
             var viewVisible = viewSettings.viewVisible;
-            var $holder = $("<div></div>");
-            $('body').append($holder);
-            //alert($target.html());
-            var targetPosition = $viewContainer.offset();
-            console.log("pos", targetPosition);
-            $holder.html($target.html());
-            $target.empty();
-            $holder.css({position: 'absolute'});
-            $holder.css(targetPosition);
-            //holder$.css({border: '1px solid red'});
-            $holder.css({'z-index': '-10'});
-            //alert("DONE");
-            //holder$.css({position: 'static'});
-            //return;
-            
-             $holder.animate({'left': '-' + $holder.width() + 'px'},'slow', function() {
-                var targetPosition = $holder.offset();
-                $holder.remove();
-                
-                $target.css({position: 'absolute'});
-                $target.css({'z-index': '-10'});
+            $target.slideUp('normal', function() {
+                $target.empty();
                 $target.html(html);
-                $target.css(targetPosition);
-                $target.css({left: "1200px"});
-                        viewAttached(viewSettings);
-                
+                viewAttached(viewSettings);
 
-                $target.animate({'left': '350px'},'slow', function() {
-                        $target.css({position: 'static'});
-                        viewVisible(viewSettings);
-                        
-                    });
-             });
-            
-            //$holder.slideUp('slow', function() {
-            //});
-        
-    };
+                $target.slideDown('normal', function() {
+                    viewVisible(viewSettings);
+                });
+            });
+        };
     }
+
+    /*
+     options.animateHandler = function(html, viewSettings) {
+     var target = viewSettings.target;
+     var $target = $(target);
+     var $viewContainer = $(".container", target);
+     var viewAttached = viewSettings.viewAttached;
+     var viewVisible = viewSettings.viewVisible;
+     var $holder = $("<div></div>");
+     $('body').append($holder);
+     //alert($target.html());
+     var targetPosition = $viewContainer.offset();
+     console.log("pos", targetPosition);
+     $holder.html($target.html());
+     $target.empty();
+     $holder.css({position: 'absolute'});
+     $holder.css(targetPosition);
+     //holder$.css({border: '1px solid red'});
+     $holder.css({'z-index': '-10'});
+     //alert("DONE");
+     //holder$.css({position: 'static'});
+     //return;
+     
+     $holder.animate({'left': '-' + $holder.width() + 'px'},'slow', function() {
+     var targetPosition = $holder.offset();
+     $holder.remove();
+     
+     $target.css({position: 'absolute'});
+     $target.css({'z-index': '-10'});
+     $target.html(html);
+     $target.css(targetPosition);
+     $target.css({left: "1200px"});
+     viewAttached(viewSettings);
+     
+     
+     $target.animate({'left': '350px'},'slow', function() {
+     $target.css({position: 'static'});
+     viewVisible(viewSettings);
+     
+     });
+     });
+     
+     //$holder.slideUp('slow', function() {
+     //});
+     
+     };
+     }*/
 
     function setActiveMenu(view) {
         if (view == null) {
@@ -181,9 +170,8 @@ define(function(require) {
         var route = routesByPath[view.id];
         //console.log("change", view, view.id, "Route:", route);
         $("#navbar li.active").removeClass("active");
-
         if (route == null) {
-            //console.warn("View with id '", view.id, "' does not have a route defined. Cannot determine which menu item this view is associated with.");
+//console.warn("View with id '", view.id, "' does not have a route defined. Cannot determine which menu item this view is associated with.");
             return;
         }
         var item = $("#menu-" + route).parent();
@@ -193,7 +181,7 @@ define(function(require) {
     }
 
     function slideToActive(li) {
-        //console.log("Slide to active");
+//console.log("Slide to active");
         $(li).addClass('active');
         //var offsetTop = $(li).offset().top - $('#navbar').offset().top;
         var location = getActiveMenuLocation(li);
