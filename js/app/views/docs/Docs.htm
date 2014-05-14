@@ -1,0 +1,1460 @@
+<div class="container">
+    <div class="api">
+        <div class="toc" id="toc">
+            <h2 class="title header">Table of contents</h2>
+            <ul class="section">
+                <li>
+
+                    <a href="" class="title">Jock</a>
+
+                    <a href="id=errorUtils" class="title">errorUtils</a>
+                    <ul class="section">
+                        <li><a href="id=errorUtils_showError">showError</a></li>
+                    </ul>
+
+                    <a href="id=hash" class="title">hash</a>
+                    <ul class="section">
+                        <li><a href="id=hash_hash">hash</a></li>
+                        <li><a href="id=hash_init">init</a></li>
+                        <li><a href="id=hash_update">update</a></li>
+                        <li><a href="id=hash_trigger">trigger</a></li>
+                    </ul>
+
+                    <a href="id=template-engine" class="title">history</a>
+                    <ul class="section">
+                        <li><a href="id=template-engine_render">render</a></li>
+                    </ul>
+
+                    <a href="id=template-engine" class="title">params</a>
+                    <ul class="section">
+                        <li><a href="id=template-engine_render">render</a></li>
+                    </ul>
+
+                    <a href="id=template-engine" class="title">string</a>
+                    <ul class="section">
+                        <li><a href="id=template-engine_render">render</a></li>
+                    </ul>
+
+                    <a href="id=url" class="title">url</a>
+                    <ul class="section">
+                        <li><a href="id=view-manager-showView">render</a></li>
+                    </ul>
+
+                    <a href="id=template-engine" class="title">utils</a>
+                    <ul class="section">
+                        <li><a href="id=template-engine_render">render</a></li>
+                    </ul>
+
+                    <a href="id=template-engine" class="title">TemplateEngine</a>
+                    <ul class="section">
+                        <li><a href="id=template-engine_render">render</a></li>
+                    </ul>
+
+                    <a href="id=template-engine" class="title">validator</a>
+                    <ul class="section">
+                        <li><a href="id=template-engine_render">render</a></li>
+                    </ul>
+
+                    <a href="id=view-manager" class="title">ViewManager</a>
+                    <ul class="section">
+                        <li><a href="id=view-manager_showView">showView</a></li>
+                        <li><a href="id=view-manager_showHTML">showHTML</a></li>
+                    </ul>
+
+                    <a href="id=viewManager_container" class="title">ViewManager.Container</a>
+                    <ul class="section">
+                        <li><a href="id=view-manager_container_showView">attach</a></li>
+                        <li><a href="id=view-manager_container_showHTML">cancel</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="content">
+
+            <div>
+                <h2>Jock Documentation</h2>
+
+                <h3 id="intro">Introduction</h3>
+
+                <p>
+                    Jock provides the best-of-breed components and some simple utilities to build Single Page Applications (SPA) using a
+                    structured MVC approach.
+                </p>
+                <p>
+                    Jock is built on three major building blocks: <a target="_blank" href="http://jquery.com/">jQuery</a> for DOM manipulation and events,
+                    <a target="_blank" href="http://requirejs.org/">RequireJS (AMD)</a> for modularization and 
+                    <a target="_blank" href="http://requirejs.org/">Handlebars</a>
+                    for HTML templates.
+                </p>
+                <p>
+                    Jock is based on the following core principles:
+                </p>
+                <ul>
+                    <li>
+                        The developer knows best how to organize and structure the code. Jock must not get in your way.
+                        Jock is not a framework and should not dictate how to write your views. Jock
+                        should perform a task and then hand control back to you.
+                    </li>
+                    <li>Jock must play nice with the web. If you want to use a JavaScript utility or jQuery plugin
+                        it should work as you would expect, no extra work should be required from your side.</li>
+                    <li>
+                        Jock does not interfere with DOM manipulation. You can perform any DOM manipulation you want, Jock doesn't care.
+                    </li>
+                    <li>
+                        HTML templates must consist of HTML, no proprietary extensions.
+                    </li>
+                    <li>
+                        Jock should be simple and easy to learn. One should be able to learn Jock in a couple of hours.
+                    </li>
+                </ul>
+
+                <h3 id="the-view">The View</h3>
+                <p>The primary use case in Jock is to navigate between views, replacing the current view with a new view.
+                </p>
+
+                <p>Views in Jock are specified as an AMD module. Views do not extend from a Jock specific class or type, instead Views
+                    are normal JavaScript <em>Functions</em> or <em>Objects</em>. The only requirement is for the View to provide an
+                    <a href="#page=api&id=onInit" class="link">#onInit</a> method. Jock invokes the #onInit method to inform the view to initialize
+                    itself when needed.
+                </p>
+
+                <h3 id="hello-world-example">Hello world example</h3>
+                <p>Let's look at a  Hello World example in Jock which we will discuss in detail below.
+                </p>
+                <p>First let's look at the HelloWorld JavaScript file.
+                </p>
+                <code>HelloWorld.js</code>
+
+                <pre class="prettyprint linenums">
+// We define an AMD module
+define(function(require) {
+
+    // We include the HelloWorld Handblebars template
+    var template = require("hb!./hello-world.htm");
+
+    function HelloWorld () {
+
+        // We provide an onInit method
+        this.onInit(container, viewOptions) {
+            // We tell the container argument to attach the
+            // view's template to the DOM
+           container.attach(template);
+        }
+
+        // We return the View
+        return HelloWorld;
+});</pre>
+
+                <p>Next is the hello-world HTML template file.</p>
+
+                <code>hello-world.htm</code>
+                <pre class="prettyprint">&lt;h1&gt;Hello World!&lt;/h1&gt;</pre>
+
+                <p>Lastly we show an application to run the Hello World demo.</p>
+
+                <code>main.js</code>
+
+                <pre class="prettyprint linenums">
+define(function(require) {
+
+    // include the HelloWorld view
+    var helloWorldView = require("app/views/HelloWorld");
+
+    // include ViewManager
+    var viewManager = require("jock/view/view-manager");
+
+    // Target specifies the ID of the HTML element where views
+    // will be placed
+    var options = {view: HelloWorldView,
+                   target: '#hello-world-demo'};
+    viewManager.showView(options);
+});</pre>
+
+                Click <a href="#" id="link-hello-world-demo">here</a> to run the Hello World Demo below.
+
+                <div id="hello-world-demo" class="demo" style="height: 50px">
+                </div>
+
+                <p>Let's go through the <em>HelloWorld</em> example in more detail.
+                </p>
+
+                <p>In <em>HelloWorld.js</em> line 2 we define a basic AMD module. If you are not familiar with AMD, the <em>define</em>
+                    function is used to define a module.
+                </p>
+
+                <p>On line 5 we <em>import</em> the <span class="typ">HelloWorld</span> View's
+                    associated template, <em>hello-world.htm</em>. Note the <em>hb!</em> prefix before the template path,
+                    <em>"hb!./hello-world.htm"</em>.This is an AMD plugin provided by Jock to load and compile Handlebars
+                    templates. The <em>template</em> variable in line 5, will in fact be a compiled Handlebars function,
+                    not a string. For those familiar with AMD, one can also use the AMD <em>text</em> plugin to load Handlebars templates,
+                    but one will then have to compile them manually.
+
+                <p>Line 7 declares the <em>HelloWorld</em> View as a function and on line 17, the View is
+                    returned as the result of the AMD module.
+                </p>
+                <p>On line 10 the onInit method is implemented which accepts two arguments, <em>container</em> and <em>viewOptions</em>.
+                    The <em>container</em> represents where the view will be added in the DOM. <em>viewOptions</em> are <em>arguments</em>
+                    and <em>URL parameters</em> that are passed to the view.
+                </p>
+                <p>Line 13 uses the <a href='#id=viewMmanager_container_attach' class='self'>container.attach</a> method to <em>adds</em> 
+                    the HelloWorld <em>template</em> to the DOM. By default
+                    the <em>attach</em> method will use a fadeIn and fadeOut animation when adding views, however this can be turned off,
+                    or another animation effect can be specified.
+                </p>
+
+                <p>The next section shows the view's associated template, <em>hello-world.htm</em>. The template contains a simple header
+                    with the text Hello World!.
+                </p>
+                <p>The last section, <em>main.js</em>, shows how to display the HelloWorld view.
+                </p>
+                <p>On line 1, we define <em>main</em> as another AMD module. On line 4 we <em>import</em> the HelloWorld view using AMD's
+                    <em>require</em> function. If you are not familiar with AMD you will note that there is no need for <em>&lt;script&gt;</em>
+                    tags to include JavaScript files in your application.
+                </p>
+                <p>Line 7 imports Jock's <em>ViewManager</em>, a mechanism for showing views. We will discuss ViewManager in detail below.
+                </p>
+                <p>Line 11 creates an option, <em>view</em> to pass to ViewManager telling it the name of the view to show. Line 12
+                    specifies the <em>target</em>, a CSS selector, where the view must be added to on the DOM. The <em>container</em> object
+                    that was passed into the <em>onInit</em> method uses this <em>target</em> when it's 
+                    <a href='#id=viewMmanager_container_attach' class='self'>attach</a> method is invoked,
+                    to add the new view. If no <em>target</em> is specified, a default target <em>#container</em> is used.
+                </p>
+                <p>Finally line 13 calls the ViewManager.<em>showView</em> method to display the view.
+
+                </p>
+
+                <h3 id="jock-configuration">Jock configuration</h3>
+                <p>
+                    Since Jock is based on AMD, it should be familiar to anyone with AMD experience.
+                </p>
+                <p>AMD provides a moduling system for JavaScript applications, so there is no need to include a bunch of &lt;script&gt; tags
+                    in your HTML pages. Instead, the JavaScript application is split into modules which are loaded as required.
+                </p>
+                <p>For a good overview on AMD see this <a href="article" target="_blank">article</a>.
+                </p>
+                <p>To start a Jock application you generally need the following setup:
+                </p>
+                <ul>
+                    <li>an index.html to bootstrap <code>require.js</code>.</li>
+                    <li>a <code>config.js</code> to configure <code>requirejs</code> to the needs of your application, Jock and other libraries.
+                        NOTE: config.js does not include application specific configuration, that is done through the <code>setup.js</code> script.</li>
+                    <li><code>main.js</code>, the entry point to your application, invoked from <code>config.js</code> above. Here you start
+                        configuring your application, such as navigation menus and events. You can also configure Jock in main.js, although it
+                        is common to push this configuration to a separate file, setup.js</li>
+                    <li><code>setup.js</code> is sometimes used to hold application specific configuration instead of cluttering main.js</li>
+                </ul>
+
+                <p>Let's go through the setup of a typical application.</p>
+
+                <p>We start with our <code>index.html</code> below.
+                </p>
+                <code>index.html</code>
+                <pre class="prettyprint linenums">
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;css/site.css&quot;/&gt;
+    &lt;script data-main=&quot;js/config&quot; src=&quot;js/lib/require.js&quot;&gt;
+&lt;/script&gt;
+  &lt;/head&gt;
+
+  &lt;body&gt;
+
+    &lt;!-- Basic navigation menu --&gt;
+    &lt;div class=&quot;header&quot;&gt;
+      &lt;ul id=&quot;navbar&quot;&gt;
+        &lt;li&gt;&lt;a href=&quot;#&quot; id=&quot;home-menu&quot;&gt;Home&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&quot;#&quot; id=&quot;customers-menu&quot;&gt;Customers&lt;/a&gt;&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/div&gt;
+
+    &lt;div id=&quot;container&quot;&gt;
+      &lt;!-- Our views will be placed here --&gt;
+    &lt;/div&gt;
+
+  &lt;/body&gt;
+&lt;/html&gt; </pre>
+
+                <p>On line 5, we include require.js. Notice the <em>data-main</em> attribute with the value <em>js/config</em>. This points
+                    to a script to configure requirejs, which will be loaded next. Let's look at <code>config.js</code>.
+                </p>
+
+                <code>config.js</code>
+                <pre class="prettyprint linenums">
+requirejs.config({
+    "baseUrl": "js/lib", // root location of JS libraries
+    "paths": {
+        "app": "../app", // path to our application
+        "hb": "jock/hb", // path to the AMD Handlebars plugin
+        "moment": "moment",
+        "numeral": "numeral"
+    },
+    "shim": {
+        "handlebars": {exports: "Handlebars"}
+    }
+});
+
+// onResourceLoad is a requirejs extension to manipulate modules
+// being loaded. Here we add the module ID (which is also the
+// path to the module location) as an attribute on the module
+// itself
+requirejs.onResourceLoad = function(context, map, depArray) {
+    var obj = context.defined[map.name];
+
+    if (obj) {
+        if (obj.prototype) {
+            if (!obj.prototype.id) {
+                obj.prototype.id = map.id;
+                obj.id = map.id;
+            }
+        } else {
+            if (!obj.id) {
+                obj.id = map.id;
+            }
+        }
+    }
+};
+
+// Load the main app module to start the application
+requirejs(["app/main"]); </pre>
+
+                <p>With RequireJS now configured, it's time to load our application. Line 36 loads our application entry point,
+                    <em>main.js</em> which resides in the <em>app</em> folder.
+                </p>
+
+                <p><em>main.js</em> is shown below:
+                </p>
+
+                <code>main.js</code>
+
+                <pre class="prettyprint linenums">
+define(function(require) {
+  var $ = require("jquery"); // load jquery
+  require("jock/jock"); // load Jock bootstrap module
+  var viewManager = require("jock/view/view-manager");
+  var Home = require("./views/home/Home"); //Home View
+  var Customer = require("./views/cust/Customers");
+
+  var options = { 
+    defaultView : Home
+  }
+
+  viewManager.init(options); // ViewManager is ready to use
+
+  // Use jQuery to wire up the menu items to show the proper View
+  $("#home-menu").click(function(e) {
+    e.preventDefault();
+    viewManager.showView({view: Home});
+  });
+  $("#customers-menu").click(function(e) {
+    e.preventDefault();
+    viewManager.showView({view: Customers});
+  });
+});</pre>
+                <p>The application is now setup and will load the <em>Home</em> view when visiting the url: <em>http://hostname/</em>
+                </p>
+                <p>Note line 3, we load the <em>jock</em> bootstrap module. This module is provided by Jock to load all of Jock
+                    required plugins and extra jQuery plugins. Without including this module, you will run into errors where certain of the
+                    documented API under the Jock or jQuery namespace doesn't work, as they haven't been loaded. So always include this
+                    module in your <em>main.js</em> or <em>setup.js</em> module. 
+                </p>
+
+                <p>You could also move your application setup code into a module of it's own, for example:</p>
+
+                <code>setup.js</code>
+                <pre class="prettyprint">
+define(function(require) {
+  var viewManager = require("jock/view/view-manager");
+  var Home = require("./views/home/Home"); //Home View
+
+  var options = {
+    defaultView : Home
+  }
+
+  viewManager.init(options); // ViewManager is ready to use
+}); </pre>
+
+                <p>Now <em>main.js</em> can be changed as follows:
+                </p>
+
+                <code>main.js</code>
+                <pre class="prettyprint">
+define(function(require) {
+  require("./setup"); // Load the setup file
+  var viewManager = require("jock/view/view-manager");
+  var Home = require("./views/home/Home"); //Home View
+  ...
+
+  // No need to setup ViewManager as that is done in setup.js
+  $("#home-menu").click(function(e) {
+    e.preventDefault();
+    viewManager.showView({view: Home});
+  });
+
+  ...
+}); </pre>
+
+                <p>With Jock configured let's look at one of the main concepts in Jock and single page applications, switching views.</p>
+
+                <h3 id="managing-views">Managing Views</h3>
+
+                <p>
+                    Managing Views forms the heart of Jock applications. Jock provides a simple mechanism to switch between views in a
+                    SPA. One of the core utilities is the #ViewManager.
+                    #ViewManager provides a method, #showView for replacing views.
+                </p>
+
+                <p>
+                    Views in Jock are AMD modules that contains regular JavaScript code. Views do not extend from any 
+                    Jock provided types. The only requirement is that a view must include an <a href="#page=api&id=onInit" class="link">#onInit</a> method. 
+                </p>
+                <p>
+                    When ViewManager#showView is called, #ViewManager will create the new View (or reuse an existing instance) and invoke
+                    #onInit on that view. The #onInit method allows the view to initialize itself. During onInit the View could make Ajax
+                    calls to fetch data and render it's HTML template.
+                </p>
+
+                <h3 id="basic-view-example">Basic View example</h3>
+                <p>
+                    An example AMD module for a Jock view:
+                </p>
+                <pre class="prettyprint linenums">
+define(function(require) {
+    
+    function PersonView () {
+        
+        // Note: onInit accepts a container and viewOptions object
+        this.onInit(container, viewOptions) {
+        }
+
+        // The optional onDestroy accepts a viewOptions object
+        this.onDestroy(viewOptions) {
+        }
+    }
+    return PersonView;
+});</pre>
+
+                <h3 id="ViewManager-life-cycle">The View life cycle</h3>
+                <p>Jock provides a well defined <em>life cycle</em> for views, through the #ViewManager.
+                </p>
+                <p>The <em>life cycle</em> consists of an <em>initialization</em> phase and an optional <em>destroy</em> phase. These phases
+                    are implemented by the view through two methods namely, <a href="#page=api&id=onInit" class="link"><em>onInit</em></a> (shown above) and
+                    <a href="#page=api&id=onDestroy" class="link"><em>onDestroy</em></a>.
+                </p>
+
+                <p>The onInit method is invoked by ViewManager on the <em>new</em> view to inform it that there was a #showView request.
+                    The view gets a chance to initialize itself during the <em>onInit</em> phase. During <em>onInit</em>, the view will
+                    typically make Ajax requests to fetch it's data, render it's associated template and attach the template to the DOM.
+                </p>
+
+                <p>The onDestroy method is invoked by ViewManager on the <em>current</em> view shown to notify it that it is about to be
+                    removed from the DOM. Depending on application needs, during the <em>onDestroy</em> phase the view can perform 
+                    cleanup tasks such as storing the current view data so that it does not have to fetch it later when the view is
+                    shown again. Or in the case of splitting a large form over multiple views, one can use the onDestroy phase to store
+                    the current view's data until the whole form is completed before posting all the views data to the server.
+                </p>
+
+                <p>Note: when the application loads the first time there is no current view to invoke onDestroy on.
+                </p>
+
+                <p>The destroy phase is optional, views do not have to implement the <em>onDestroy</em> method if they don't care about
+                    this phase.
+                </p>
+
+                <h3 id="initialize-view-template">Initialize ViewManager</h3>
+
+                <p>
+                    Before using ViewManager, it must be initialized through it's <a href="#page=api&id=viewManager_init" class="link">init</a> method. For example:
+                </p>
+
+                <code>setup.js</code>
+                <pre class="prettyprint linenums">
+define(function(require) {
+
+    var viewManager = require("jock/view/view-manager");
+    var Home = require("./views/home/Home");
+
+    var options = {
+        // set a default view to load for the url '/'
+        defaultView : Home,
+    };
+    // Initialize viewManager
+    viewManager.init(options);
+
+    // now we can invoke viewManage.showView
+});</pre>
+                <p>ViewManager supports many other options to tweak it's behavior such as <em>routing</em>, <em>custom view animation</em>,
+                    <em>default DOM target</em> etc. Click <a href='#page=api&id=viewManager_init' class="link">here</a> for the full list of options.
+                </p>
+
+                <h3 id="view-manager-showView">ViewManager showView</h3>
+                <p><a href='#page=api&id=viewManager_showView' class="link">showView</a> replaces the current view with the specified view.
+                    It also returns a list of <a href='#page=docs&id=viewManager_showView_promises' class='self'>promises</a> 
+                    for callers to be notified of certain events.
+                </p>
+
+                <p>showView accepts an <a href="#page=api&id=viewManager_showView" class="link">options</a> argument through which you can
+                    pass the <em>view</em> to render as well as <em>arguments</em> and <em>url parameter</em>. For a full description of the
+                    options see the <a href="#page=api&id=viewManager_showView" class="link">options API</a>.
+                </p>
+
+                Below we outline the sequence flow for showView:
+                <ol>
+                    <li>
+                        the view argument is resolved to it's view type. You can read <a href="todo">here</a> how Jock resolves views.
+                    </li>
+                    <li>
+                        a new view instance is created by invoking <code>new view()</code>.
+                    </li>
+                    <li>
+                        browser history is updated with the new view's route or path.
+                    </li>
+                    <li>
+                        invoke <em>onInit</em> on the new view. passing a <em>container</em> that the view should call when ready to
+                        display it's HTML.
+                    </li>
+                    <li>
+                        The view can now make server requests to load it's data, and render it's associated template. When the view is ready
+                        it calls the container's <a href='#id=viewMmanager_container_attach' class='self'>container.attach</a> method, 
+                        passing it's rendered template.
+                    </li>
+
+                    <li>
+                        If present, the current view's <em>onDestroy</em> method is invoked. ViewManager updates it's reference of the
+                        current view to the new view and the previous view is discarded.
+                    </li>
+                    <li>Next the DOM is updated by removing the old view's HTML and inserting the new view's HTML.
+                    </li>
+                    <li>
+                        Any <em>actions</em> specified in the HTML template is <em>binded</em> to it's associated view through a call to
+                        <a href='#page=api&id=templateEngine_bind' class='link'>TemplateEngine.bind</a>.
+                    </li>
+                </ol>
+
+                <code>Basic example:</code>
+
+                <pre class="prettyprint linenums">
+// include personView
+var personView = require("app/views/personView");
+
+// include ViewManager  
+var viewManager = require("jock/view/view-manager");
+
+// Show the view
+viewManager.showView( {view: personView} );
+                </pre>
+
+                <code>app/views/personView.js:</code>
+                <pre class="prettyprint linenums">
+define(function(require) {
+
+var $ = require("jquery");
+var template = require("hb!./personView.htm");
+var te = require("jock/template/template-engine");
+var viewManager = require("jock/view/view-manager");
+
+    function personView() {
+
+        var that = {};
+
+        that.onInit = function(container, options) {
+            var html = te.render(template);
+            container.attach(html);
+        }
+
+        return that;
+    }
+    return personView;
+});
+
+                </pre>
+
+                <code>Passing common options to the view:</code>
+
+                <pre class="prettyprint linenums">
+// include personView
+var personView = require("app/views/personView");
+
+// include ViewManager  
+var viewManager = require("jock/view/view-manager");
+
+// Create an options object with 'args' and 'params'. The params will
+// automatically be added to the URL hash by Jock, for history purposes
+var options = {
+    view: personView,
+    args: {callback: function(view) {
+        // This callback is invoked by the personView, and pass
+        // back an instance of itself
+    }},
+    params: {id: 1}
+}
+
+// Show the view
+viewManager.showView( options );
+                </pre>
+
+                <code>app/views/personView.js:</code>
+                <pre class="prettyprint linenums">
+define(function(require) {
+
+var $ = require("jquery");
+var template = require("hb!./personView.htm");
+var te = require("jock/template/template-engine");
+var viewManager = require("jock/view/view-manager");
+
+    function personView() {
+
+        var that = {};
+
+        that.onInit = function(container, options) {
+
+            // retrieve the callback from the options
+            callback = options.args.callback;
+
+            // retrieve the id parameter from the options.
+            // The id parameter will also be added to the URL hash
+            // by Jock, thus history will be working automatically
+            var id = options.params.id;
+
+            // Retrieve the person with the given id
+            $.get( "/person", { id: id } ).done(function( data ) {
+                var html = te.render(template, {person: data} );
+                container.attach(html);
+
+                // Invoke the callback passing in an instance
+                // of the personView back
+                callback(this);
+            });
+        }
+
+        return that;
+    }
+    return personView;
+});
+
+                </pre>
+
+                <h3 id="viewManager_showView_resolve">Resolving views</h3>
+                ViewManager.showView is invoked by passing in <em>options.view</em>. The view argument can be a:
+                <ul>
+                    <li><em>Function (or Constructor Function)</em></li>
+                    <li><em>Object</em> (object must be an instance of an existing View)</li>
+                    <li><em>string</em> (must either refer to the View path or the View route)</li>
+                </ul>
+
+                Let's walk through each of these options.
+                <p>
+                    If a <code>Function or Constructor Function</code> is passed in, Jock will invoke the function with
+                    <em>new</em>, as in <em>new View()</em>.
+                </p>
+
+                <code>Function</code> and <code>Constructor</code> examples:
+                <pre class="prettyprint linenums">
+// include personView view, a function
+var personView = require("app/views/personView");
+
+// include ProductView view, a constructor function
+var ProductView = require("app/views/ProductView");
+
+// include ViewManager
+var viewManager = require("jock/view/view-manager");
+                    
+// personView is a normal JavaScript Function so Jock will create an
+// instance by invoking: var view = new personView();
+viewManager.showView( {view: personView} );
+
+// ProductView is a Constructor Function so Jock will create an
+// instance by invoking: var view = new ProductView();
+viewManager.showView( {view: ProductView} );
+                </pre>
+                <p>
+                </p>
+                <p>If an <em>Object</em> is passed as the view argument, Jock will assume the object is an existing view, and won't
+                    create a new instance. This is useful if you want to manage view instances yourself.
+                </p>
+
+                <code>Object</code> Example:
+                <pre class="prettyprint linenums">
+// include personView view, a function
+var personView = require("app/views/personView");
+
+// include ViewManager  
+var viewManager = require("jock/view/view-manager");
+                    
+// Here we create and store a view instance and pass that to showView
+var viewObject = personView();
+viewManager.showView( {view: viewObject} );
+                </pre>
+                <p>
+                </p>
+
+                <p>If a <em>string</em> is passed as the view argument, Jock will assume this is the <em>route</em> to the view and
+                    will try and lookup the path for the given route. If a route cannot be found, Jock will assume the string is the
+                    <em>path</em> to the view.
+                    Next Jock will make a <em>require()</em> call passing in the view path in order to load the view. Once the view is
+                    loaded, Jock will follow the rules above on <em>Function</em> resolution.
+                </p>
+
+                <code>string</code> examples:
+                <pre class="prettyprint linenums">
+var viewManager = require("jock/view/view-manager");
+var personView = require("app/views/personView");
+
+// Setup a route for the personView:
+// "person" -> "app/views/personView"
+var options = {};
+options.routes = {
+    "person": personView.id
+};
+viewManager.init(options);
+
+
+// We show the view by using the path to the view
+viewManager.showView({view: "app/views/personView"});
+
+// Here we show view by using the route of the view 
+viewManager.showView( {view: "person"} );
+                </pre>
+
+                <h3 id="viewManager_showView_promises">ViewManager.showView promises</h3>
+                <p>
+                    <em>ViewManager.showView</em>  returns a <a href="TODO" target="_blank">promise</a> that is resolved when the view has been
+                    shown. This promise provides the caller a callback to perform operations when the new view is rendered.
+                </p>
+                <p>The promise also contains a further list of <a href="TODO" target="_blank">promises</a> for callers to be notified
+                    of events while the new view is rendered.
+                <p>The following promises are returned by calling <em>showView</em>:</p>
+                <ul>
+                    <li><em><b>default:</b></em> the default promise which is returned by the call to <code>viewManager.showView</code>
+                        and occurs after the view has been attached to the DOM and made visible.
+                        <p/>
+                        Sequentially this is the last promise that will occur during the showView call.
+                        <p/>
+                        This is useful when you want to perform an operation or DOM manipulation on the new view<em>after</em> the new view
+                        has been rendered and all other promises resolved.
+                        <p/>
+                    </li>
+                    <li><em><b>attached:</b></em> this promise occurs when the view is attached to the DOM, but before the view is shown (becomes visible).
+                        This is useful when you want to perform an operation or DOM manipulation on the new view<em>before</em> the view is
+                        shown (becomes visible).
+                        <br/>
+                        <b>Note:</b> differentiating between the <em>attached</em> and <em>visible</em> event is only possible 
+                        when <em>animation</em> is enabled. If animation is disabled, the <em>attached</em> and <em>visible</em> events
+                        will occur simultaneously when the view HTML is added to the DOM.
+                        <p/>
+                    </li>
+                    <li><em><b>visible:</b></em> this promise occurs when the view is shown. This is useful when you want to perform an
+                        operation or DOM manipulation on the new view<em>after</em> the view is shown (becomes visible).
+                        <br/>
+                        <b>Note:</b> differentiating between the <em>attached</em> and <em>visible</em> event is only possible 
+                        when <em>animation</em> is enabled. If animation is disabled, the <em>attached</em> and <em>visible</em> events
+                        will occur simultaneously when the view HTML is added to the DOM.
+                        <p/>
+                    </li>
+                    <li><em><b>cancel:</b></em> this promise occurs when the view is cancelled for some reason. Cancelling a view generally
+                        happens when an error occurs while requesting data from the server. The view would invoke <em>cancel</em> on the
+                        <em>container</em> (instead of <em>attach</em>) which in turn resolves the <em>cancel</em> promise. If you are
+                        interested in knowing if a view is cancelled you can use this promise.
+                        <p/>
+                    </li>
+                    <li><em><b>overwrite:</b></em> this promise occurs when a view is <em>overwritten</em> by another showView call.
+                        For example if a <code>viewTemplate.showView</code> call is made and before the view could finish rendering another
+                        call to <code>viewTemplate.showView</code> is made, the first view is <em>overwritten</em> by the second <em>showView</em>
+                        call, and will not be rendered any further. Any animation that was done when the view was overwritten is also
+                        stopped. If you are interested in knowing when a view is overwritten you can use this promise.
+                        <p/>
+                    </li>
+                </ul>
+
+                <p>Let's look at some examples of using these promises:</p>
+
+                <code>JavaScript showing the promises for showView</code>
+                <pre class="prettyprint linenums">
+var viewManager = require("jock/view/view-manager");
+var personView = require("app/views/personView");
+
+var promise = viewManager.showView({view: personView});
+
+// Default promise shown below will be resolved after the personView
+// is shown
+promise.then(function(view) {
+    // the view argument is a reference to the personView
+    console.log("default promise resolved for ", view);
+});
+
+// The attached promise is resolved when the personView HTML is
+// attached to the DOM
+promise.attached.then(function(view) {
+    // the view argument is a reference to the personView
+    console.log("attached promise resolved for ", view);
+});
+
+// The visible promise is resolved when the personView HTML is
+// made visible
+promise.visible.then(function(view) {
+    // the view argument is a reference to the personView
+    console.log("visible promise resolved for ", view);
+});
+
+// The cancel promise is resolved when the personView is
+// cancelled
+promise.cancel.then(function(view) {
+    // the view argument is a reference to the personView
+    console.log("cancel promise resolved for ", view);
+});
+
+// The overwrite promise is resolved when the personView is
+// overwritten by another showView call
+promise.overwrite.then(function(view) {
+    // the view argument is a reference to the personView
+    console.log("overwrite promise resolved for ", view);
+});
+                </pre>
+
+                <p></p>
+
+                <code>personView.js</code>
+                <pre class="prettyprint linenums">
+define(function(require) {
+
+    var template = require("hb!./person-view.htm");
+    var te = require("jock/template/template-engine");
+
+    function personView() {
+
+        // We provide an onInit method
+        this.onInit(container, viewOptions) {
+            $.ajax({
+                url: '/person',
+                data: 'id=1'
+            }).then(function(data) {
+                var html = te.render(template, {person: data} );
+
+                // container.attach will attach the view template to the
+                // DOM. attach() resolves the attached, visible and
+                // default promises, in that order
+                container.attach(html);
+
+            }, function(error) {
+                // container.cancel() will cancel rendering the new view.
+                // cancel() resolves the cancel promise
+                container.cancel();
+            });
+        }
+
+        // We return the View
+        return personView;
+});</pre>
+
+                <p/>
+                We add a listener for every promise that <em>showView()</em> returns. In <code>personView.js</code>, line 9, we fetch the person from the
+                server. If the Ajax call is successful, the then handler on line 13 will be invoked.
+                <p/>
+                On line 14 the template is rendered as HTML which is then passed to the <em>attach</em> method of the container, online 19.
+                <p/>
+                In the <em>attach</em> method, assuming default animation behavior,
+                Jock will fade out (make invisible) the current view before removing it. The new view's HTML will be attach to the DOM all while the view
+                is still invisible. Once the new view is <em>atached</em> to the DOM, Jock resolves the <em>attached</em> promise.
+                <p/>
+                Next Jock fades in the newly attached view, and once complete, resolves the <em>visible</em> promise.
+                <p/>
+                Lastly Jock will resolve the <em>default</em> promise and the <em>showView</em> call is complete.
+                <p/>
+                If the ajax call resulted in an error, the error handler on line 21 will be invoked.
+                <p/>
+                The error handler will instruct Jock to <em>cancel</em> the showView call by invoking <em>container.cancel()</em> on line 24.
+
+                <h3 id="viewManager_container">The ViewManager Container passed to onInit</h3>
+                The view's <em>onInit</em> method receives two arguments, a <em>container</em> and a viewOptions object. Here we will look
+                in detail at the <em>container</em>.
+                <p></p>
+                When implementing the view's onInit method, you <em>must</em> invoke either <code>container.attach</code> or
+                <code>container.cancel</code>, in order for the ViewManager to resolve any promises made by callers of ViewManager#showView.
+                <p></p>
+                Container.attach accepts two parameters, <em>html</em> and a <em>containerOptions</em>.
+                <p></p>
+                The <em>html</em> argument is the view's HTML string to add to the DOM.
+                <p></p>
+                The <a href="#page=api&id=viewManager_container" class="link">containerOptions</a> are instructions passed to the <em>attach</em> method, for
+                example you can pass <em>animate</em> options to enable or disable animation for the view.
+                <p></p>
+                Container.attach returns a list of <a href='#page=docs&id=container_attach_promises' class='self'>promises</a> 
+                    for callers to be notified of certain events. These promise allows one to add events handlers and manipulate the DOM
+                    of the new view.
+                <p/>
+                Let's look at an example view:
+                <p/>
+                <code>personSearchView.js</code>
+                <pre class="prettyprint linenums">
+// We define an AMD module
+define(function(require) {
+
+    var template = require("hb!./person-search.htm");
+
+    function personSearchView () {
+
+        // The onInit method
+        this.onInit(container, viewOptions) {
+                
+            // Render the view template
+            var html = te.render(template);
+
+            // Instruct the container to attach the rendered HTML to
+            // the DOM. The attach call returns a promise.
+            var attachPromise = container.attach(html)
+
+            // We add a handler to the attach promise so
+            // we can be notified when the view's HTML is added to
+            // the DOM.
+            attachPromise.then(function() {
+                    
+                // Inside the promise we can add event listeners and
+                // do further DOM manipulations
+                    
+                // Here we use the jQuery DataTable plugin to enhance
+                // our table
+                $("table").datatable();
+
+                // Here we add an event listener to the search button
+                $("my-button").on("click", performSearch);
+            });
+        }
+
+        function performSearch() {
+            var search = $("searchInput").val();
+            // Here we can do an ajax call to fetch the persons based
+            // on the 'search' input
+            ...
+        }
+
+        // We return the View
+        return personSearchView;
+});</pre>
+
+                In line 9 we define the <em>onInit</em> method passing in the container. We then render the template in line 12 and
+                <em>attach</em> the HTML to the container which returns a promise.
+                <p/>
+                On line 21 we attach a handler to the promise which informs us once the HTML has been attached to the DOM.
+                <p/>
+                Inside the promise handler we use the <a href="https://datatables.net/" target="_blank">DataTables</a> jQuery plugin to enhance our table as well
+                as register a <em>click</em> handler on the button with the id <em>"my-button"</em>. The click handler will invoke the
+                <em>performSearch</em> function to perform a search on the server based on the user search input.
+                
+                <h3 id="container_attach_promises">Container.attach promises</h3>
+                <p>
+                    <em>Container.attach</em>  returns a <a href="TODO" target="_blank">promise</a> that is resolved when the view's HTML
+                    has been <em>attached</em> to the DOM.. This promise provides the caller a callback to perform operations when the new
+                    view is attached.
+                </p>
+                <p>The promise also contains a further list of <a href="TODO" target="_blank">promises</a> for callers to be notified
+                    of events while the new view is rendered.
+                <p>The following promises are returned by calling <em>attach</em>:</p>
+                <ul>
+                    <li><em><b>default:</b></em> the default promise which is returned by the call to <code>container.attach</code>
+                        and occurs <em>after</em> the view html has been attached to the DOM.
+                        <p/>
+                        This is useful when you want to add events or perform DOM manipulation on the new view<em>after</em> the new view's
+                        HTML has been added to the DOM.
+                        <p/>
+                        <b>Note:</b> if animation is enabled, this promise occurs <em>before</em> the view becomes visible (is shown).
+                        <p/>
+                    </li>
+                    <li><em><b>attached:</b></em> this promise is synonymous with the default promise above.
+                        <br/>
+                        <b>Note:</b> differentiating between the <em>attached</em> and <em>visible</em> event is only possible 
+                        when <em>animation</em> is enabled. If animation is disabled, the <em>attached</em> and <em>visible</em> events
+                        will occur simultaneously when the view HTML is added to the DOM.
+                        <p/>
+                    </li>
+                    <li><em><b>visible:</b></em> this promise occurs when the view is shown. This is useful when you want to perform an
+                        operation or DOM manipulation on the new view<em>after</em> the view is shown (becomes visible).
+                        <br/>
+                        <b>Note:</b> differentiating between the <em>attached</em> and <em>visible</em> event is only possible 
+                        when <em>animation</em> is enabled. If animation is disabled, the <em>attached</em> and <em>visible</em> events
+                        will occur simultaneously when the view HTML is added to the DOM.
+                        <p/>
+                    </li>
+                    <li><em><b>overwrite:</b></em> this promise occurs when a view is <em>overwritten</em> by another showView call.
+                        For example if a <code>viewTemplate.showView</code> call is made and before the view could finish rendering another
+                        call to <code>viewTemplate.showView</code> is made, the first view is <em>overwritten</em> by the second <em>showView</em>
+                        call, and will not be rendered any further. Any animation that was done when the view was overwritten is also
+                        stopped. If you are interested in knowing when a view is overwritten you can use this promise.
+                        <p/>
+                    </li>
+                </ul>
+
+                <p>Let's look at some examples of using these promises:</p>
+                
+                 <code>personView.js</code>
+                <pre class="prettyprint linenums">
+define(function(require) {
+
+    var template = require("hb!./person-view.htm");
+    var te = require("jock/template/template-engine");
+
+    function personView() {
+
+        // We provide an onInit method
+        this.onInit(container, viewOptions) {
+            $.ajax({
+                url: '/person',
+                data: 'id=1'
+            }).then(function(data) {
+                var html = te.render(template, {person: data} );
+
+                // container.attach will attach the view template to the
+                // DOM and return promises to hook into the view life
+                // cycle.
+                var promises = container.attach(html);
+
+                // add default promise which is resolved when the view's
+                // HTML is attached to the DOM. The argument passed to
+                // the resolved promise is an instance of this view
+
+                promise.then(function(view) {
+                    // Here we can add event handlers and perform DOM
+                    // manipulation
+                    $("#my-button").on("click", function() {
+                        alert("my-button clicked");
+                    {);
+
+                    // Convert the my-table into a Datatable.
+                    $("#my-table").datatables();
+                };
+
+                promise.attached.then(function(view) {
+                    // This promise is the same as the default above
+                    // but might be considered semantically clearer.
+                });
+
+                promise.visible.then(function(view) {
+                    // This promise is resolved when the view
+                    // becomes visible
+                });
+
+                promise.overwrite.then(function(view) {
+                    // This promise is resolved when the view
+                    // is overwritten. This could be used
+                    // to perform cleanup if needed
+                });
+
+            }, function(error) {
+                // container.cancel() will cancel rendering the new view.
+                container.cancel();
+            });
+        }
+
+        // We return the View
+        return personView;
+});</pre>
+
+                <h3 id="viewManager_container_cancel">Cancel view</h3>
+                It is possible to cancel a view from displaying by invoking the <em>cancel</em> method on the <em>container</em> which is
+                passed to <em>onInit</em>.
+                <p/>
+                When <em>cancel</em> is called, <em>ViewManager</em> won't render the new view, and instead keep the currently displayed
+                view active.
+                <p/>
+                We will expand on our previous example below:
+                <p/>
+                <code>personSearchView.js</code>
+                <pre class="prettyprint linenums">
+// We define an AMD module
+define(function(require) {
+
+    var template = require("hb!./person-search.htm");
+
+    function personSearchView () {
+
+        // The onInit method
+        this.onInit(container, viewOptions) {
+
+            // Perform and Ajax request to fetch the persons
+            $.get("/persons").then(function(personsArray) {
+                // Render the view template passing in the persons
+                // received from the server
+                var html = te.render(template, {persons, personsArray});
+
+                // Instruct the container to attach the rendered HTML to
+                // the DOM. The attach call returns a promise.
+                var attachPromise = container.attach(html)
+
+                // We add a handler to the attach promise so
+                // we can be notified when the view's HTML is added to
+                // the DOM.
+                attachPromise.then(function() {
+                    
+                    // Inside the promise we can add event listeners and
+                    // do further DOM manipulations
+                    
+                    // Here we use the jQuery DataTable plugin to enhance
+                    // our table
+                    $("table").datatable();
+
+                    // Here we add an event listener to the search button
+                    $("my-button").on("click", performSearch);
+                });
+            },
+            function(error) {
+                // The ajax error handler cancels the new view
+                container.cancel();
+            });
+        }
+
+        function performSearch() {
+            var search = $("searchInput").val();
+            // Here we can do an ajax call to fetch the persons based
+            // on the 'search' input
+            ...
+        }
+
+        // We return the View
+        return personSearchView;
+});</pre>
+                In this example we added an ajax request to fetch all the persons from the server. If the request is successful, the function
+                on line 12 will execute with the returned persons as an array. The persons will be rendered by the view and attached to the
+                DOM on line 19.
+                <p/>
+                If the ajax request fails the error routine of the ajax request will be invoked which is the function on line 37. On line 39
+                the rendering of the new view is cancelled with the code <em>container.cancel()</em>.
+                
+                <h3 id="control_animation">Control animation</h3>
+                ViewManager has a default fade animation but can easily be switched off globally or per showView call.
+                <p/>
+                To switch off animation globally pass <code>{animate=false}</code> to
+                                <a href="#page=api&id=viewManager_init" class="link">ViewManage.init(options)</a>.
+                <p/>
+                You can also bypass animation for a specific showView call by passing <code>{animate=false}</code> to
+                                <a href="#page=api&id=viewManager_showView" class="link">ViewManage.showView(options)</a>.
+                <p/>
+                Another way to bypass animation per view is by passing <code>{animate=false}</code> to
+                                <a href="#page=api&id=viewManager_container_attach" class="link">container.attach(options)</a>. Calls
+                                to show this view won't be animated.
+                                <p/>
+                                Jock automatically switches off animation when users use the browser history to navigate between views.
+                                <p/>
+                                Jock also automatically switches off animation when users <a href='#page=docs&id=overwrite' class="self">overwrite</a>
+                                a view through multiple showView invocations while a showView is still busy processing. In such a case,
+                                animation is switched off to switch between views as quickly as possible. Animation is switched on again
+                                as soon as the showView completes.
+
+                <h3 id="custom_animation">Custom animation</h3>
+                By default Jock provides a <em>fade</em> animation when switching views. This animation will fade out the current view,
+                remove the current view's DOM, add the new view's DOM and fade in the new view.
+                <p/>
+                You can also provide your own animation implementation by passing in an <code>{animateHandler: function}</code> option to
+                <a href="#page=api&id=viewManager_init" class="link">ViewManage.init</a>.
+                <p/>
+                When implementing your own animation handler there are two important ViewManage methods that need to called during the animation.
+                <p/>
+                When the new view HTML is <em>attached</em> to the DOM, the ViewManager method <em>viewAttached</em> must be called to allow
+                the ViewManager to process this event and resolve the
+                <a class='self' href='#page=docs&id=viewManager_showView_promises'>attach promise</a>.
+                <p/>
+                When the new view HTML becomes <em>visible</em> to the DOM, the ViewManager method <em>viewVisible</em> must be called to allow
+                the ViewManager to process this event and resolve the
+                <a class='self' href='#page=docs&id=viewManager_showView_promises'>visible promise</a>.
+                <p/>
+                Let's look at the default animation handler of ViewManager in it's entirety below:
+                <p/>
+                
+                <pre class="prettyprint linenums">
+function attachViewWithAnim(html, viewSettings) {
+    var $target = $(viewSettings.target);
+    var viewAttached = viewSettings.viewAttached;
+    var viewVisible = viewSettings.viewVisible;
+    $target.fadeOut('fast', function() {
+
+        $target.empty();
+        $target.html(html);
+        viewAttached(viewSettings);
+
+        $target.fadeIn({duration: 'fast', complete: function() {
+            viewVisible(viewSettings);
+        }});
+    });
+};
+</pre>
+                The animation handler is passed a <em>viewSettings</em> object which contains the <em>target</em>, a CSS selector where the
+                new view should be added to. This is shown on line 2.
+                <p/>
+                On line 3 and 4 the <em>viewAttached</em> and <em>viewVisible</em> is retrieved from the <em>viewSettings</em>. These are
+                the two functions that the animation handler must invoke while animating the new view.
+                <p/>
+                On line 5 jQuery's <em>fadeOut</em> is used to fade out the current view. Line 7 and 8 jQuery's <em>empty</em> and <em>html</em>
+                methods are used to remove the current view and attach the new view's html.
+                <p/>
+                Line 9 is important. Here we invoke the <em>viewAttached</em> method to inform ViewManager that the new view has been attached.
+                <p/>
+                Line 11 we use jQuery's <em>fadeIn</em> to show the new view.
+                And importantly on line 12 we invoke the <em>viewVisible</em> method to inform ViewManager that the new view is visible.
+                <p/>
+                Next let's take a look at implementing a custom animation handler.
+                <p/>
+                We want the current view to slide up, and then slide down the new view.
+                Below we show the code.
+                
+                <code>Custom animation handler</code>
+                
+                <pre class="prettyprint linenums">
+define(function(require) {
+
+    var viewManager = require("jock/view/view-manager");
+
+    // ViewManager options
+    var options = {
+        animateHandler = slideAnimator
+    };
+
+    // Initialize viewManager with new animateHandler
+    viewManager.init(options);
+
+    // custom animation function
+    function slideAnimator(html, viewSettings) {
+        var target = viewSettings.target;
+        var $target = $(target);
+        var viewAttached = viewSettings.viewAttached;
+        var viewVisible = viewSettings.viewVisible;
+
+        // Use jQuery's slideUp function to slide the current view out
+        $target.slideUp('normal', function() {
+            
+            // When complete, we clear the removed view
+            $target.empty();
+            
+            // Next we add the new view's HTML to the DOM
+            $target.html(html);
+            
+            // We fire the viewAttached callback
+            // to inform ViewManager that the view is now attached
+            viewAttached(viewSettings);
+
+            // Next we slide the new view down
+            $target.slideDown('normal', function() {
+
+                // Once complete we invoke the viewVisible callback
+                // to inform ViewManager that the view is now visible
+                viewVisible(viewSettings);
+            });
+        });
+    };
+});
+
+
+</pre>
+
+In the example above, we use jQuery's <em>slideUp</em> and <em>slideDown</em> functions to slide the current view up and offscreen.
+Upon completion the slideUp function invokes it's <em>complete</em> callback on line 21.
+
+<p/>
+Line 24 removes the current view from the DOM and line 27 adds the new view's HTML to the DOM.
+<p/>
+On line 31 <em>viewAttached</em> is invoked which informs ViewManager that the new view HTML is attached to the DOM.
+ViewManager can now resolve the <em>attached</em> promise which allows the new view to bind events and perform DOM manipulation.
+<p/>
+Line 34 uses jQuery's <em>slideDown</em> method to slide the new view down, onscreen.
+<p/>
+Once complete the <em>viewVisible</em> method is invoked to inform ViewManager that the new view is now visible. ViewManager can now
+resolve the <em>visible</em> promise which allows the new view to perform further DOM manipulations on the visible view.
+<p/>
+<b>Warning:</b> depending on the type of animation you need you could end up with both views present on the DOM at the same time. For example
+if you want to slide in a new view while simultaneously sliding out the old view you might add both views to the DOM, next to each other
+and then slide both views to bring the new view onscreen.
+<p/>
+such a scenario can create issues where the two views have duplicate IDs for elements, as this is
+not allowed by HTML.
+<p/>
+The problem with using duplicate IDs is that CSS selector behavior won't be predictable. For example add an event to the button with ID
+<em>"my-button</em> might not add the event listener to the new view, but instead add it to the current view.
+<p/>
+Some options to deal with duplicate IDs are:
+<p/>
+<ul>
+    <li>ensure IDs are unique across the application. Easiest to do this is to prefix view IDs with a common ID.
+    </li>
+    <li>do not invoke <em>viewAttached</em> and <em>viewVisible</em> until after the current view is removed from the DOM. One problem with
+        this approach is that the new view is already visible and users will notice DOM manipulations performed on the new view such as
+        tables or lists being enhanced and transformed.
+    </li>
+    <li>in your views, limit the jQuery selectors to the current view.
+        Here is a simple way of achieving this:
+                <pre class="prettyprint linenums">
+// We use a proxy to create a global context to limit searching to
+// the div with id '#myView'.
+var $v = $.proxy($.fn.find, $("div#myView"));
+var button = $v(".my-button");
+</pre>
+        
+    </li>
+</ul>
+
+                <h3 id="view-manager-showHTML">ViewManager showHTML</h3>
+
+                <h3 id="viewManager_double_click_problem">ViewManager double click behavior</h3>
+
+                <h3 id="viewManager_history">ViewManager history</h3>
+
+                <h3 id="viewManager_routes">ViewManager routes</h3>
+
+                <h3 id="urlUtility">URL utility</h3>
+
+                <h3 id="templateEngine">Template Engine</h3>
+
+                <h3 id="template-engine-helpers">Template Engine Helpers</h3>
+
+                <h3 id="action-helper">action Helper</h3>
+                The <em>action</em> helper provides an easy way to bind event handlers to the template. Binding event handlers can also be
+                achieved through jQuery's <a href="https://api.jquery.com/on/" target="_blank">on</a> method.
+                <p/>
+                The advantage of using the <em>action</em> helper is it makes it easy to pass data instances being rendered to the event
+                handler. Using jQuery's event handling mechanism you would need some way to associate the DOM element with the data
+                instance, ie. using jQuery's <a href="https://api.jquery.com/jQuery.data/" target="_blank">data</a>. This will become
+                clearer in the examples below.
+                <p/>
+                The action helper syntax is as follows:
+                <p/>
+                <code>\{{action event = @eventHandler}}</code>
+                
+                For example, let's look at a Handlebars template rendering a table for a list of <em>person</em> instances:
+                <p/>
+                <code>person-view.htm</code>
+                <pre class="prettyprint linenums">
+&lt;table&gt;
+    &lt;tr&gt;
+        &lt;th&gt;Firstname&lt;/th&gt;
+        &lt;th&gt;Lastname&lt;/th&gt;
+        &lt;th&gt;Age&lt;/th&gt;
+        &lt;th&gt;Action&lt;/th&gt;
+    &lt;/tr&gt;
+\{{#each persons}}
+&lt;tr&gt;
+    &lt;td&gt;\{{firstname}}&lt;/td&gt;
+    &lt;td&gt;\{{lastname}}&lt;/td&gt;
+    &lt;td&gt;\{{age}}&lt;/td&gt;
+    &lt;td&gt;
+        &lt;a href='#' \{{action click=@edit}}&gt;Edit&lt;/a&gt; | 
+        &lt;a href='#' \{{action click=@remove}}&gt;Remove&lt;/a&gt;
+    &lt;/td&gt;
+&lt;/tr&gt;
+\{{/each}}
+&lt;/table&gt;
+});</pre>
+                Each row renders the person information, while the <em>action</em> column renders two links, for <em>editing</em> and <em>deleting</em>
+                person instances.
+                <p/>
+                The <em>edit</em> action is a click event which fires an event handler called <em>edit</em>. The <em>action</em> helper will
+                automatically pass the current context object (in this case the current person) to the event handler. There is no need to
+                store or lookup the person instance or the person ID etc.
+                
+                The <em>remove</em> action
+                is a click event which fires an event handler called <em>remove</em>. The <em>action</em> helper will
+                automatically pass the current context object (in this case the current person) to the event handler. There is no need to
+                store or lookup the person instance or the person ID etc.
+                <p/>
+                Next let's look at the template view where the event handlers are defined and passed to the template.
+                <p/>
+                <code>person-view.js</code>
+                <pre class="prettyprint linenums">
+define(function(require) {
+    var te = require("jock/template/template-engine");
+    var template = require("hb!./person-view.htm");
+
+    function personView () {
+
+        var that ={};
+
+        that.onInit(container, viewOptions) {
+
+                // Define actions, one for edit and one for remove.
+                // edit action handler refers to  editPerson function
+                // remove action handler refers to deletePerson function
+            var actions = {
+                edit: editPerson
+                remove: deletePerson
+            }
+
+            // Render the person-view template
+            var html = te.render(template, {persons: persons}, actions);
+           container.attach(template);
+        }
+
+        // Person edit handler. Note that the person instance to edit
+        // is automatically passed to this function from the template
+        // through the action handler
+        function editPerson(person) {
+        }
+        
+        // Person delete handler. Note that the person instance to delete
+        // is automatically passed to this function from the template
+        // through the action handler
+        function deletePerson(person) {
+        }
+
+        return that;
+    }
+
+    return personView;
+});</pre>                
+
+                <h3 id="template-engine-bind">Template Engine Bind</h3>
+
+                <h3 id="formatDate-helper">formatDate helper</h3>
+
+                <h3 id="formatNumber-helper">formatNumber helper</h3>
+
+
+                <h3 id="validation">Validation</h3>
+
+                <h3 id="build">Build</h3>
+
+                <h3 id="view-template">View Template</h3>
+
+                <p>
+                    In this example we show how to <em>include</em> the view's external HTML <em>template</em> file, called
+                    <em>person-view.htm</em>.
+                    We will discuss the example in detail below.
+                </p>
+
+                <pre class="prettyprint linenums">
+define(function(require) {
+
+    // include the PersonView Handblebars template
+    var template = require("hb!./person-view.htm");
+    
+    function PersonView () {
+    ...
+                </pre>
+                <p>In line <em>4</em> we use RequireJS to include the view template, <em>person-view.htm</em>. 
+                </p>
+                <p>This is a Handlebars template so we use a special AMD Handlebars plugin called <em>hb</em>, to load the template. Note the
+                    <em>hb!</em> syntax in the <em>require</em> argument on line 4.
+                </p>
+                <p>The <em>hb</em> plugin will load the person-view template and then compile the template using the Handlebars compiler.
+                    The result of the compilation step is a <em>function</em> which can be executed by the Handlebars runtime. In other
+                    words on line <em>4</em> above, the variable <em>template</em> will be assigned a Handlebars compiled template
+                    <em>function</em>. The <em>template</em> variable is not assigned a string.
+                </p>
+
+                <p>
+
+                    <strong>container</strong> (documented <a href="#page=docs&id=viewManager_container" class="self">here</a>)
+
+                </p>
+
+                <p>
+                    Note the view does not attach it's HTML template to the DOM,
+                    instead it delegates this task back to the #ViewManager through the <em>container</em> that is passed in to the #onInit
+                    method.
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+    <div id='global' >
+        <a href='' {{action click=@clk1}}>click</a>
+    </div>
+    <div id='inner' style='margin-bottom: 200px'>
+        <a href='' {{action click=@clk2}}>click2</a>
+    </div>
