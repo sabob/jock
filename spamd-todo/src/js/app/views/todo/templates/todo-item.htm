@@ -1,8 +1,0 @@
-<li class="{{#if completed}}class="completed"{{/if}}">
-    <div class="view">
-        <input class="toggle" type="checkbox" {{#if completed}}checked{{/if}} {{action change=@toggleComplete}}>
-        <label   {{action dblclick=@startEdit}}>{{title}}</label>
-        <button class="destroy" {{action click=@remove}}></button>
-    </div>
-    <input class="edit" value="{{title}}" {{action keyup=@editKeyup focusout=@editFocusout}}>
-</li>
