@@ -7,8 +7,8 @@
 /bou-examples/build/
 /bou-examples/conf
 /bou/nbproject/private/
-/spamd-examples/nbproject/private/
-/spamd/nbproject/private/
-/spamd-examples/build/
-/spamd-examples/dist/
-/spamd-examples/src/js/lib/greensock/
+/jock-examples/nbproject/private/
+/jock/nbproject/private/
+/jock-examples/build/
+/jock-examples/dist/
+/jock-examples/src/js/lib/greensock/
