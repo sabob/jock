@@ -7,7 +7,7 @@ requirejs.config({
     "baseUrl": "js/lib", // root folder where all our libraries are located
     "paths": {
         "app": "../app", // path to our application
-        "hb": "spamd/hb", // set path to the AMD Handlebars plugin for compiling templates when they are loaded
+        "hb": "jock/hb", // set path to the AMD Handlebars plugin for compiling templates when they are loaded
         "moment": "moment",
         "numeral": "numeral"
     },
