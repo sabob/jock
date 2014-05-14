@@ -3,8 +3,8 @@ define(function(require) {
     var template = require("hb!./Home.htm");
     var titlePartial = require("hb!./title.htm");
     var Handlebars = require("handlebars");
-    var te = require("spamd/template/template-engine");
-    var viewManager = require("spamd/view/view-manager");
+    var te = require("jock/template/template-engine");
+    var viewManager = require("jock/view/view-manager");
     require("domReady!");
 
     function Home() {
@@ -46,7 +46,7 @@ define(function(require) {
             promise.then(function(data) {
 
                 console.log("YAY!", data);
-                var url = $.spamd.url("https://bob:pok@yahoo.com:8080/mydir1/mydir2/index.html?x=1&y=1#x=1&y=1", true);
+                var url = $.jock.url("https://bob:pok@yahoo.com:8080/mydir1/mydir2/index.html?x=1&y=1#x=1&y=1", true);
                 url.removeParam("y");
                 url.addParam("m", null);
                 Handlebars.registerPartial("titlePartial", titlePartial);

@@ -5,7 +5,7 @@
             <ul class="section">
                 <li>
 
-                    <a href="" class="title">SPAMD</a>
+                    <a href="" class="title">Jock</a>
 
                     <a href="id=errorUtils" class="title">errorUtils</a>
                     <ul class="section">
@@ -85,12 +85,12 @@
         <div class="content">
 
             <div>
-                <h2>SPAMD API</h2>
+                <h2>Jock API</h2>
                 <p>
-                    SPAMD provides a small and simple set of utilities for building single page applications (SPA) with jQuery and AMD.
+                    Jock provides a small and simple set of utilities for building single page applications (SPA) with jQuery and AMD.
                 </p>
                 <p>
-                    This page lists the complete SPAMD API reference.
+                    This page lists the complete Jock API reference.
 
                 </p>
                 <p id="viewManager">
@@ -246,13 +246,13 @@ promise.attached.then(function(view) {
             <div id="implicit_api">
                 <h2>Implicit APIs</h2>
                 <p>
-                    Here we document SPAMD's implicit APIs. These APIs are functions that SPAMD expects users to implement. This API 
+                    Here we document Jock's implicit APIs. These APIs are functions that Jock expects users to implement. This API 
                     consists of the <code>onInit</code> and <code>onDestroy</code> methods for views.
                 </p>
 
                 <span class="methodName" id="onInit">onInit</span><code class="methodSig">onInit(container, options)</code>
 
-                <p>Views must implement an <em>onInit</em> method that SPAMD will call to inform the view to initialize itself. Once the
+                <p>Views must implement an <em>onInit</em> method that Jock will call to inform the view to initialize itself. Once the
                     view is initialized, it must inform the ViewManager that it is ready and provide the ViewManager with HTML to render.
                     It does so through the <em>container</em> argument.
                 </p>
@@ -291,7 +291,7 @@ promise.attached.then(function(view) {
 
                 <span class="methodName" id="onDestroy">onDestroy</span><code class="methodSig">onDestroy(options)</code>
 
-                <p>If views wan to to be informed when they are going to be removed, they can implement <em>onDestroy</em> method. SPAMD will
+                <p>If views wan to to be informed when they are going to be removed, they can implement <em>onDestroy</em> method. Jock will
                     call this method if available on the view, when the view is to be removed. Views can use the onDestroy method to perform
                     any cleanup operations, such as storing it's data for later retrieval or unsubscribing listeners etc.
                 </p>

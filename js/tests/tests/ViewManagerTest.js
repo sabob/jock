@@ -1,10 +1,10 @@
 
 "use strict";
 define(function(require) {
-    require("spamd/SPAMD");
+    require("jock/Jock");
     var $ = require('jquery');
     var dummyLib = require('../libs/dummylib');
-    var viewManager = require("spamd/view/view-manager");
+    var viewManager = require("jock/view/view-manager");
     var API = require("app/views/api/API");
 
 

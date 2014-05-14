@@ -5,7 +5,7 @@ require.config({
         'QUnit': '../tests/libs/qunit',
         "app": "../app",
         "test": "../tests",
-        "hb": "spamd/hb",
+        "hb": "jock/hb",
         "moment": "moment",
         "numeral": "numeral"
     },

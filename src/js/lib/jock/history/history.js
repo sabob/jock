@@ -4,8 +4,8 @@ define(function(require) {
     var params = require("../utils/params");
     var paramsObj = null;
 
-    $.spamd = $.spamd || {};
-    $.spamd.history = $.spamd.history || {};
+    $.jock = $.jock || {};
+    $.jock.history = $.jock.history || {};
 
     var createHistory = function() {
 
@@ -213,6 +213,6 @@ define(function(require) {
         return that;
     };
 
-    $.spamd.history = createHistory();
-    return $.spamd.history;
+    $.jock.history = createHistory();
+    return $.jock.history;
 });

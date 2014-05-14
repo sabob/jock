@@ -5,7 +5,7 @@ define(function(require) {
     var $ = require("jquery");
     var template = require("hb!./API.htm");
     var domUtils = require("app/util/dom-utils");
-    var viewManager = require("spamd/view/view-manager");
+    var viewManager = require("jock/view/view-manager");
     require("domReady!");
     function API() {
 
@@ -29,10 +29,10 @@ define(function(require) {
                 /*try {
                     throw new Error("hello");
                 } catch (e) {
-                    alert($.spamd.extractStacktrace(e));
+                    alert($.jock.extractStacktrace(e));
                 }*/
 
-                var windowUrl = $.spamd.url().removeHashParam("id").toString();
+                var windowUrl = $.jock.url().removeHashParam("id").toString();
 
                 $(".toc a, a.self").each(function(i, elem) {
                     var href = $(this).attr("href");
@@ -46,7 +46,7 @@ define(function(require) {
                 });
                 $(".toc a, a.self").on("click", function(e) {
                     var url = $.parseUrl(this.href);
-                    //$.spamd.history.skipEventOnce(true);
+                    //$.jock.history.skipEventOnce(true);
                     var id = url.params.id;
                     scrollIntoView(id);
                 });

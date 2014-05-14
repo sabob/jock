@@ -5,9 +5,9 @@ define(function(require) {
     var $ = require("jquery");
     var template = require("hb!./Docs.htm");
     var domUtils = require("app/util/dom-utils");
-    var viewManager = require("spamd/view/view-manager");
+    var viewManager = require("jock/view/view-manager");
     var HelloWorldDemo = require("../demos/hello/HelloWorld");
-    var te = require("spamd/template/template-engine");
+    var te = require("jock/template/template-engine");
     var API = require("../api/API");
     require("domReady!");
     function Docs() {
@@ -47,7 +47,7 @@ define(function(require) {
 
             function onAttached() {
                 /*
-                var windowUrl = $.spamd.url().removeHashParam("id").toString();
+                var windowUrl = $.jock.url().removeHashParam("id").toString();
 
                 $(".toc a").each(function(i, elem) {
                     var href = $(this).attr("href");
@@ -71,17 +71,17 @@ define(function(require) {
 
                 $(".toc a, .content a.self").on("click", function(e) {
                     var url = $.parseUrl(this.href);
-                    $.spamd.history.skipEventOnce(true);
+                    $.jock.history.skipEventOnce(true);
                     var id = url.params.id;
                     scrollIntoView(id);
                 });
 
                 $("#link-hello-world-demo").on("click", function(e) {
                     e.preventDefault();
-                    //$.spamd.history.disable(true);
-                    $.spamd.history.disableOnce(true);
+                    //$.jock.history.disable(true);
+                    $.jock.history.disableOnce(true);
                     viewManager.showView({view: HelloWorldDemo, target: "#hello-world-demo"});
-                    //$.spamd.history.disable(false);
+                    //$.jock.history.disable(false);
                 });
             }
 

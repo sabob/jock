@@ -2,8 +2,8 @@ define(function(require) {
 //console.log("Setup starting!");
 
     var $ = require("jquery");
-    require("spamd/spamd");
-    var viewManager = require("spamd/view/view-manager");
+    require("jock/jock");
+    var viewManager = require("jock/view/view-manager");
     var Home = require("./views/home/Home");
     var Intro = require("./views/intro/Intro");
     var API = require("./views/api/API");

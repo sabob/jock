@@ -4,7 +4,7 @@ define(function(require) {
 
     function Utils() {
 
-        $.spamd = $.spamd || {};
+        $.jock = $.jock || {};
 
         this.toJson = function(jqueryOrSelector, options) {
             var object = this.toObject(jqueryOrSelector, options);
@@ -112,15 +112,15 @@ define(function(require) {
     }
 
     var utils = new Utils();
-    $.spamd.toObject = utils.toObject;
-    $.spamd.fromObject = utils.fromObject;
-    $.spamd.toJson = utils.toJson;
-    $.spamd.fromJson = utils.fromJson;
+    $.jock.toObject = utils.toObject;
+    $.jock.fromObject = utils.fromObject;
+    $.jock.toJson = utils.toJson;
+    $.jock.fromJson = utils.fromJson;
 
 //TODO auto bind
 // how to detect duplicate
     if ($.fn.toObject) {
-        console.warn("There is already a jQuery plugin called 'toObject'. SPAMD won't override this plugin, instead use $.spamd.toObject");
+        console.warn("There is already a jQuery plugin called 'toObject'. Jock won't override this plugin, instead use $.jock.toObject");
 
     } else {
         $.fn.toObject = function(options) {
@@ -130,7 +130,7 @@ define(function(require) {
     }
 
     if ($.fn.fromObject) {
-        console.warn("There is already a jQuery plugin called 'fromObject'. SPAMD won't override this plugin, instead use $.spamd.fromObject");
+        console.warn("There is already a jQuery plugin called 'fromObject'. Jock won't override this plugin, instead use $.jock.fromObject");
 
     } else {
         $.fn.fromObject = function(obj, options) {
@@ -140,7 +140,7 @@ define(function(require) {
     }
 
     if ($.fn.toJson) {
-        console.warn("There is already a jQuery plugin called 'toJson'. SPAMD won't override this plugin, instead use $.spamd.toJson");
+        console.warn("There is already a jQuery plugin called 'toJson'. Jock won't override this plugin, instead use $.jock.toJson");
 
     } else {
         $.fn.toJson = function(options) {
@@ -149,7 +149,7 @@ define(function(require) {
     }
 
     if ($.fn.fromJson) {
-        console.warn("There is already a jQuery plugin called 'fromJson'. SPAMD won't override this plugin, instead use $.spamd.fromJson");
+        console.warn("There is already a jQuery plugin called 'fromJson'. Jock won't override this plugin, instead use $.jock.fromJson");
 
     } else {
         $.fn.fromJson = function(json, options) {

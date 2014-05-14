@@ -10,8 +10,8 @@ requirejs.config({
 });
 
 // Load the main app module to start the app
-//requirejs(["spamd/spamd", "app/setup", "app/main"]);
+//requirejs(["jock/jock", "app/setup", "app/main"]);
 
-requirejs(["spamd/history/history"], function(history) {
+requirejs(["jock/history/history"], function(history) {
 });
 

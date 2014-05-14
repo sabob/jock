@@ -8,7 +8,7 @@ define(function(require) {
     var API = require("./views/api/API");
     var Dash = require("./views/dash/Dash");
     var footer = require("hb!./views/footer/footer.htm");
-    var viewManager = require("spamd/view/view-manager");
+    var viewManager = require("jock/view/view-manager");
     require("domReady!");
 
     $("#menu-dash").click(function(e) {

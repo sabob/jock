@@ -1,8 +1,8 @@
 define(function(require) {
     var $ = require("jquery");
     var template = require("hb!./Dash2.htm");
-    var te = require("spamd/template/template-engine");
-    var viewManager = require("spamd/view/view-manager");
+    var te = require("jock/template/template-engine");
+    var viewManager = require("jock/view/view-manager");
     require("domReady!");
 
     function Dash2() {

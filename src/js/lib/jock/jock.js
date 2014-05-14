@@ -1,22 +1,22 @@
 define(function(require) {
-    console.log("SPAMD start");
-    //require('spamd/onResourceLoad');
+    console.log("Jock start");
+    //require('jock/onResourceLoad');
     var $ = require("jquery");
     $.ajaxSetup({traditional: true});
 //requirejs(["jquery.history"]);
 //requirejs(["history.adapter.jquery"]);
 //requirejs(["jsuri"]);
-    require("spamd/utils/string");
-    require("spamd/utils/url");
-    require("spamd/utils/utils");
-    require("spamd/utils/error-utils");
+    require("jock/utils/string");
+    require("jock/utils/url");
+    require("jock/utils/utils");
+    require("jock/utils/error-utils");
 
     //console.log("URL NOW RDY");
 
     require("jquery.deparam");
     require("jquery.deserialize");
 
-    console.log("SPAMD end");
+    console.log("Jock end");
 
 // Place third party dependencies in the lib folder
 //
@@ -28,7 +28,7 @@ define(function(require) {
      //"baseUrl": "lib",
      "paths": {
      //"app": "../app",
-     "hb": "spamd/hb",
+     "hb": "jock/hb",
      "moment": "moment",
      "numeral": "numeral"
      },
@@ -40,7 +40,7 @@ define(function(require) {
 
 
 // Load the main app module to start the app
-//console.log("Loading SPAMD");
+//console.log("Loading Jock");
 //requirejs([ "app/main"]);
 
 });

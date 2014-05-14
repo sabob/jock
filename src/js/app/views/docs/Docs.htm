@@ -5,7 +5,7 @@
             <ul class="section">
                 <li>
 
-                    <a href="" class="title">SPAMD</a>
+                    <a href="" class="title">Jock</a>
 
                     <a href="id=errorUtils" class="title">errorUtils</a>
                     <ul class="section">
@@ -73,54 +73,54 @@
         <div class="content">
 
             <div>
-                <h2>SPAMD Documentation</h2>
+                <h2>Jock Documentation</h2>
 
                 <h3 id="intro">Introduction</h3>
 
                 <p>
-                    SPAMD provides the best-of-breed components and some simple utilities to build Single Page Applications (SPA) using a
+                    Jock provides the best-of-breed components and some simple utilities to build Single Page Applications (SPA) using a
                     structured MVC approach.
                 </p>
                 <p>
-                    SPAMD is built on three major building blocks: <a target="_blank" href="http://jquery.com/">jQuery</a> for DOM manipulation and events,
+                    Jock is built on three major building blocks: <a target="_blank" href="http://jquery.com/">jQuery</a> for DOM manipulation and events,
                     <a target="_blank" href="http://requirejs.org/">RequireJS (AMD)</a> for modularization and 
                     <a target="_blank" href="http://requirejs.org/">Handlebars</a>
                     for HTML templates.
                 </p>
                 <p>
-                    SPAMD is based on the following core principles:
+                    Jock is based on the following core principles:
                 </p>
                 <ul>
                     <li>
-                        The developer knows best how to organize and structure the code. SPAMD must not get in your way.
-                        SPAMD is not a framework and should not dictate how to write your views. SPAMD
+                        The developer knows best how to organize and structure the code. Jock must not get in your way.
+                        Jock is not a framework and should not dictate how to write your views. Jock
                         should perform a task and then hand control back to you.
                     </li>
-                    <li>SPAMD must play nice with the web. If you want to use a JavaScript utility or jQuery plugin
+                    <li>Jock must play nice with the web. If you want to use a JavaScript utility or jQuery plugin
                         it should work as you would expect, no extra work should be required from your side.</li>
                     <li>
-                        SPAMD does not interfere with DOM manipulation. You can perform any DOM manipulation you want, SPAMD doesn't care.
+                        Jock does not interfere with DOM manipulation. You can perform any DOM manipulation you want, Jock doesn't care.
                     </li>
                     <li>
                         HTML templates must consist of HTML, no proprietary extensions.
                     </li>
                     <li>
-                        SPAMD should be simple and easy to learn. One should be able to learn SPAMD in a couple of hours.
+                        Jock should be simple and easy to learn. One should be able to learn Jock in a couple of hours.
                     </li>
                 </ul>
 
                 <h3 id="the-view">The View</h3>
-                <p>The primary use case in SPAMD is to navigate between views, replacing the current view with a new view.
+                <p>The primary use case in Jock is to navigate between views, replacing the current view with a new view.
                 </p>
 
-                <p>Views in SPAMD are specified as an AMD module. Views do not extend from a SPAMD specific class or type, instead Views
+                <p>Views in Jock are specified as an AMD module. Views do not extend from a Jock specific class or type, instead Views
                     are normal JavaScript <em>Functions</em> or <em>Objects</em>. The only requirement is for the View to provide an
-                    <a href="#page=api&id=onInit" class="link">#onInit</a> method. SPAMD invokes the #onInit method to inform the view to initialize
+                    <a href="#page=api&id=onInit" class="link">#onInit</a> method. Jock invokes the #onInit method to inform the view to initialize
                     itself when needed.
                 </p>
 
                 <h3 id="hello-world-example">Hello world example</h3>
-                <p>Let's look at a  Hello World example in SPAMD which we will discuss in detail below.
+                <p>Let's look at a  Hello World example in Jock which we will discuss in detail below.
                 </p>
                 <p>First let's look at the HelloWorld JavaScript file.
                 </p>
@@ -162,7 +162,7 @@ define(function(require) {
     var helloWorldView = require("app/views/HelloWorld");
 
     // include ViewManager
-    var viewManager = require("spamd/view/view-manager");
+    var viewManager = require("jock/view/view-manager");
 
     // Target specifies the ID of the HTML element where views
     // will be placed
@@ -185,7 +185,7 @@ define(function(require) {
 
                 <p>On line 5 we <em>import</em> the <span class="typ">HelloWorld</span> View's
                     associated template, <em>hello-world.htm</em>. Note the <em>hb!</em> prefix before the template path,
-                    <em>"hb!./hello-world.htm"</em>.This is an AMD plugin provided by SPAMD to load and compile Handlebars
+                    <em>"hb!./hello-world.htm"</em>.This is an AMD plugin provided by Jock to load and compile Handlebars
                     templates. The <em>template</em> variable in line 5, will in fact be a compiled Handlebars function,
                     not a string. For those familiar with AMD, one can also use the AMD <em>text</em> plugin to load Handlebars templates,
                     but one will then have to compile them manually.
@@ -212,7 +212,7 @@ define(function(require) {
                     <em>require</em> function. If you are not familiar with AMD you will note that there is no need for <em>&lt;script&gt;</em>
                     tags to include JavaScript files in your application.
                 </p>
-                <p>Line 7 imports SPAMD's <em>ViewManager</em>, a mechanism for showing views. We will discuss ViewManager in detail below.
+                <p>Line 7 imports Jock's <em>ViewManager</em>, a mechanism for showing views. We will discuss ViewManager in detail below.
                 </p>
                 <p>Line 11 creates an option, <em>view</em> to pass to ViewManager telling it the name of the view to show. Line 12
                     specifies the <em>target</em>, a CSS selector, where the view must be added to on the DOM. The <em>container</em> object
@@ -224,23 +224,23 @@ define(function(require) {
 
                 </p>
 
-                <h3 id="spamd-configuration">SPAMD configuration</h3>
+                <h3 id="jock-configuration">Jock configuration</h3>
                 <p>
-                    Since SPAMD is based on AMD, it should be familiar to anyone with AMD experience.
+                    Since Jock is based on AMD, it should be familiar to anyone with AMD experience.
                 </p>
                 <p>AMD provides a moduling system for JavaScript applications, so there is no need to include a bunch of &lt;script&gt; tags
                     in your HTML pages. Instead, the JavaScript application is split into modules which are loaded as required.
                 </p>
                 <p>For a good overview on AMD see this <a href="article" target="_blank">article</a>.
                 </p>
-                <p>To start a SPAMD application you generally need the following setup:
+                <p>To start a Jock application you generally need the following setup:
                 </p>
                 <ul>
                     <li>an index.html to bootstrap <code>require.js</code>.</li>
-                    <li>a <code>config.js</code> to configure <code>requirejs</code> to the needs of your application, SPAMD and other libraries.
+                    <li>a <code>config.js</code> to configure <code>requirejs</code> to the needs of your application, Jock and other libraries.
                         NOTE: config.js does not include application specific configuration, that is done through the <code>setup.js</code> script.</li>
                     <li><code>main.js</code>, the entry point to your application, invoked from <code>config.js</code> above. Here you start
-                        configuring your application, such as navigation menus and events. You can also configure SPAMD in main.js, although it
+                        configuring your application, such as navigation menus and events. You can also configure Jock in main.js, although it
                         is common to push this configuration to a separate file, setup.js</li>
                     <li><code>setup.js</code> is sometimes used to hold application specific configuration instead of cluttering main.js</li>
                 </ul>
@@ -286,7 +286,7 @@ requirejs.config({
     "baseUrl": "js/lib", // root location of JS libraries
     "paths": {
         "app": "../app", // path to our application
-        "hb": "spamd/hb", // path to the AMD Handlebars plugin
+        "hb": "jock/hb", // path to the AMD Handlebars plugin
         "moment": "moment",
         "numeral": "numeral"
     },
@@ -331,8 +331,8 @@ requirejs(["app/main"]); </pre>
                 <pre class="prettyprint linenums">
 define(function(require) {
   var $ = require("jquery"); // load jquery
-  require("spamd/spamd"); // load SPAMD bootstrap module
-  var viewManager = require("spamd/view/view-manager");
+  require("jock/jock"); // load Jock bootstrap module
+  var viewManager = require("jock/view/view-manager");
   var Home = require("./views/home/Home"); //Home View
   var Customer = require("./views/cust/Customers");
 
@@ -354,9 +354,9 @@ define(function(require) {
 });</pre>
                 <p>The application is now setup and will load the <em>Home</em> view when visiting the url: <em>http://hostname/</em>
                 </p>
-                <p>Note line 3, we load the <em>spamd</em> bootstrap module. This module is provided by SPAMD to load all of SPAMD
+                <p>Note line 3, we load the <em>jock</em> bootstrap module. This module is provided by Jock to load all of Jock
                     required plugins and extra jQuery plugins. Without including this module, you will run into errors where certain of the
-                    documented API under the SPAMD or jQuery namespace doesn't work, as they haven't been loaded. So always include this
+                    documented API under the Jock or jQuery namespace doesn't work, as they haven't been loaded. So always include this
                     module in your <em>main.js</em> or <em>setup.js</em> module. 
                 </p>
 
@@ -365,7 +365,7 @@ define(function(require) {
                 <code>setup.js</code>
                 <pre class="prettyprint">
 define(function(require) {
-  var viewManager = require("spamd/view/view-manager");
+  var viewManager = require("jock/view/view-manager");
   var Home = require("./views/home/Home"); //Home View
 
   var options = {
@@ -382,7 +382,7 @@ define(function(require) {
                 <pre class="prettyprint">
 define(function(require) {
   require("./setup"); // Load the setup file
-  var viewManager = require("spamd/view/view-manager");
+  var viewManager = require("jock/view/view-manager");
   var Home = require("./views/home/Home"); //Home View
   ...
 
@@ -395,19 +395,19 @@ define(function(require) {
   ...
 }); </pre>
 
-                <p>With SPAMD configured let's look at one of the main concepts in SPAMD and single page applications, switching views.</p>
+                <p>With Jock configured let's look at one of the main concepts in Jock and single page applications, switching views.</p>
 
                 <h3 id="managing-views">Managing Views</h3>
 
                 <p>
-                    Managing Views forms the heart of SPAMD applications. SPAMD provides a simple mechanism to switch between views in a
+                    Managing Views forms the heart of Jock applications. Jock provides a simple mechanism to switch between views in a
                     SPA. One of the core utilities is the #ViewManager.
                     #ViewManager provides a method, #showView for replacing views.
                 </p>
 
                 <p>
-                    Views in SPAMD are AMD modules that contains regular JavaScript code. Views do not extend from any 
-                    SPAMD provided types. The only requirement is that a view must include an <a href="#page=api&id=onInit" class="link">#onInit</a> method. 
+                    Views in Jock are AMD modules that contains regular JavaScript code. Views do not extend from any 
+                    Jock provided types. The only requirement is that a view must include an <a href="#page=api&id=onInit" class="link">#onInit</a> method. 
                 </p>
                 <p>
                     When ViewManager#showView is called, #ViewManager will create the new View (or reuse an existing instance) and invoke
@@ -417,7 +417,7 @@ define(function(require) {
 
                 <h3 id="basic-view-example">Basic View example</h3>
                 <p>
-                    An example AMD module for a SPAMD view:
+                    An example AMD module for a Jock view:
                 </p>
                 <pre class="prettyprint linenums">
 define(function(require) {
@@ -436,7 +436,7 @@ define(function(require) {
 });</pre>
 
                 <h3 id="ViewManager-life-cycle">The View life cycle</h3>
-                <p>SPAMD provides a well defined <em>life cycle</em> for views, through the #ViewManager.
+                <p>Jock provides a well defined <em>life cycle</em> for views, through the #ViewManager.
                 </p>
                 <p>The <em>life cycle</em> consists of an <em>initialization</em> phase and an optional <em>destroy</em> phase. These phases
                     are implemented by the view through two methods namely, <a href="#page=api&id=onInit" class="link"><em>onInit</em></a> (shown above) and
@@ -472,7 +472,7 @@ define(function(require) {
                 <pre class="prettyprint linenums">
 define(function(require) {
 
-    var viewManager = require("spamd/view/view-manager");
+    var viewManager = require("jock/view/view-manager");
     var Home = require("./views/home/Home");
 
     var options = {
@@ -502,7 +502,7 @@ define(function(require) {
                 Below we outline the sequence flow for showView:
                 <ol>
                     <li>
-                        the view argument is resolved to it's view type. You can read <a href="todo">here</a> how SPAMD resolves views.
+                        the view argument is resolved to it's view type. You can read <a href="todo">here</a> how Jock resolves views.
                     </li>
                     <li>
                         a new view instance is created by invoking <code>new view()</code>.
@@ -539,7 +539,7 @@ define(function(require) {
 var personView = require("app/views/personView");
 
 // include ViewManager  
-var viewManager = require("spamd/view/view-manager");
+var viewManager = require("jock/view/view-manager");
 
 // Show the view
 viewManager.showView( {view: personView} );
@@ -551,8 +551,8 @@ define(function(require) {
 
 var $ = require("jquery");
 var template = require("hb!./personView.htm");
-var te = require("spamd/template/template-engine");
-var viewManager = require("spamd/view/view-manager");
+var te = require("jock/template/template-engine");
+var viewManager = require("jock/view/view-manager");
 
     function personView() {
 
@@ -577,10 +577,10 @@ var viewManager = require("spamd/view/view-manager");
 var personView = require("app/views/personView");
 
 // include ViewManager  
-var viewManager = require("spamd/view/view-manager");
+var viewManager = require("jock/view/view-manager");
 
 // Create an options object with 'args' and 'params'. The params will
-// automatically be added to the URL hash by SPAMD, for history purposes
+// automatically be added to the URL hash by Jock, for history purposes
 var options = {
     view: personView,
     args: {callback: function(view) {
@@ -600,8 +600,8 @@ define(function(require) {
 
 var $ = require("jquery");
 var template = require("hb!./personView.htm");
-var te = require("spamd/template/template-engine");
-var viewManager = require("spamd/view/view-manager");
+var te = require("jock/template/template-engine");
+var viewManager = require("jock/view/view-manager");
 
     function personView() {
 
@@ -614,7 +614,7 @@ var viewManager = require("spamd/view/view-manager");
 
             // retrieve the id parameter from the options.
             // The id parameter will also be added to the URL hash
-            // by SPAMD, thus history will be working automatically
+            // by Jock, thus history will be working automatically
             var id = options.params.id;
 
             // Retrieve the person with the given id
@@ -645,7 +645,7 @@ var viewManager = require("spamd/view/view-manager");
 
                 Let's walk through each of these options.
                 <p>
-                    If a <code>Function or Constructor Function</code> is passed in, SPAMD will invoke the function with
+                    If a <code>Function or Constructor Function</code> is passed in, Jock will invoke the function with
                     <em>new</em>, as in <em>new View()</em>.
                 </p>
 
@@ -658,19 +658,19 @@ var personView = require("app/views/personView");
 var ProductView = require("app/views/ProductView");
 
 // include ViewManager
-var viewManager = require("spamd/view/view-manager");
+var viewManager = require("jock/view/view-manager");
                     
-// personView is a normal JavaScript Function so SPAMD will create an
+// personView is a normal JavaScript Function so Jock will create an
 // instance by invoking: var view = new personView();
 viewManager.showView( {view: personView} );
 
-// ProductView is a Constructor Function so SPAMD will create an
+// ProductView is a Constructor Function so Jock will create an
 // instance by invoking: var view = new ProductView();
 viewManager.showView( {view: ProductView} );
                 </pre>
                 <p>
                 </p>
-                <p>If an <em>Object</em> is passed as the view argument, SPAMD will assume the object is an existing view, and won't
+                <p>If an <em>Object</em> is passed as the view argument, Jock will assume the object is an existing view, and won't
                     create a new instance. This is useful if you want to manage view instances yourself.
                 </p>
 
@@ -680,7 +680,7 @@ viewManager.showView( {view: ProductView} );
 var personView = require("app/views/personView");
 
 // include ViewManager  
-var viewManager = require("spamd/view/view-manager");
+var viewManager = require("jock/view/view-manager");
                     
 // Here we create and store a view instance and pass that to showView
 var viewObject = personView();
@@ -689,16 +689,16 @@ viewManager.showView( {view: viewObject} );
                 <p>
                 </p>
 
-                <p>If a <em>string</em> is passed as the view argument, SPAMD will assume this is the <em>route</em> to the view and
-                    will try and lookup the path for the given route. If a route cannot be found, SPAMD will assume the string is the
+                <p>If a <em>string</em> is passed as the view argument, Jock will assume this is the <em>route</em> to the view and
+                    will try and lookup the path for the given route. If a route cannot be found, Jock will assume the string is the
                     <em>path</em> to the view.
-                    Next SPAMD will make a <em>require()</em> call passing in the view path in order to load the view. Once the view is
-                    loaded, SPAMD will follow the rules above on <em>Function</em> resolution.
+                    Next Jock will make a <em>require()</em> call passing in the view path in order to load the view. Once the view is
+                    loaded, Jock will follow the rules above on <em>Function</em> resolution.
                 </p>
 
                 <code>string</code> examples:
                 <pre class="prettyprint linenums">
-var viewManager = require("spamd/view/view-manager");
+var viewManager = require("jock/view/view-manager");
 var personView = require("app/views/personView");
 
 // Setup a route for the personView:
@@ -771,7 +771,7 @@ viewManager.showView( {view: "person"} );
 
                 <code>JavaScript showing the promises for showView</code>
                 <pre class="prettyprint linenums">
-var viewManager = require("spamd/view/view-manager");
+var viewManager = require("jock/view/view-manager");
 var personView = require("app/views/personView");
 
 var promise = viewManager.showView({view: personView});
@@ -819,7 +819,7 @@ promise.overwrite.then(function(view) {
 define(function(require) {
 
     var template = require("hb!./person-view.htm");
-    var te = require("spamd/template/template-engine");
+    var te = require("jock/template/template-engine");
 
     function personView() {
 
@@ -854,16 +854,16 @@ define(function(require) {
                 On line 14 the template is rendered as HTML which is then passed to the <em>attach</em> method of the container, online 19.
                 <p/>
                 In the <em>attach</em> method, assuming default animation behavior,
-                SPAMD will fade out (make invisible) the current view before removing it. The new view's HTML will be attach to the DOM all while the view
-                is still invisible. Once the new view is <em>atached</em> to the DOM, SPAMD resolves the <em>attached</em> promise.
+                Jock will fade out (make invisible) the current view before removing it. The new view's HTML will be attach to the DOM all while the view
+                is still invisible. Once the new view is <em>atached</em> to the DOM, Jock resolves the <em>attached</em> promise.
                 <p/>
-                Next SPAMD fades in the newly attached view, and once complete, resolves the <em>visible</em> promise.
+                Next Jock fades in the newly attached view, and once complete, resolves the <em>visible</em> promise.
                 <p/>
-                Lastly SPAMD will resolve the <em>default</em> promise and the <em>showView</em> call is complete.
+                Lastly Jock will resolve the <em>default</em> promise and the <em>showView</em> call is complete.
                 <p/>
                 If the ajax call resulted in an error, the error handler on line 21 will be invoked.
                 <p/>
-                The error handler will instruct SPAMD to <em>cancel</em> the showView call by invoking <em>container.cancel()</em> on line 24.
+                The error handler will instruct Jock to <em>cancel</em> the showView call by invoking <em>container.cancel()</em> on line 24.
 
                 <h3 id="viewManager_container">The ViewManager Container passed to onInit</h3>
                 The view's <em>onInit</em> method receives two arguments, a <em>container</em> and a viewOptions object. Here we will look
@@ -991,7 +991,7 @@ define(function(require) {
 define(function(require) {
 
     var template = require("hb!./person-view.htm");
-    var te = require("spamd/template/template-engine");
+    var te = require("jock/template/template-engine");
 
     function personView() {
 
@@ -1132,15 +1132,15 @@ define(function(require) {
                                 <a href="#page=api&id=viewManager_container_attach" class="link">container.attach(options)</a>. Calls
                                 to show this view won't be animated.
                                 <p/>
-                                SPAMD automatically switches off animation when users use the browser history to navigate between views.
+                                Jock automatically switches off animation when users use the browser history to navigate between views.
                                 <p/>
-                                SPAMD also automatically switches off animation when users <a href='#page=docs&id=overwrite' class="self">overwrite</a>
+                                Jock also automatically switches off animation when users <a href='#page=docs&id=overwrite' class="self">overwrite</a>
                                 a view through multiple showView invocations while a showView is still busy processing. In such a case,
                                 animation is switched off to switch between views as quickly as possible. Animation is switched on again
                                 as soon as the showView completes.
 
                 <h3 id="custom_animation">Custom animation</h3>
-                By default SPAMD provides a <em>fade</em> animation when switching views. This animation will fade out the current view,
+                By default Jock provides a <em>fade</em> animation when switching views. This animation will fade out the current view,
                 remove the current view's DOM, add the new view's DOM and fade in the new view.
                 <p/>
                 You can also provide your own animation implementation by passing in an <code>{animateHandler: function}</code> option to
@@ -1200,7 +1200,7 @@ function attachViewWithAnim(html, viewSettings) {
                 <pre class="prettyprint linenums">
 define(function(require) {
 
-    var viewManager = require("spamd/view/view-manager");
+    var viewManager = require("jock/view/view-manager");
 
     // ViewManager options
     var options = {
@@ -1357,7 +1357,7 @@ var button = $v(".my-button");
                 <code>person-view.js</code>
                 <pre class="prettyprint linenums">
 define(function(require) {
-    var te = require("spamd/template/template-engine");
+    var te = require("jock/template/template-engine");
     var template = require("hb!./person-view.htm");
 
     function personView () {

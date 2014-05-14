@@ -3,8 +3,8 @@ define(function(require) {
     var template = require("hb!./Dash.htm");
     var Dash1 = require("./Dash1");
     var Dash2 = require("./Dash2");
-    var te = require("spamd/template/template-engine");
-    var viewManager = require("spamd/view/view-manager");
+    var te = require("jock/template/template-engine");
+    var viewManager = require("jock/view/view-manager");
     require("domReady!");
 
     function Dash() {
