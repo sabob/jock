@@ -16,6 +16,10 @@
                var p2 = d2.promise();
                var d3 = $.Deferred();
                var p3 = d3.promise();
+               
+               p1.then(function() {
+                  console.log("P1 done");
+              });
 
                p1.then(function() {
                   console.log("P1 done");

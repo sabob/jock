@@ -2,8 +2,8 @@ define(function(require) {
 
     var $ = require("jquery");
     var template = require("hb!./CustomerSearch.htm");
-    var te = require("spamd/template/template-engine");
-    var viewManager = require("spamd/view/view-manager");
+    var te = require("jock/template/template-engine");
+    var viewManager = require("jock/view/view-manager");
     var CustomerEdit = require("./CustomerEdit");
     require("domReady!");
 

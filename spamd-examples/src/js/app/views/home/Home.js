@@ -3,8 +3,8 @@ define(function(require) {
     var template = require("hb!./Home.htm");
     var titlePartial = require("hb!./title.htm");
     var Handlebars = require("handlebars");
-    var te = require("spamd/template/template-engine");
-    var viewManager = require("spamd/view/view-manager");
+    var te = require("jock/template/template-engine");
+    var viewManager = require("jock/view/view-manager");
     require("domReady!");
 
     function Home() {

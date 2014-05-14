@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta http-equiv="X-UA-Compatible" content="chrome=1">
+        <!--<link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>-->
+        <link rel="stylesheet" type="text/css" href="../css/site.css" />
+        <link rel="stylesheet" type="text/css" href="../css/font-awesome.css" />
+
+        <script data-main="js/app" src="../js/lib/jquery.js"></script>
+        <!--<script src="../js/lib/history.adapter.jquery.js"></script>-->
+        <script src="../js/lib/jquery.history.js"></script>
+        <script>
+            $(function() {
+                console.log(History.Adapter.bind);
+
+                
+                 $(window).on('statechange', function() { // Note: We are using statechange instead of popstate
+                 var state = History.getState(); // Note: We are using History.getState() instead of event.state
+                 console.log("STATE CHANGE", state);
+                 });
+                 
+                 $(window).on('anchorchange', function() { // Note: We are using statechange instead of popstate
+                 var state = History.getState(); // Note: We are using History.getState() instead of event.state
+                 console.log("ANCHOR CHANGE", state);
+                 });
+
+                $("#one").on("click", function(e) {
+                    //e.preventDefault();
+                    var state = {param: "1"};
+                    var params = $.param(state);
+                    History.pushState(state, "page 1", "?page=one&" + params + "#id1");
+                });
+
+                $("#two").on("click", function(e) {
+                    //e.preventDefault();
+                    var state = {param: "2"};
+                    var params = $.param(state);
+                    //history.pushState(state, "page 2", "two.html?" + params + "#id2");
+                    History.pushState(state, "page 2", "?page=two&" + params + "#id2");
+                });
+
+                $("#three").on("click", function(e) {
+                    //e.preventDefault();
+                    var state = {param: "3"};
+                    var params = $.param(state);
+                    //history.pushState(state, "page 3", "three.html?" + params + "#id3");
+                    History.pushState(state, "page 3", "?page=three&" + params + "#id3");
+                });
+
+                $("#chk").on("click", function(e) {
+                    e.preventDefault();
+                    //setTimeout(function() {
+                        var currentState = History.getState();
+                        console.log("state", currentState);
+
+                    //}, 100);
+                });
+            });
+        </script>
+    </head>
+
+    <body>
+        <div style="position: fixed;margin-left: 30px">
+
+            <a id="one" href="#id1">One</a>
+
+            <a id="two" href="#id2">Two</a>
+
+            <a id="three" href="#id3">Three</a>
+
+            <a id="chk" href="#">Check</a>
+        </div>
+
+        <div style="padding-top: 40px"></div>
+
+        <p id="id1">
+            P1
+            <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+        </p>
+
+        <p id="id2">
+            P2
+            <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+        </p>
+
+        <p id="id3">
+            P3
+            <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+        </p>
+
+    </body>
+</html>

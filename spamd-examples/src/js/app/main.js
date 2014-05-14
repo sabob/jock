@@ -5,7 +5,7 @@ define(function(require) {
     var CustomerSearch = require("./views/customer/CustomerSearch");
     var ProductSearch = require("./views/product/ProductSearch");
     var footer = require("hb!./views/footer/footer.htm");
-    var viewManager = require("spamd/view/view-manager");
+    var viewManager = require("jock/view/view-manager");
     require("domReady!");
     $("#menu-home").click(function(e) {
         e.preventDefault();
