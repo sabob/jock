@@ -389,8 +389,8 @@ define(function(require) {
         }
     };
 
-    $.spamd = $.spamd || {};
-    $.spamd.url = createUrl;
-    return $.spamd.url;
+    $.jock = $.jock || {};
+    $.jock.url = createUrl;
+    return $.jock.url;
 
 });

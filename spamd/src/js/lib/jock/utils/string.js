@@ -81,8 +81,8 @@ define(function(require) {
         return source * 1 || 0;
     };
 
-    $.spamd = $.spamd || {};
-    $.spamd.string = string;
+    $.jock = $.jock || {};
+    $.jock.string = string;
 
     return string;
 });

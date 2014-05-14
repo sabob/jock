@@ -7,7 +7,7 @@
 
 define(function(require) {
     var $ = require("jquery");
-    var string = require("spamd/utils/string");
+    var string = require("jock/utils/string");
 
     var createParams = function() {
 

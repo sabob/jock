@@ -9,11 +9,11 @@
 }(function($) {
 // use $ safely, it's provided either by AMD or module pattern
 
-    $.spamd = $.spamd || {};
-    /*if (!$.spamd) {
-     $.spamd = spamd;
+    $.jock = $.jock || {};
+    /*if (!$.jock) {
+     $.jock = jock;
      }*/
-    $.spamd.showError = function(text, selector) {
+    $.jock.showError = function(text, selector) {
         selector = selector || 'body';
         var tmpl = '<div id="kv-overlay" class="overlay"></div><div id="errorDialog"><div id="errorHolder"></div><div class="close bl-close"><a href="#">Close</a></div><div class="close br-close"><a href="#">Close</a></div></div>';
 
@@ -153,7 +153,7 @@
     // so far supports only Firefox, Chrome and Opera (buggy), Safari (for real exceptions)
 // Later Safari and IE10 are supposed to support error.stack as well
 // See also https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Error/Stack
-    $.spamd.extractStacktrace = function(e, offset) {
+    $.jock.extractStacktrace = function(e, offset) {
         var fileName="pok.js";
         offset = offset === undefined ? 0 : offset;
 
@@ -194,18 +194,18 @@
         }
     };
 
-    $.spamd.sourceFromStacktrace = function(offset) {
+    $.jock.sourceFromStacktrace = function(offset) {
         try {
             throw new Error();
         } catch (e) {
-            return $.spamd.extractStacktrace(e, offset);
+            return $.jock.extractStacktrace(e, offset);
         }
     };
     
-    $.spamd.extractFileName = function() {
-        var fileName = ($.spamd.sourceFromStacktrace( 0 ) || "" ).replace(/(:\d+)+\)?/, "").replace(/.+\//, "");
+    $.jock.extractFileName = function() {
+        var fileName = ($.jock.sourceFromStacktrace( 0 ) || "" ).replace(/(:\d+)+\)?/, "").replace(/.+\//, "");
         return fileName;
     };
 
-    return $.spamd;
+    return $.jock;
 }));

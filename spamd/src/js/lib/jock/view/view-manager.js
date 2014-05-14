@@ -2,8 +2,8 @@ define(function(require) {
 
     var $ = require("jquery");
     require("domReady!");
-    require("spamd/history/history");
-    var params = require("spamd/utils/params");
+    require("jock/history/history");
+    var params = require("jock/utils/params");
     var utils = require("../utils/utils");
     var templateEngine = require("../template/template-engine");
     var tweenMax = require("tweenmax");
@@ -70,7 +70,7 @@ define(function(require) {
 
             this.setRoutes(settings.routes);
 
-            $.spamd.history.init(function(options) {
+            $.jock.history.init(function(options) {
                 //console.warn("External?", options.external);
 
                 //console.log("PROCESS HASH CHANGE OVER", processHashChange);
@@ -82,7 +82,7 @@ define(function(require) {
 
                     processHashChange = false;
 
-                    var historyParams = $.spamd.history.params();
+                    var historyParams = $.jock.history.params();
                     var viewName = historyParams.page;
                     //console.log("BUT VIEWNAME", viewName);
                     var viewPath = routesByName[viewName] || viewName;
@@ -91,7 +91,7 @@ define(function(require) {
 //                    }
 
                     if (viewPath) {// ensure path is not blank
-                        var viewParams = $.spamd.history.params.get();
+                        var viewParams = $.jock.history.params.get();
                         delete viewParams.page;
                         //console.log("hash shows new view", viewPath, " with params", viewParams);
                         //console.log("2", location.href);
@@ -104,9 +104,9 @@ define(function(require) {
                     }
                 }
             });
-            var hasPage = $.spamd.history.params().page;
+            var hasPage = $.jock.history.params().page;
             if (hasPage) {
-                $.spamd.history.update();
+                $.jock.history.update();
             } else {
 
                 if (settings.defaultView) {
@@ -342,7 +342,7 @@ define(function(require) {
 
         this.hasMovedToNewView = function(route) {
             //console.log("3", location.href);
-            var currentViewName = $.spamd.history.params().page;
+            var currentViewName = $.jock.history.params().page;
             if (currentViewName === route) {
                 //console.info("You have NOT moved to a new view. From '" + currentViewName + "' to '" + route + "'");
                 return false;
@@ -380,20 +380,20 @@ define(function(require) {
             // we don't change the view url, except add new parameters
             if (isMainViewReplaced) {
                 var movedToNewView = this.hasMovedToNewView(route);
-                currentHash = $.spamd.history.hash();
+                currentHash = $.jock.history.hash();
                 //console.log("movedToNewView", movedToNewView);
                 if (movedToNewView) {
-                    $.spamd.history.clear();
+                    $.jock.history.clear();
                 }
-                $.spamd.history.params.set({page: route});
+                $.jock.history.params.set({page: route});
             }
             //console.log("5", location.href);
 
             var viewParams = viewSettings.params;
-            $.spamd.history.params.set(viewParams);
+            $.jock.history.params.set(viewParams);
 
             if (viewSettings.updateHistory) {
-                $.spamd.history.update();
+                $.jock.history.update();
             }
             processHashChange = true;
 
@@ -497,9 +497,9 @@ define(function(require) {
                         return that.overwrite(view, viewSettings.deferredHolder, viewSettings);
                     }
                     processHashChange = false;
-                    $.spamd.history.hash(currentHash);
+                    $.jock.history.hash(currentHash);
                     currentHash = null;
-                    $.spamd.history.update();
+                    $.jock.history.update();
                     processHashChange = true;
 
                     var cancelPromise = deferredHolder.promises.cancel;
@@ -803,7 +803,7 @@ define(function(require) {
 
         this.updateHistory = function() {
             processHashChange = false;
-            $.spamd.history.update();
+            $.jock.history.update();
             processHashChange = true;
         };
 

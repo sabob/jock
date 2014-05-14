@@ -4,18 +4,18 @@
     <configuration>
         <general-data xmlns="http://www.netbeans.org/ns/freeform-project/1">
             <!-- Do not use Project Properties customizer when editing this file manually. -->
-            <name>spamd</name>
+            <name>jock</name>
             <properties>
                 <property name="ant.script">ant/build.xml</property>
             </properties>
             <folders>
                 <source-folder>
-                    <label>spamd</label>
+                    <label>jock</label>
                     <type>doc_root</type>
                     <location>.</location>
                 </source-folder>
                 <source-folder>
-                    <label>spamd</label>
+                    <label>jock</label>
                     <type>web_inf</type>
                     <location>.</location>
                 </source-folder>

@@ -41,9 +41,9 @@ define(function(require) {
             target = target || "body";
             //console.log("binding target:", target);
 
-            // Select target with data-spamd-attribute and all children with data-spamd-attribute
-            $("[data-spamd-action]", target).addBack("[data-spamd-action]").each(function(i, item) {
-                var currentID = this.attributes["data-spamd-action"].value;
+            // Select target with data-jock-attribute and all children with data-jock-attribute
+            $("[data-jock-action]", target).addBack("[data-jock-action]").each(function(i, item) {
+                var currentID = this.attributes["data-jock-action"].value;
 
                 var currentAction = actionRegistry[currentID];
                 delete actionRegistry[currentID];
@@ -62,7 +62,7 @@ define(function(require) {
                     currentAction.action.call(this, e, currentAction.objectRef, currentAction.options);
                 });
                 // remove the action attribute
-                node.removeAttr("data-spamd-action");
+                node.removeAttr("data-jock-action");
             });
         };
 
@@ -102,7 +102,7 @@ define(function(require) {
                 actionRegistryLength++;
                 var id = actionRegistryLength - 1;
 
-                return new Handlebars.SafeString("data-spamd-action=\"" + id + "\"");
+                return new Handlebars.SafeString("data-jock-action=\"" + id + "\"");
             });
 
             checkHelper('formatDate');
