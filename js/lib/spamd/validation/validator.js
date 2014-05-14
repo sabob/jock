@@ -12,7 +12,6 @@
     "dojo/json",
     "dojo/window",
     "dojo/fx/easing",
-    "dijit/registry",
     "dojo/_base/array",
     "dojo/fx",
     "dojo/dom-attr",
@@ -20,9 +19,6 @@
     "dojo/dom-geometry",
     "app/components/busy/busyPanel",
     "./client-utils",
-    "./view-manager",
-    "dojox/validate/web",
-    "dojox/validate/regexp",
     "dojo/NodeList-traverse",
     "dojo/domReady!"
 ],
@@ -37,17 +33,13 @@
                 JSON,
                 win,
                 easing,
-                registry,
                 array,
                 fx,
                 domAttr,
                 domStyle,
                 domGeom,
                 busyPanel,
-                utils,
-                viewManager,
-                validateWeb,
-                regexp
+                utils
                 ) {
 
             function Validator() {
