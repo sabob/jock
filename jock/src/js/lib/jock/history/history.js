@@ -88,6 +88,9 @@ define(function(require) {
             }
 
             if (changeCallback) {
+               options.hash = params(options.newHash);
+               options.prevHashParams = params(options.oldHash);
+               $(that).trigger("onHashChange", [options]);
                 changeCallback(options);
             }
         }

@@ -5,8 +5,8 @@ define(function(require) {
     require("jock/history/history");
     var params = require("jock/utils/params");
     var utils = require("../utils/utils");
+    var hash = require("jock/history/hash");
     var templateEngine = require("../template/template-engine");
-    var tweenMax = require("tweenmax");
     function ViewManager() {
 
         var that = this;
@@ -70,13 +70,12 @@ define(function(require) {
 
             this.setRoutes(settings.routes);
 
-            $.jock.history.init(function(options) {
+            $.jock.history.init(function(hashOptions) {
                 //console.warn("External?", options.external);
 
                 //console.log("PROCESS HASH CHANGE OVER", processHashChange);
                 //console.log("NEW HASH", options.newHash, "old hash", options.oldHash, "Prcess HASH", processHashChange);
-                var oldPage = params(options.oldHash).get().page;
-                //console.info("OLD View", oldPage);
+                var oldPage = params(hashOptions.oldHash).get().page;
 
                 if (processHashChange) {
 
@@ -84,18 +83,30 @@ define(function(require) {
 
                     var historyParams = $.jock.history.params();
                     var viewName = historyParams.page;
-                    //console.log("BUT VIEWNAME", viewName);
                     var viewPath = routesByName[viewName] || viewName;
                     //if (!viewPath) {
 //                        viewPath = viewName;
 //                    }
 
                     if (viewPath) {// ensure path is not blank
+                        var movedToNewView = that.hasMovedToNewView(oldPage);
+                        if (!hashOptions.initial && !movedToNewView) {
+
+                            //notify hash changes
+                            var views = that.getCurrentViews();
+                            $.each(views, function(i, view) {
+                                $(view.options.hash).trigger("onHashChange", hashOptions);
+                            });
+                            processHashChange = true;
+
+                            return;
+                        }
+
                         var viewParams = $.jock.history.params.get();
                         delete viewParams.page;
                         //console.log("hash shows new view", viewPath, " with params", viewParams);
                         //console.log("2", location.href);
-                        that.showView({view: viewPath, params: viewParams, hashChange: true, externalHashChange: options.external}).then(function(view) {
+                        that.showView({view: viewPath, params: viewParams, hashChange: true, externalHashChange: hashOptions.external}).then(function(view) {
                             settings.onHashChange(view);
                             processHashChange = true;
                         });
@@ -113,6 +124,8 @@ define(function(require) {
                     options.view = settings.defaultView;
                     this.showView(options).then(function(view) {
                         settings.onHashChange(view);
+                        var hashOptions = {view: view};
+                        $(that).trigger("onHashChange", [hashOptions]);
                     });
                 }
             }
@@ -126,42 +139,42 @@ define(function(require) {
 
             this.ensureInitialized();
 
-            var target = options.target || settings.target;
-            // Make copy
-            var defaults = {
-                params: {},
-                args: {},
-                bindTemplate: settings.bindTemplate,
-                animate: settings.animate,
-                updateHistory: settings.updateHistory,
-                overwritten: false,
-                externalHashChange: false
-            };
-            var viewSettings = $.extend({}, defaults, options);
-            viewSettings.target = target;
-            viewSettings._options = options;
-
-            addGlobalErrorHandler(target);
-
-
-            if (typeof (callStack[target]) === 'undefined') {
-                callStack[target] = [];
-            }
-
             var deferredHolder = that.createDeferreds();
 
             // The timeout below allows the attached promise to be returned to the caller before running the function.
             setTimeout(function() {
+                var target = options.target || settings.target;
+                // Make copy
+                var defaults = {
+                    params: {},
+                    args: {},
+                    bindTemplate: settings.bindTemplate,
+                    animate: settings.animate,
+                    updateHistory: settings.updateHistory,
+                    overwritten: false,
+                    externalHashChange: false
+                };
+                var viewSettings = $.extend({}, defaults, options);
+                viewSettings.target = target;
+                viewSettings._options = options;
 
-                if (callStack[target].length !== 0) {
-                    //console.warn("ViewSettings.animate", viewSettings.animate);
-                    //viewSettings.animate = false;
-                    //console.warn("ViewSettings.animate", viewSettings.animate);
+                addGlobalErrorHandler(target);
 
-                    //console.warn("[ViewManager.showView] ViewManager is already processing a showView/showHTML request for the target '" + target + "' and options: ", options, ". Use ViewManager.clear('" + target + "') to force a showView/showHTML request.", callStack[target]);
-                    //deferredHolder.reject();
-                    //return deferredHolder.promises;
+
+                if (typeof (callStack[target]) === 'undefined') {
+                    callStack[target] = [];
                 }
+
+                /*
+                 if (callStack[target].length !== 0) {
+                 //console.warn("ViewSettings.animate", viewSettings.animate);
+                 //viewSettings.animate = false;
+                 //console.warn("ViewSettings.animate", viewSettings.animate);
+                 
+                 //console.warn("[ViewManager.showView] ViewManager is already processing a showView/showHTML request for the target '" + target + "' and options: ", options, ". Use ViewManager.clear('" + target + "') to force a showView/showHTML request.", callStack[target]);
+                 //deferredHolder.reject();
+                 //return deferredHolder.promises;
+                 }*/
 
                 if (templateEngine.hasActions()) {
                     //console.warn("It's been detected that there are unbounded actions in the TemplateEngine! Make sure to call templateEngine.bind() after template is added to DOM!");
@@ -308,30 +321,16 @@ define(function(require) {
                 return this.overwrite(view, deferredHolder, viewSettings);
             }
 
-            // Check if invokeWithNew has been set yet
-            if (typeof view.invokeWithNew === "undefined") {
-
-                var invokewithNew = utils.isInvokeFunctionWithNew(view);
-                view.invokeWithNew = invokewithNew;
-            }
-
             if (view instanceof Function) {
-                // View must be instantiated
-                if (view.invokeWithNew) {
-                    // Function name starts with uppercase so invoke with "new"
-                    viewSettings.view = new view();
-
-                } else {
-                    // Function name is lowercase so invoke without "new"
-                    viewSettings.view = view();
-                }
+                // Instantiate new view
+                viewSettings.view = new view();
 
                 if (viewSettings.view.id == null) {
                     viewSettings.view.id = view.id;
                 }
 
             } else {
-                // View already instantiated
+                // View is not a Function, so assume it is an object and thus already instantiated
                 viewSettings.view = view;
             }
             //viewSettings.view._created = true;
@@ -360,12 +359,13 @@ define(function(require) {
                 return this.overwrite(view, viewSettings.deferredHolder, viewSettings);
             }
 
+            viewSettings.hash = {id: Math.random()};
+
             var target = viewSettings.target;
             var isMainViewReplaced = target === settings.target;
             //isMainViewReplaced=true;
 
             var view = viewSettings.view;
-            //setCurrentView(view, viewSettings);
 
             var args = viewSettings.args;
             var deferredHolder = viewSettings.deferredHolder;
@@ -414,7 +414,6 @@ define(function(require) {
                             that.overwrite(view, viewSettings.deferredHolder, viewSettings);
                             return deferredHolder.promises.attached;
                         }
-
                         var previousView = setCurrentView(view, viewSettings);
                         viewSettings.previousView = previousView;
 
@@ -534,33 +533,42 @@ define(function(require) {
 
             var viewOptions = {};
             viewOptions.path = route;
-            var initOptions = {args: args, params: viewParams, hashChange: viewSettings.hashChange, view: viewOptions};
+            var initOptions = {
+                args: args,
+                params: viewParams,
+                hashChange: viewSettings.hashChange,
+                hash: viewSettings.hash,
+                view: viewOptions
+            };
 
             if (viewSettings.overwritten === true) {
                 return this.overwrite(view, viewSettings.deferredHolder, viewSettings);
             }
+
             view.onInit(container, initOptions);
             //return result;
         };
 
         this.showHTML = function(options) {
             this.ensureInitialized();
-            var target = options.target || settings.target;
-            var defaults = {
-                animate: settings.animate,
-                bindTemplate: settings.bindTemplate,
-                overwritten: false
-            };
-            var viewSettings = $.extend({}, defaults, options);
-            viewSettings._options = options;
-            viewSettings.target = target;
-
-            addGlobalErrorHandler(target);
 
             var deferredHolder = that.createDeferreds();
 
             // The timeout below allows the attached promise to be returned to the caller before running the function.
             setTimeout(function() {
+
+                var target = options.target || settings.target;
+                var defaults = {
+                    animate: settings.animate,
+                    bindTemplate: settings.bindTemplate,
+                    overwritten: false
+                };
+                var viewSettings = $.extend({}, defaults, options);
+                viewSettings._options = options;
+                viewSettings.target = target;
+
+                addGlobalErrorHandler(target);
+
                 viewSettings.deferredHolder = deferredHolder;
 
                 if (typeof (callStack[target]) === 'undefined') {
@@ -777,20 +785,13 @@ define(function(require) {
             var $target = $(target);
             var viewAttached = viewSettings.viewAttached;
             var viewVisible = viewSettings.viewVisible;
-            $target.fadeOut('slow', function() {
+            $target.fadeOut('fast', function() {
 
                 $target.empty();
                 $target.html(html);
                 viewAttached(viewSettings);
-                //tweenMax.to($target[0], 0, {opacity:0, top: "10px", position: "relative"});
-                /*
-                 tweenMax.to($target[0], 1, {opacity:1, top: "0px", position: "relative", ease:"Expo.easeOut",  onComplete: function() {
-                 $target.css({'position': 'static'});
-                 console.log("done1");
-                 viewVisible(viewSettings);    
-                 }});*/
 
-                $target.fadeIn({queue: false, duration: 'slow', complete: function() {
+                $target.fadeIn({queue: false, duration: 'fast', complete: function() {
                         viewVisible(viewSettings);
                     }});
 
