@@ -20,12 +20,10 @@ define(function(require) {
                 
                 //console.log("about to attach");
                 container.attach(html).then(function() {
-                    console.log("onAttached THEN");
                     onAttached(args);
                 });
                 
                 container.visible.then(function() {
-                    console.log("onVisible THEN");
                     onAttached(args);
                 });
             });

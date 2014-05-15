@@ -73,11 +73,9 @@ define(function(require) {
         });
         
         $(viewManager).on("global.visible", function(e, options) {
-            console.log("global.visible");
         });
 
         $(viewManager).on("global.attached", function(e, options) {
-            console.log("global.attached");
 
             if (!$.fn.placeholder.input || !$.fn.placeholder.textarea) {
                 $('input, textarea').placeholder();
