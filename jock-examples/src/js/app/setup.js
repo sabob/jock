@@ -10,6 +10,7 @@ define(function(require) {
     var ProductSearch = require("./views/product/ProductSearch");
     var ProductEdit = require("./views/product/ProductEdit");
     var placeholder = require("./plugins/jquery.placeholder");
+    var validationSetup = require("./util/validation-setup");
     //var floatlabels = require("./plugins/floatlabels");
     require("domReady!");
 
@@ -24,6 +25,7 @@ define(function(require) {
     var menuNames = [];
 
     setupActiveMenu();
+    validationSetup.setupValidation();
 
     /*options.onHashChange = function(view) {
      setActiveMenu(view);

@@ -4,7 +4,7 @@ define(function(require) {
     var template = require("hb!./ProductEdit.htm");
     var te = require("jock/template/template-engine");
     var viewManager = require("jock/view/view-manager");
-    var domUtils = require("../../util/dom-utils");
+    var toastr = require("app/plugins/toastr");
     require("domReady!");
 
     function productEdit() {
@@ -12,11 +12,11 @@ define(function(require) {
         var that = {};
 
         that.onInit = function(container, options) {
-                if (options.params.id == null) {
+            if (options.params.id == null) {
                 container.cancel();
                 return;
             }
-            
+
             var productId = options.params.id;
 
             var promise = $.ajax("/data/product" + productId + ".json");
@@ -27,19 +27,21 @@ define(function(require) {
                 container.attach(html).then(function() {
                     onAttached(product);
                 });
-            }, function(e, status, msg) {
-                console.log(status, msg);
+            });
+
+            container.overwrite.then(function(view) {
+                console.error("Overwritten product, aborting AJAX");
+                promise.abort();
             });
         };
 
         function onSave(e, product) {
             e.preventDefault();
             var product = $("#form").toObject();
-            domUtils.clearAlerts();
-            domUtils.alertSuccess("Product '" + product.name + "' saved!");
+            toastr.success("Product '" + product.name + "' saved!", "Saved");
         }
-        
-         function onBack(e, origProduct) {
+
+        function onBack(e, origProduct) {
             e.preventDefault();
             var productSearch = require("./ProductSearch");
             viewManager.showView({view: productSearch});

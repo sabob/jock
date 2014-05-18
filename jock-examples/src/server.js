@@ -10,6 +10,25 @@ app.get("/", checkAuth, function(req, res) {
     res.redirect("/index.html");
 });
 
+
+app.get('/data/customer:id.json', checkAuth, function(req, res) {
+    var sleep = 2000;
+    setTimeout(function() {
+        res.sendfile("." + req.path);
+
+    }, sleep);
+});
+
+
+app.get('/data/product:id.json', checkAuth, function(req, res) {
+    var sleep = 2000;
+    setTimeout(function() {
+        res.sendfile("." + req.path);
+
+    }, sleep);
+});
+
+
 app.get('/data/person.json', checkAuth, function(req, res) {
     //var body = "hello";
     //res.setHeader('Content-Type', 'application/json');

@@ -4,7 +4,7 @@ define(function(require) {
     var template = require("hb!./CustomerEdit.htm");
     var te = require("jock/template/template-engine");
     var viewManager = require("jock/view/view-manager");
-    var domUtils = require("../../util/dom-utils");
+    var toastr = require("app/plugins/toastr");
     require("domReady!");
 
     function customerEdit() {
@@ -27,19 +27,24 @@ define(function(require) {
                 container.attach(html).then(function() {
                     onAttached(customer);
                 });
-            }, function(e, status, msg) {
-                console.log(status, msg);
+            });
+            
+            container.overwrite.then(function(view) {
+                console.error("Overwritten customer, aborting AJAX");
+                promise.abort();
             });
         };
 
         function onSave(e, origCustomer) {
             e.preventDefault();
-            var customer = $("#form").toObject();
-            domUtils.clearAlerts();
-            domUtils.alertSuccess("Customer '" + customer.name + "' saved!");
+            var valid = $("#form").validationEngine('validate');
+            if (valid) {
+                var customer = $("#form").toObject();
+                toastr.success("Customer '" + customer.name + "' saved!", "Saved");
+            }
         }
-        
-         function onBack(e, origCustomer) {
+
+        function onBack(e, origCustomer) {
             e.preventDefault();
             var CustomerSearch = require("./CustomerSearch");
             viewManager.showView({view: CustomerSearch});
@@ -55,7 +60,11 @@ define(function(require) {
         }
 
         function onAttached(customer) {
+            // Copy customer values to form
             $("#form").fromObject(customer);
+
+            // Add inline validation to form
+            $("#form").validationEngine();
         }
 
         return that;

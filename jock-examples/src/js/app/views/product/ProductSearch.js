@@ -21,6 +21,11 @@ define(function(require) {
                     onAttached(args);
                 });
             });
+            
+             container.overwrite.then(function(view) {
+                console.error("Overwritten products, aborting AJAX");
+                promise.abort();
+            });
         };
         
          function onEdit(e, product) {
