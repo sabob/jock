@@ -71,6 +71,9 @@ define(function(require) {
             if (model.showActive() && todo.completed) {
                 removeRow(e.target);
             }
+            if (model.showCompleted() && !todo.completed) {
+                removeRow(e.target);
+            }
             renderHeader();
             renderFooter();
         }
