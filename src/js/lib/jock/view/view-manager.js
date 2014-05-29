@@ -7,9 +7,12 @@ define(function(require) {
     var utils = require("../utils/utils");
     var hash = require("jock/history/hash");
     var templateEngine = require("../template/template-engine");
+    var tracker = require("jock/utils/ajax-tracker");
+
     function ViewManager() {
 
         var that = this;
+        var ajaxTracker = tracker(this);
 
         var currentViews = {};
 
@@ -160,7 +163,6 @@ define(function(require) {
 
                 addGlobalErrorHandler(target);
 
-
                 if (typeof (callStack[target]) === 'undefined') {
                     callStack[target] = [];
                 }
@@ -294,6 +296,10 @@ define(function(require) {
             viewSettings.overwrittenCompleted = true;
             console.warn("request overwritten -> rejecting deferreds, clearing target");
             console.warn("resetting template engine");
+
+            ajaxTracker.abort(viewSettings.target);
+            ajaxTracker.clear(viewSettings.target);
+
             templateEngine.reset();
             //deferredHolder.reject();
             var target = viewSettings.target;
@@ -317,6 +323,17 @@ define(function(require) {
         };
 
         this.commonShowView = function(view, deferredHolder, viewSettings) {
+            
+            var isMainViewReplaced = viewSettings.target === settings.target;
+            var triggerOptions = {
+                oldView: viewSettings.previousView,
+                newView: view,
+                isMainView: isMainViewReplaced,
+                viewSettings: viewSettings
+            };
+
+            $(this).trigger("global.showView", [triggerOptions]);
+
             if (viewSettings.overwritten === true) {
                 return this.overwrite(view, deferredHolder, viewSettings);
             }
@@ -485,6 +502,8 @@ define(function(require) {
                             that.commonAttachView(html, viewSettings);
                         }
 
+                        //me.attached.visible = me.visible;
+                        //me.attached.attached = me.attached;
                     });
                     return me.attached;
                 };
@@ -517,6 +536,16 @@ define(function(require) {
 
                     return cancelPromise;
                 };
+
+                me.tracker = {};
+                me.tracker.add = function(jqXHR, args) {
+                    ajaxTracker.add(viewSettings.target, jqXHR, args);
+                };
+
+                me.tracker.remove = function(jqXHR) {
+                    ajaxTracker.remove(viewSettings.target, jqXHR);
+                };
+
                 return me;
             }();
             //console.log("view.oninit", view.onInit);
@@ -789,9 +818,14 @@ define(function(require) {
                 $target.html(html);
                 viewAttached(viewSettings);
 
-                $target.fadeIn({duration: 'fast', complete: function() {
+                $target.fadeIn({queue: false, duration: 'fast', complete: function() {
                         viewVisible(viewSettings);
                     }});
+
+                //$target.animate({rotateY: "rotateY(10deg)"}, {queue: false, duration: 'fast', complete: function() {
+                //alert("o");
+                // }});
+
             });
         };
 
