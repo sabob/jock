@@ -9,7 +9,7 @@ define(function(require) {
     var CustomerEdit = require("./views/customer/CustomerEdit");
     var ProductSearch = require("./views/product/ProductSearch");
     var ProductEdit = require("./views/product/ProductEdit");
-    var placeholder = require("./plugins/jquery.placeholder");
+    require("./plugins/jquery.placeholder");
     var validationSetup = require("./util/validation-setup");
     //var floatlabels = require("./plugins/floatlabels");
     require("domReady!");
@@ -73,7 +73,44 @@ define(function(require) {
             $("#navbar li.active").removeClass("active");
             slideToActive($item);
         });
-        
+
+
+        $(viewManager).on("ajax.success", function() {
+            console.log("ajax.success", arguments);
+        });
+
+        $(viewManager).on("ajax.error", function() {
+            console.log("ajax.error", arguments);
+        });
+
+        $(viewManager).on("ajax.complete", function() {
+            console.log("ajax.complete", arguments);
+        });
+
+        $(viewManager).on("ajax.start", function(e, args) {
+            console.log("ajax.start", arguments);
+            var msg = "Loading...";
+            args = args || {};
+            if (args.msg != null) {
+                msg = args.msg;
+            }
+
+            $(document.body).append('<div id="loading">' + msg + '</div>');
+            $('#loading').css({padding: "15px", fontSize: "12px", position: "absolute", top: "-40px", right: "50%", background: "#FFED38", color: "#000"});
+            $("#loading").animate({ top: 0 });
+        });
+
+        $(viewManager).on("ajax.stop", function(e, args) {
+            console.log("ajax.stop", arguments);
+            $("#loading").animate({
+                top: -45
+
+            }, function() {
+                $('#loading').remove();
+
+            });
+        });
+
         $(viewManager).on("global.visible", function(e, options) {
         });
 

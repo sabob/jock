@@ -109,6 +109,20 @@ define(function(require) {
             var results = (funcNameRegex).exec((view).constructor.toString());
             return (results && results.length > 1) ? results[1] : "";
         };
+
+        this.objectSize = function(o) {
+            if (Object.keys) {
+                return Object.keys(o).length;
+            }
+
+            var count = 0;
+            var prop;
+            for (prop in o) {
+                if (o.hasOwnProperty(prop)) {
+                    count++;
+                }
+            }
+        };
     }
 
     var utils = new Utils();

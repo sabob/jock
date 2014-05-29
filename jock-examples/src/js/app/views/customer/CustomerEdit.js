@@ -5,13 +5,19 @@ define(function(require) {
     var te = require("jock/template/template-engine");
     var viewManager = require("jock/view/view-manager");
     var toastr = require("app/plugins/toastr");
+    //var tracker = require("jock/utils/ajaxTracker");
     require("domReady!");
 
     function customerEdit() {
 
         var that = {};
+        //var container;
+        
+        //var ajaxTracker = tracker(viewManager);
 
-        that.onInit = function(container, options) {
+        that.onInit = function(containerArg, options) {
+            var container = containerArg;
+
             if (options.params.id == null) {
                 container.cancel();
                 return;
@@ -20,42 +26,46 @@ define(function(require) {
             var customerId = options.params.id;
 
             var promise = $.ajax("/data/customer" + customerId + ".json");
+            container.tracker.add(promise);
             promise.then(function(customer) {
 
-                var html = renderTemplate(customer);
+                var html = renderTemplate(customer, container);
 
                 container.attach(html).then(function() {
                     onAttached(customer);
                 });
             });
-            
+
             container.overwrite.then(function(view) {
                 console.error("Overwritten customer, aborting AJAX");
-                promise.abort();
+                //promise.abort();
             });
         };
 
-        function onSave(e, origCustomer) {
+        function onSave(e, origCustomer, options) {
             e.preventDefault();
             var valid = $("#form").validationEngine('validate');
             if (valid) {
                 var customer = $("#form").toObject();
+                var promise = $.ajax("/data/customer" + customer.id + ".json");
+                var container = options.data.container;
+                container.tracker.add(promise, {msg: 'Saving...'});
                 toastr.success("Customer '" + customer.name + "' saved!", "Saved");
             }
         }
 
-        function onBack(e, origCustomer) {
+        function onBack(e, origCustomer, options) {
             e.preventDefault();
             var CustomerSearch = require("./CustomerSearch");
             viewManager.showView({view: CustomerSearch});
         }
 
-        function renderTemplate(customer) {
+        function renderTemplate(customer, container) {
             var actions = {
                 save: onSave,
                 back: onBack
             };
-            var html = te.render(template, {'customer': customer}, actions);
+                        var html = te.render(template, {'customer': customer}, actions, {data: {container: container}});
             return html;
         }
 

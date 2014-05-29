@@ -14,6 +14,7 @@ define(function(require) {
         that.onInit = function(container, args) {
 
             var promise = $.ajax("/data/customers.json");
+            container.tracker.add(promise);
             promise.then(function(data) {
 
                 var html = renderTemplate(data);
