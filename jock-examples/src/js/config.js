@@ -9,14 +9,10 @@ requirejs.config({
         "app": "../app", // path to our application
         "hb": "jock/hb", // set path to the AMD Handlebars plugin for compiling templates when they are loaded
         "moment": "moment",
-        "numeral": "numeral",
-        tweenmax:  'greensock/TweenMax'
+        "numeral": "numeral"
     },
     "shim": {
-        "handlebars": {exports: "Handlebars"},
-        "tweenmax": {
-            exports: 'TweenMax'
-    }
+        "handlebars": {exports: "Handlebars"}
     }
 });
 
@@ -49,6 +45,5 @@ requirejs.onResourceLoad = function(context, map, depArray) {
     }
 };*/
 
-var GreenSockAMDPath = "greensock";
 // Load the main app module to start the app
 requirejs(["app/main"]);
