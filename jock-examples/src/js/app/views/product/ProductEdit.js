@@ -42,6 +42,7 @@ define(function(require) {
             e.preventDefault();
             var product = $("#form").toObject();
             var container = options.data.container;
+            var promise = $.ajax("/data/product" + product.id + ".json");
             container.tracker.add(promise, {msg: 'Saving...'});
             toastr.success("Product '" + product.name + "' saved!", "Saved");
         }
