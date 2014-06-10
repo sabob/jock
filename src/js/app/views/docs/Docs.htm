@@ -1004,11 +1004,13 @@ define(function(require) {
                 var html = te.render(template, {person: data} );
 
                 // container.attach will attach the view template to the
-                // DOM and return promises to hook into the view life
-                // cycle.
-                var promises = container.attach(html);
+                // DOM and return a promise that is resolved when the
+                // template is added to the dom. Other promises such
+                // as visible and overwrite are available on the
+                // container instance
+                var promise = container.attach(html);
 
-                // add default promise which is resolved when the view's
+                // set the promise which is resolved when the view's
                 // HTML is attached to the DOM. The argument passed to
                 // the resolved promise is an instance of this view
 
@@ -1023,17 +1025,17 @@ define(function(require) {
                     $("#my-table").datatables();
                 };
 
-                promise.attached.then(function(view) {
+                container.attached.then(function(view) {
                     // This promise is the same as the default above
                     // but might be considered semantically clearer.
                 });
 
-                promise.visible.then(function(view) {
+                container.visible.then(function(view) {
                     // This promise is resolved when the view
                     // becomes visible
                 });
 
-                promise.overwrite.then(function(view) {
+                container.overwrite.then(function(view) {
                     // This promise is resolved when the view
                     // is overwritten. This could be used
                     // to perform cleanup if needed
