@@ -12,7 +12,7 @@ app.get("/", checkAuth, function(req, res) {
 
 
 app.get('/data/customer:id.json', checkAuth, function(req, res) {
-    var sleep = 2000;
+    var sleep = 0;
     setTimeout(function() {
         res.sendfile("." + req.path);
 
@@ -21,7 +21,7 @@ app.get('/data/customer:id.json', checkAuth, function(req, res) {
 
 
 app.get('/data/product:id.json', checkAuth, function(req, res) {
-    var sleep = 2000;
+    var sleep = 0;
     setTimeout(function() {
         res.sendfile("." + req.path);
 
@@ -32,7 +32,7 @@ app.get('/data/product:id.json', checkAuth, function(req, res) {
 app.get('/data/person.json', checkAuth, function(req, res) {
     //var body = "hello";
     //res.setHeader('Content-Type', 'application/json');
-    var sleep = 2000;
+    var sleep = 0;
     setTimeout(function() {
         res.sendfile("." + req.path);
 

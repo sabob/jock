@@ -5,16 +5,11 @@ define(function(require) {
     var te = require("jock/template/template-engine");
     var viewManager = require("jock/view/view-manager");
     var toastr = require("app/plugins/toastr");
-    //var tracker = require("jock/utils/ajaxTracker");
     require("domReady!");
 
     function customerEdit() {
 
         var that = {};
-        //var container;
-        
-        //var ajaxTracker = tracker(viewManager);
-
         that.onInit = function(containerArg, options) {
             var container = containerArg;
 
@@ -65,7 +60,7 @@ define(function(require) {
                 save: onSave,
                 back: onBack
             };
-                        var html = te.render(template, {'customer': customer}, actions, {data: {container: container}});
+            var html = te.render(template, {'customer': customer}, actions, {data: {container: container}});
             return html;
         }
 

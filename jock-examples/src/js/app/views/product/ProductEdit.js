@@ -11,7 +11,9 @@ define(function(require) {
 
         var that = {};
 
-        that.onInit = function(container, options) {
+        that.onInit = function(containerArg, options) {
+            var container = containerArg;
+
             if (options.params.id == null) {
                 container.cancel();
                 return;
@@ -20,9 +22,10 @@ define(function(require) {
             var productId = options.params.id;
 
             var promise = $.ajax("/data/product" + productId + ".json");
+            container.tracker.add(promise);
             promise.then(function(product) {
 
-                var html = renderTemplate(product);
+                var html = renderTemplate(product, container);
 
                 container.attach(html).then(function() {
                     onAttached(product);
@@ -35,24 +38,26 @@ define(function(require) {
             });
         };
 
-        function onSave(e, product) {
+        function onSave(e, origProduct, options) {
             e.preventDefault();
             var product = $("#form").toObject();
+            var container = options.data.container;
+            container.tracker.add(promise, {msg: 'Saving...'});
             toastr.success("Product '" + product.name + "' saved!", "Saved");
         }
 
-        function onBack(e, origProduct) {
+        function onBack(e, origProduct, options) {
             e.preventDefault();
             var productSearch = require("./ProductSearch");
             viewManager.showView({view: productSearch});
         }
 
-        function renderTemplate(product) {
+        function renderTemplate(product, container) {
             var actions = {
                 save: onSave,
                 back: onBack
             };
-            var html = te.render(template, {'product': product}, actions);
+            var html = te.render(template, {'product': product}, actions, {data: {container: container}});
             return html;
         }
 

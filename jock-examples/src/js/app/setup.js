@@ -88,21 +88,18 @@ define(function(require) {
         });
 
         $(viewManager).on("ajax.start", function(e, args) {
-            console.log("ajax.start", arguments);
             var msg = "Loading...";
             args = args || {};
             if (args.msg != null) {
                 msg = args.msg;
             }
 
-            $(document.body).append('<div id="loading">' + msg + '</div>');
-            $('#loading').css({padding: "15px", fontSize: "12px", position: "absolute", top: "-40px", right: "50%", background: "#FFED38", color: "#000"});
-            $("#loading").animate({ top: 0 });
+            $(document.body).append('<div id="loading" class="loader">' + msg + '</div>');
+            $("#loading").stop( true, true ).animate({ top: 0 });
         });
 
         $(viewManager).on("ajax.stop", function(e, args) {
-            console.log("ajax.stop", arguments);
-            $("#loading").animate({
+            $("#loading").stop( true, true ).animate({
                 top: -45
 
             }, function() {

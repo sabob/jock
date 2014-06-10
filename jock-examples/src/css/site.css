@@ -568,3 +568,13 @@ input.form-control {
     transition: transform 1s;
   perspective: 600px;
 }
+
+.loader {
+    padding: 15px; 
+    font-size: 12px;
+    position: absolute;
+    top: -40px;
+    right: 50%;
+    background: #FFED38;
+    color: #000;
+}
