@@ -4,7 +4,6 @@ define(function(require) {
     require("jock/jock");
     var viewManager = require("jock/view/view-manager");
     var todoView = require("./views/todo/todo-view");
-    require("domReady!");
 
     var options = {
         target: "#todoapp"
