@@ -80,8 +80,6 @@ define(function(require) {
 
         function toggleAll(e) {
             var isChecked = $(e.target).prop('checked');
-            $('#todo-list input[type=checkbox]').prop('checked', isChecked);
-
             model.todos().forEach(function(todo) {
                 todo.completed = isChecked;
             });
@@ -173,12 +171,18 @@ define(function(require) {
         }
 
         function renderHeader() {
+            // Check if there are any visible items
             if (model.getFilteredTodos().length > 0) {
                 $("#toggle-all").toggle(true);
                 $("#toggle-all").prop('checked', false);
             } else {
                 $("#toggle-all").toggle(false);
             }
+
+            if (model.getActiveTodos().length === 0) {
+                $("#toggle-all").prop('checked', true);
+            }
+
         }
 
         function renderFooter() {
