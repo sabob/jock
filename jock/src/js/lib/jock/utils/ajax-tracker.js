@@ -1,4 +1,4 @@
-define(function() {
+define(function(require) {
 
     var $ = require("jquery");
     var utils = require("jock/utils/utils");
