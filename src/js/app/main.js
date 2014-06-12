@@ -9,7 +9,6 @@ define(function(require) {
     var Dash = require("./views/dash/Dash");
     var footer = require("hb!./views/footer/footer.htm");
     var viewManager = require("jock/view/view-manager");
-    require("domReady!");
 
     $("#menu-dash").click(function(e) {
         e.preventDefault();

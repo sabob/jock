@@ -5,7 +5,6 @@ define(function(require) {
     var Handlebars = require("handlebars");
     var moment = require("moment");
     var numeral = require("numeral");
-    require("domReady!");
 
     function TemplateEngine() {
 

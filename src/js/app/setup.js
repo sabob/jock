@@ -11,7 +11,6 @@ define(function(require) {
     var Why = require("./views/why/Why");
     var Dash = require("./views/dash/Dash");
     var prettify = require("prettify");
-    require("domReady!");
     setupActiveMenu();
     var options = {};
     options.routes = {

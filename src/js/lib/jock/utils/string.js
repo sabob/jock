@@ -6,8 +6,6 @@
 define(function(require) {
     var $ = require("jquery");
 
-    require("domReady!");
-
     var string = {
         capitalize: function(str) {
             str = str == null ? '' : String(str);
