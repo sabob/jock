@@ -1,6 +1,6 @@
 
 "use strict";
-define(function() {
+define(function(require) {
     var dummyLib = function(a, b) {
         return (a + b);
     };
