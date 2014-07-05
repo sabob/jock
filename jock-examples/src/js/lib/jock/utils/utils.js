@@ -1,6 +1,5 @@
 define(function(require) {
     var $ = require("jquery");
-    require("domReady!");
 
     function Utils() {
 

@@ -9,10 +9,19 @@ requirejs.config({
         "app": "../app", // path to our application
         "hb": "jock/hb", // set path to the AMD Handlebars plugin for compiling templates when they are loaded
         "moment": "moment",
-        "numeral": "numeral"
+        "numeral": "numeral",
+        "bootstrap": '../app/plugins/bootstrap',
+        'select2': '../app/plugins/select2'
     },
     "shim": {
-        "handlebars": {exports: "Handlebars"}
+        'handlebars': {exports: 'Handlebars'},
+        'bootstrap': {
+            deps: ['jquery']
+        },
+        'select2': {
+            deps: ['jquery'],
+            exports: 'Select2'
+        }
     }
 });
 
@@ -36,14 +45,14 @@ requirejs.onResourceLoad = function(context, map, depArray) {
     }
 };
 /*
-    requirejs.onError = function (err) {
-    if (err.requireType === 'timeout') {
-        // tell user
-        alert("error: "+err);
-    } else {
-        throw err;
-    }
-};*/
+ requirejs.onError = function (err) {
+ if (err.requireType === 'timeout') {
+ // tell user
+ alert("error: "+err);
+ } else {
+ throw err;
+ }
+ };*/
 
 // Load the main app module to start the app
 requirejs(["app/main"]);

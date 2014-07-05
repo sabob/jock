@@ -4,9 +4,9 @@ define(function(require) {
     var Home = require("./views/home/Home");
     var CustomerSearch = require("./views/customer/CustomerSearch");
     var ProductSearch = require("./views/product/ProductSearch");
+    var CalendarEdit = require("./views/calendar/CalendarEdit");
     var footer = require("hb!./views/footer/footer.htm");
     var viewManager = require("jock/view/view-manager");
-    require("domReady!");
     $("#menu-home").click(function(e) {
         e.preventDefault();
         viewManager.showView({view: Home});
@@ -24,6 +24,11 @@ define(function(require) {
     $("#menu-products").click(function(e) {
         e.preventDefault();
         viewManager.showView({view: ProductSearch});
+    });
+    
+    $("#menu-calendar").click(function(e) {
+        e.preventDefault();
+        viewManager.showView({view: CalendarEdit});
     });
 
     viewManager.showHTML({animate: false, html: footer, target: "#footer-holder"}).then(function() {

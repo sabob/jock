@@ -1,11 +1,14 @@
 @import url("bootstrap.css");
 @import url("toastr.css");
-@import url("validationEngine.jquery.css");
+@import url("fullcalendar.css");
+@import url("validationEngine.jquery.css"); 
+@import url("select2.css");
+@import url("select2-bootstrap.css");
 
 ul,li {
     margin: 0;
-	padding: 0;
-	border: 0;
+    padding: 0;
+    border: 0;
 }
 
 /* HTML5 display-role reset for older browsers */
@@ -30,7 +33,7 @@ p {
     font-weight: normal;
 }
 body {
-    
+
     line-height: 1.5; 
     overflow-y: scroll;
     text-shadow: none;    
@@ -332,6 +335,7 @@ a:visited {
 }
 .footer {
     display:  block;
+
     /*height: 74px;*/
 }
 .footer-content {
@@ -380,6 +384,7 @@ a:visited {
     position: fixed;
     bottom: 0;
     width: 100%;
+    z-index: 1;
 
 }
 #logo {
@@ -482,14 +487,14 @@ a:visited {
 .methodName {
     font-size: 25px;
     line-height: 35px;
-        font-weight: normal;
+    font-weight: normal;
 }
 .method code{
     background: none;
     border: none;
 }
 code.methodSig {
-        margin-left: 20px;
+    margin-left: 20px;
 }
 .method i{
     font-style: italic;
@@ -543,8 +548,8 @@ code.methodSig {
 .yellow {
     color: #FFFF00;
 }
- .placeholder {
-     color: #aaa;
+.placeholder {
+    color: #aaa;
 }
 
 input {
@@ -553,7 +558,7 @@ input {
     outline: 0;
     color: #494949;
     font-size: 14px;
-  width: 100%
+    width: 100%;
 }
 label.label-floatlabel {
     font-weight: bold;
@@ -563,11 +568,11 @@ input.form-control {
     height: auto;
     padding: 10px 12px;
 }
-
+/*
 .gutter {
     transition: transform 1s;
   perspective: 600px;
-}
+}*/
 
 .loader {
     padding: 15px; 
@@ -577,4 +582,45 @@ input.form-control {
     right: 50%;
     background: #FFED38;
     color: #000;
+}
+
+.calendarSelected {
+    //background-color:  red;
+    /*background-color: #428BCA;*/
+    background-color: #D9EDF7;
+    //opacity: 0.3;
+}
+
+.fc-cell-overlay {
+    border: 1px dotted gray;
+    opacity: 1;
+    background: none;
+}
+
+a.remove-event, a.remove-event:hover  {
+    text-decoration: none;
+    cursor: pointer;
+    color: #fff;
+    padding: 5px;
+    padding-top: 10px;
+}
+
+.btn-xl {
+    padding: 15px 24px;
+    font-size: 18px;
+    border-radius: 0px;
+}
+.fc-view-month .fc-event-time{
+    display : none;
+}
+.fc-view-month .fc-event-title {
+    text-decoration: underline;
+    margin-bottom: 4px;
+    font-size: larger;
+}
+.fc-view-month .fc-event:hover {
+    cursor: pointer;
+}
+.workTime {
+    color: #999;
 }

@@ -1,7 +1,6 @@
 define(function(require) {
 
     var $ = require("jquery");
-    require("domReady!");
     require("jock/history/history");
     var params = require("jock/utils/params");
     var utils = require("../utils/utils");

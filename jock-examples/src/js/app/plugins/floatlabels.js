@@ -6,7 +6,7 @@
  * Author: Marcus Pohorely ( http://www.clubdesign.at )
  * Copyright: Copyright 2013 / 2014 http://www.clubdesign.at
  */
-define(function() {
+define(function(require) {
     var $ = require("jquery");
 
     var pluginName = "floatlabel",

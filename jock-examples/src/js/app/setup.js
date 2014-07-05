@@ -9,10 +9,11 @@ define(function(require) {
     var CustomerEdit = require("./views/customer/CustomerEdit");
     var ProductSearch = require("./views/product/ProductSearch");
     var ProductEdit = require("./views/product/ProductEdit");
+    var CalendarEdit = require("./views/calendar/CalendarEdit");
     require("./plugins/jquery.placeholder");
+    require("bootstrap");
     var validationSetup = require("./util/validation-setup");
-    //var floatlabels = require("./plugins/floatlabels");
-    require("domReady!");
+    require("./plugins/fullcalendar");
 
     var options = {};
     options.routes = {
@@ -20,7 +21,8 @@ define(function(require) {
         "customers": CustomerSearch.id,
         "customerEdit": CustomerEdit.id,
         "products": ProductSearch.id,
-        "productEdit": ProductEdit.id
+        "productEdit": ProductEdit.id,
+        "calendarEdit": CalendarEdit.id
     };
     var menuNames = [];
 

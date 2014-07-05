@@ -23,8 +23,7 @@
     "./view-manager",
     "dojox/validate/web",
     "dojox/validate/regexp",
-    "dojo/NodeList-traverse",
-    "dojo/domReady!"
+    "dojo/NodeList-traverse"
 ],
         function(domConstruct,
                 query,
