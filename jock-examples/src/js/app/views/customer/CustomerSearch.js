@@ -16,7 +16,6 @@ define(function(require) {
             var promise = $.ajax("/data/customers.json");
             container.tracker.add(promise);
             promise.then(function(data) {
-                console.log("MOO")
 
                 var html = renderTemplate(data);
                 
