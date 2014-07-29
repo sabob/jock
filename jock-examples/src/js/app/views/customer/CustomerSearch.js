@@ -18,8 +18,6 @@ define(function(require) {
             promise.then(function(data) {
 
                 var html = renderTemplate(data);
-                
-                //console.log("about to attach");
                 container.attach(html).then(function() {
                     onAttached(args);
                 });
@@ -31,7 +29,7 @@ define(function(require) {
             
              container.overwrite.then(function(view) {
                 console.error("Overwritten customers, aborting AJAX");
-                // Cod ebelow is not necessary since container.tracker cancels registered AJAX when request is overwritten
+                // Code below is not necessary since container.tracker cancels registered AJAX when request is overwritten
                 promise.abort();
             });
         };
