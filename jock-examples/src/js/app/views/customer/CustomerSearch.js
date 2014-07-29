@@ -16,6 +16,7 @@ define(function(require) {
             var promise = $.ajax("/data/customers.json");
             container.tracker.add(promise);
             promise.then(function(data) {
+                console.log("MOO")
 
                 var html = renderTemplate(data);
                 
@@ -31,6 +32,7 @@ define(function(require) {
             
              container.overwrite.then(function(view) {
                 console.error("Overwritten customers, aborting AJAX");
+                // Cod ebelow is not necessary since container.tracker cancels registered AJAX when request is overwritten
                 promise.abort();
             });
         };
