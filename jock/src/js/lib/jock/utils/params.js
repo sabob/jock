@@ -8,13 +8,13 @@
 define(function(require) {
     var $ = require("jquery");
     var string = require("jock/utils/string");
+    var globals = require("jock/globals");
 
     var createParams = function() {
 
-
-        var that = function(val) {
+        var that = function(options) {
             var params;
-            params = parseParams(val);
+            params = parseParams(options);
 
             var result = {};
 
@@ -136,13 +136,19 @@ define(function(require) {
             return result;
         };
 
-        var parseParams = function(val) {
+        var parseParams = function(options) {
             //var params = window.location.hash ? window.location.hash.substr(1).split("&") : [];
+            var val = options.params;
+            var hashPrefix = globals.hashPrefix() || "!";
+
             var params = {};
             if (val == null) {
                 return params;
             }
             if (val.charAt(0) === "#") {
+                val = val.substr(1);
+            }
+            if (val.charAt(0) === hashPrefix) {
                 val = val.substr(1);
             }
 

@@ -188,7 +188,7 @@ define(function(require) {
         if (this.params == null) {
             //var hash = that.hash();
             var val = this.uri.query;
-            this.params = createParams(val);
+            this.params = createParams({params : val});
         }
     };
     
@@ -250,7 +250,7 @@ define(function(require) {
     Url.prototype.ensureHashParamsInitialized = function() {
         if (this.hashParams == null) {
             var val = this.uri.anchor;
-            this.hashParams = createParams(val);
+            this.hashParams = createParams({params : val});
         }
     };
 
