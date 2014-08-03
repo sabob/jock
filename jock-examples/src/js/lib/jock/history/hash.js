@@ -45,6 +45,7 @@ define(function(require) {
 
     var $ = require("jquery");
     var params = require("../utils/params");
+    var globals = require("jock/globals");
 
     var historyLength = window.history.length;
 
@@ -181,6 +182,12 @@ define(function(require) {
             // is no cross-browser way to keep track of navigation to the exact
             // same hash multiple times in a row. A wrapper can handle this by
             // adding an incrementing counter to the end of the hash.
+            if (newHash == hash) {
+                return false;
+            }
+            
+            // If new hash doesn't match, prefix with hashPrefix and try again
+            newHash = globals.hashPrefix() + newHash;
             if (newHash == hash) {
                 return false;
             }

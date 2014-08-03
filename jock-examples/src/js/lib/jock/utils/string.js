@@ -30,7 +30,6 @@ define(function(require) {
                 return '';
             return String(str).replace(/([.*+?^=!:${}()|[\]\/\\])/g, '\\$1');
         },
-
         capitalize: function(str) {
             str = str == null ? '' : String(str);
             return str.charAt(0).toUpperCase() + str.slice(1);

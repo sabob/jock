@@ -80,7 +80,7 @@ define(function(require) {
             }
             // update params from new hash
             // TODO test change
-            paramsObj = params(options.newHash);
+            paramsObj = params({params : options.newHash});
 
             if (that.skipEventOnce()) {
                 that.skipEventOnce(false);
@@ -88,8 +88,8 @@ define(function(require) {
             }
 
             if (changeCallback) {
-               options.hash = params(options.newHash);
-               options.prevHashParams = params(options.oldHash);
+               options.hash = paramsObj;
+               options.prevHash = params({params : options.oldHash});
                $(that).trigger("onHashChange", [options]);
                 changeCallback(options);
             }

@@ -3,6 +3,7 @@ define(function(require) {
     var $ = require("jquery");
     require("jock/history/history");
     var params = require("jock/utils/params");
+    var globals = require("jock/globals");
     var utils = require("../utils/utils");
     var hash = require("jock/history/hash");
     var templateEngine = require("../template/template-engine");
@@ -71,13 +72,16 @@ define(function(require) {
             settings = $.extend({}, settings, options);
 
             this.setRoutes(settings.routes);
+            
+            // Set the global hashPrefix specified
+            globals.hashPrefix(options.hashPrefix);
 
             $.jock.history.init(function(hashOptions) {
                 //console.warn("External?", options.external);
 
                 //console.log("PROCESS HASH CHANGE OVER", processHashChange);
                 //console.log("NEW HASH", options.newHash, "old hash", options.oldHash, "Prcess HASH", processHashChange);
-                var oldPage = params(hashOptions.oldHash).get().page;
+                var oldPage = hashOptions.prevHash.get().page;
 
                 if (processHashChange) {
 
