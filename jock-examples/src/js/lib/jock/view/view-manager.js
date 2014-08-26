@@ -972,10 +972,12 @@ define(function(require) {
             window.onerror = globalErrorHandler;
         }
 
-        function globalErrorHandler(message, url, lineNumber) {
+        function globalErrorHandler(message, url, lineNumber, colNumber, error) {
             for (var i = 0; i < errorHandlerStack.length; i++) {
                 var target = errorHandlerStack[i];
-                targetErrorHandler(message, url, lineNumber, target);
+                
+                var options = {message: message, url: url, line: lineNumber, col: colNumber, error: error, target: target};
+                targetErrorHandler(options);
             }
 
             var prevError = globalErrorHandler.prevError;
@@ -985,9 +987,9 @@ define(function(require) {
             }
         }
 
-        function targetErrorHandler(message, url, lineNumber, target) {
-            that.clear(target);
-            var $target = $(target);
+        function targetErrorHandler(options) {
+            that.clear(options.target);
+            var $target = $(options.target);
             $target.finish();
             $target.clearQueue().stop(true, true);
             setTimeout(function() {
