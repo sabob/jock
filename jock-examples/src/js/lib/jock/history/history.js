@@ -209,7 +209,7 @@ define(function(require) {
         function ensureParamsInitialized() {
             if (paramsObj == null) {
                 var hash = that.hash();
-                paramsObj = params(hash);
+                paramsObj = params({params : hash});
             }
         }
 
