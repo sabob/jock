@@ -39,6 +39,8 @@ define(function(require) {
     };
 
     viewManager.init(options);
+    var viewName = viewManager.getCurrentRoute();
+    setInitialActiveMenu(viewName);
 
     function setupActiveMenu() {
 
@@ -138,9 +140,15 @@ define(function(require) {
         item.addClass("active");
         $("#nav-ind").css(location);
     }
+    
+    function setInitialActiveMenu(viewName) {
+        var $item = $("#menu-" + viewName).parent();
+        $item.addClass('active');
+        var location = getActiveMenuLocation($item);
+        $('#nav-ind').css(location);
+    }
 
     function slideToActive($li) {
-        //console.log("ACTIVE", $li);
         $li.addClass('active');
         var location = getActiveMenuLocation($li);
         $('#nav-ind').animate(location, 'fast', 'linear');
