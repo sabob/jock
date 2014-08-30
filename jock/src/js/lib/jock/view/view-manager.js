@@ -53,9 +53,27 @@ define(function(require) {
             }
         };
 
+        this.getRoutes = function() {
+            return routesByName;
+        };
+        
         this.getRoutesByPath = function() {
             return routesByPath;
         };
+        
+        this.getCurrentRoute = function() {
+            var page = $.jock.history.params().page;
+            return page;
+        };
+
+        this.getCurrentRoutePath = function() {
+            var page = that.getCurrentRoute();
+            if (page != null) {
+                return that.getRoutes()[page];
+            }
+            return null;
+        };
+
         this.init = function(options) {
             if (initialized) {
                 // If no options are specified, and view-manager has been initialized before, we can skip initialization, otherwise
