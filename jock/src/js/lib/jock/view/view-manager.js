@@ -230,7 +230,7 @@ define(function(require) {
                                 tempViewSettings.overwritten = true;
                                 console.warn("OVERRITTEN");
 
-                                tempViewSettings.deferredHolder.overwriteDeferred.resolve(tempViewSettings.view);
+                                tempViewSettings.deferredHolder.overwriteDeferred.resolve({view: tempViewSettings.view, container: tempViewSettings.container});
 
                                 if (tempViewSettings.container) {
 
@@ -473,8 +473,8 @@ define(function(require) {
                                 viewSettings: viewSettings
                             };
                             $(that).trigger("global.attached", [triggerOptions]);
-
-                            deferredHolder.attachedDeferred.resolve(view);
+                            
+                            deferredHolder.attachedDeferred.resolve({view: view, container: viewSettings.container});
 
                             // In case user forgot to bind. TODO this call could be slow if DOM is large, so make autobind configurable
                             if (templateEngine.hasActions()) {
@@ -499,7 +499,7 @@ define(function(require) {
                             // TODO perhaps a global.before.visible and global.after.visible???
                             $(that).trigger("global.visible", [triggerOptions]);
 
-                            deferredHolder.visibleDeferred.resolve(view);
+                            deferredHolder.visibleDeferred.resolve({view: view, container: viewSettings.container});
                             //});
                         };
 
@@ -545,7 +545,7 @@ define(function(require) {
                     var target = viewSettings.target;
                     parent.clear(target);
                     var currentView = that.getCurrentView(target);
-                    cancelDeferred.resolve(currentView, view);
+                    cancelDeferred.resolve({currentView: currentView, newView: view, container: viewSettings.container});
                     var isMainViewReplaced = target === settings.target;
                     var triggerOptions = {
                         oldView: currentView,
@@ -651,7 +651,7 @@ define(function(require) {
                     };
                     $(this).trigger("global.html.attached", [triggerOptions]);
 
-                    deferredHolder.attachedDeferred.resolve(html);
+                    deferredHolder.attachedDeferred.resolve({html: html});
 
                     // In case user forgot to bind. TODO this call could be slow if DOM is large, so make autobind configurable
                     if (templateEngine.hasActions()) {
@@ -670,7 +670,7 @@ define(function(require) {
                     };
                     $(this).trigger("global.html.visible", [triggerOptions]);
 
-                    deferredHolder.visibleDeferred.resolve(html);
+                    deferredHolder.visibleDeferred.resolve({html: html});
                     //});
                 };
 
@@ -783,7 +783,7 @@ define(function(require) {
             }
             var mainDeferred = viewSettings.deferredHolder.mainDeferred;
             if (mainDeferred) {
-                mainDeferred.resolve(view);
+                mainDeferred.resolve({view: view, container: viewSettings.container});
             }
 
             that.clear(target);
