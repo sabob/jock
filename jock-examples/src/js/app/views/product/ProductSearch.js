@@ -41,10 +41,6 @@ define(function(require) {
         };
 
         function renderTemplate(products) {
-            var actions = {
-                edit: that.onEdit,
-                remove: that.onDelete
-            };
             var html = te.render({template: template, context: {products: products}, actions: that});
             return html;
         }

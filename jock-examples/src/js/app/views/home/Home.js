@@ -22,7 +22,7 @@ define(function (require) {
         };
 
         function onAttached(options) {
-            console.log("arg", options);
+            console.log("HOME attached arg", options);
 
             $("#radios").radiosToSlider();
 
@@ -56,7 +56,8 @@ define(function (require) {
                 });
             });
 
-            $("#down").on('click', function () {
+            $("#down").on('click', function (e) {
+                e.preventDefault();
                 window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
                 downloadWithXHR2();
 

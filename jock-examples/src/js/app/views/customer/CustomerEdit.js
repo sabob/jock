@@ -1,4 +1,4 @@
-define(function(require) {
+define(function (require) {
 
     var $ = require("jquery");
     var template = require("hb!./CustomerEdit.htm");
@@ -10,7 +10,7 @@ define(function(require) {
     function customerEdit() {
 
         var that = {};
-        that.onInit = function(containerArg, options) {
+        that.onInit = function (containerArg, options) {
             var container = containerArg;
 
             if (options.params.id == null) {
@@ -22,22 +22,22 @@ define(function(require) {
 
             var promise = $.ajax("/data/customer" + customerId + ".json");
             container.tracker.add(promise);
-            promise.then(function(customer) {
+            promise.then(function (customer) {
 
                 var html = renderTemplate(customer, container);
 
-                container.attach(html).then(function() {
+                container.attach(html).then(function () {
                     onAttached(customer);
                 });
             });
 
-            container.overwrite.then(function(view) {
+            container.overwrite.then(function (view) {
                 console.error("Overwritten customer, aborting AJAX");
                 //promise.abort();
             });
         };
 
-        that.onSave = function(e, origCustomer, options) {
+        that.onSave = function (e, origCustomer, options) {
             e.preventDefault();
             var valid = $("#form").validationEngine('validate');
             if (valid) {
@@ -49,20 +49,19 @@ define(function(require) {
             }
         }
 
-        that.onBack = function(e, origCustomer, options) {
+        that.onBack = function (e, origCustomer, options) {
             e.preventDefault();
             var CustomerSearch = require("./CustomerSearch");
             viewManager.showView({view: CustomerSearch});
         }
 
         function renderTemplate(customer, container) {
-            /*
-            var actions = {
-                save: onSave,
-                back: onBack
-            };*/
 
-            var html = te.render({template: template, context: {'customer': customer}, actions: that, data: {container: container}});
+            var html = te.render({
+                template: template,
+                context: {'customer': customer},
+                actions: that,
+                data: {container: container}});
             return html;
         }
 
