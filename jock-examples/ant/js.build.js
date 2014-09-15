@@ -29,6 +29,14 @@
         if (name === 'handlebars') {
             return null;
         }
+        if (name === "handlebars-runtime") {
+            // Replace the AMD name 'handlebars-runtime' with just 'handlebars', otherwise handlebars dependencies will not find it
+            // and attempt to download it again
+            contents = contents.replace("define('handlebars-runtime'", "define('handlebars'");
+            
+            // Same thing as above but check for double quotes
+            contents = contents.replace('define("handlebars-runtime"', 'define("handlebars"');
+        }
         return contents;
     }
 })
