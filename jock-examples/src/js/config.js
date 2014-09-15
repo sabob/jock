@@ -14,7 +14,6 @@ requirejs.config({
         'select2': '../app/plugins/select2'
     },
     "shim": {
-        'handlebars': {exports: 'Handlebars'},
         'bootstrap': {
             deps: ['jquery']
         },

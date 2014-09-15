@@ -29,23 +29,23 @@ define(function(require) {
             });
         };
         
-         function onEdit(e, product) {
+         that.onEdit = function(e, product) {
             e.preventDefault();
             //console.log("Edit", product);
             viewManager.showView({view: ProductEdit, params: {id: product.id}, args: {product: product}});
         }
 
-        function onDelete(e, product) {
+        that.onDelete = function(e, product) {
             e.preventDefault();
             console.log("Delete", product);
-        }
+        };
 
         function renderTemplate(products) {
             var actions = {
-                edit: onEdit,
-                remove: onDelete
+                edit: that.onEdit,
+                remove: that.onDelete
             };
-            var html = te.render(template, {products: products}, actions);
+            var html = te.render({template: template, context: {products: products}, actions: that});
             return html;
         }
 

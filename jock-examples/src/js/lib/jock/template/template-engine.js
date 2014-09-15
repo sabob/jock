@@ -1,4 +1,4 @@
-define(function(require) {
+define(function (require) {
     var $ = require("jquery");
     //require("jquery.address");
     var utils = require("../utils/utils");
@@ -13,26 +13,52 @@ define(function(require) {
         var actionRegistryLength = 0;
         var actionRegistry = {};
 
-        this.hasActions = function() {
+        this.hasActions = function () {
             return actionRegistryLength > 0;
         };
 
-        this.reset = function() {
+        this.reset = function () {
             actionRegistry = {};
             actionRegistryLength = 0;
         };
 
-        this.render = function(template, context, actions, options) {
-            options = options || {};
-            options.data = options.data || {};
-            actions = actions || {};
-            $.extend(options.data, actions);
+        this.render = function (options) {
 
-            var html = template(context, options);
+            var template = options.template;
+            var context = options.context;
+            var actions = options.actions;
+            var data = options.data;
+            var helpers = options.helpers;
+            var partials = options.partials;
+
+            var hbOptions = {data: {}};
+            actions = actions || {};
+
+            if (data == null) {
+                if (actions != null) {
+                    hbOptions.data = actions;
+                }
+            } else {
+                $.extend(hbOptions.data, data);
+                if (actions != null) {
+                    $.extend(hbOptions.data, actions);
+                }
+            }
+
+            if (helpers != null) {
+                hbOptions.helpers = helpers;
+            }
+
+            if (partials != null) {
+                hbOptions.partials = partials;
+            }
+
+            var html = template(context, hbOptions);
+
             return html;
         };
 
-        this.bind = function(target) {
+        this.bind = function (target) {
             if (!this.hasActions()) {
                 return;
             }
@@ -40,7 +66,7 @@ define(function(require) {
             //console.log("binding target:", target);
 
             // Select target with data-jock-attribute and all children with data-jock-attribute
-            $("[data-jock-action]", target).addBack("[data-jock-action]").each(function(i, item) {
+            $("[data-jock-action]", target).addBack("[data-jock-action]").each(function (i, item) {
                 var currentID = this.attributes["data-jock-action"].value;
 
                 var actionArray = actionRegistry[currentID];
@@ -64,7 +90,7 @@ define(function(require) {
         };
 
         function bindAction(action, $node) {
-            $node.on(action.on, function(e) {
+            $node.on(action.on, function (e) {
                 if (action.on === "click") {
                     //e.preventDefault();
                 }
@@ -75,14 +101,14 @@ define(function(require) {
 
         }
 
-        this.registerHelpers = function() {
+        this.registerHelpers = function () {
             if (registered) {
                 return;
             }
             registered = true;
 
             checkHelper('action');
-            Handlebars.registerHelper('action', function(options) {
+            Handlebars.registerHelper('action', function (options) {
                 if (options == null || options.hash == null) {
                     return;
                 }
@@ -90,7 +116,7 @@ define(function(require) {
                 var actionArray = [];
                 var context = this;
 
-                $.each(options.hash, function(key, value) {
+                $.each(options.hash, function (key, value) {
                     if ($.isFunction(value)) {
 
                         var actionData = {
@@ -111,7 +137,7 @@ define(function(require) {
             });
 
             checkHelper('formatDate');
-            Handlebars.registerHelper('formatDate', function(context, block) {
+            Handlebars.registerHelper('formatDate', function (context, block) {
 
                 var f = block.hash.format || "MMM Do, YYYY";
                 var day = moment(context);
@@ -119,21 +145,21 @@ define(function(require) {
             });
 
             checkHelper('formatNumber');
-            Handlebars.registerHelper('formatNumber', function(context, block) {
+            Handlebars.registerHelper('formatNumber', function (context, block) {
                 var f = block.hash.format || "#";
                 var str = numeral(context).format(f);
                 return str;
             });
 
-            var ExpressionRegistry = function() {
+            var ExpressionRegistry = function () {
                 this.expressions = [];
             };
 
-            ExpressionRegistry.prototype.add = function(operator, method) {
+            ExpressionRegistry.prototype.add = function (operator, method) {
                 this.expressions[operator] = method;
             };
 
-            ExpressionRegistry.prototype.call = function(operator, left, right) {
+            ExpressionRegistry.prototype.call = function (operator, left, right) {
                 if (!this.expressions.hasOwnProperty(operator)) {
                     throw new Error('Unknown operator "' + operator + '"');
                 }
@@ -142,38 +168,38 @@ define(function(require) {
             };
 
             var eR = new ExpressionRegistry;
-            eR.add('==', function(left, right) {
+            eR.add('==', function (left, right) {
                 return left == right;
             });
-            eR.add('not', function(left, right) {
+            eR.add('not', function (left, right) {
                 return left != right;
             });
-            eR.add('>', function(left, right) {
+            eR.add('>', function (left, right) {
                 return left > right;
             });
-            eR.add('<', function(left, right) {
+            eR.add('<', function (left, right) {
                 return left < right;
             });
-            eR.add('>=', function(left, right) {
+            eR.add('>=', function (left, right) {
                 return left >= right;
             });
-            eR.add('<=', function(left, right) {
+            eR.add('<=', function (left, right) {
                 return left <= right;
             });
-            eR.add('===', function(left, right) {
+            eR.add('===', function (left, right) {
                 return left === right;
             });
-            eR.add('!==', function(left, right) {
+            eR.add('!==', function (left, right) {
                 return left !== right;
             });
-            eR.add('in', function(left, right) {
+            eR.add('in', function (left, right) {
                 if (!isArray(right)) {
                     right = right.split(',');
                 }
                 return right.indexOf(left) !== -1;
             });
 
-            var isHelper = function() {
+            var isHelper = function () {
                 var args = arguments
                         , left = args[0]
                         , operator = args[1]

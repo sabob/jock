@@ -5,6 +5,8 @@ define(function(require) {
     var te = require("jock/template/template-engine");
     var viewManager = require("jock/view/view-manager");
     var toastr = require("app/plugins/toastr");
+    var customerEdit = require("app/views/customer/customerEdit");
+    var customerSearch = require("app/views/customer/customerSearch");
     require("domReady!");
 
     function productEdit() {
@@ -25,7 +27,15 @@ define(function(require) {
             container.tracker.add(promise);
             promise.then(function(product) {
 
-                var html = renderTemplate(product, container);
+                var tabs = [
+                    {label: "One", tpl: "#", disable: "false", active: true},
+                    {label: "Two", tpl: "#", disable: "false", active: false},
+                    {label: "Three", tpl: "#", disable: "false", active: false}
+                ];
+
+                var data = {product: product, tabs: tabs};
+
+                var html = renderTemplate(data, container);
 
                 container.attach(html).then(function() {
                     onAttached(product);
@@ -37,6 +47,16 @@ define(function(require) {
                 promise.abort();
             });
         };
+
+        function onSelectTab(e, tab, options) {
+            e.preventDefault();
+            if (tab.label == "One") {
+                viewManager.showView({view: customerEdit, target: "#tabContent", params: {id: 1}});
+            } else {
+                console.log("Two");
+                viewManager.showView({view: customerSearch, target: "#tabContent", params: {id: 1}});
+            }
+        }
 
         function onSave(e, origProduct, options) {
             e.preventDefault();
@@ -53,12 +73,13 @@ define(function(require) {
             viewManager.showView({view: productSearch});
         }
 
-        function renderTemplate(product, container) {
+        function renderTemplate(data, container) {
             var actions = {
                 save: onSave,
-                back: onBack
+                back: onBack,
+                selectTab: onSelectTab
             };
-            var html = te.render(template, {'product': product}, actions, {data: {container: container}});
+            var html = te.render({template: template, context: data, actions: actions, data: {container: container}});
             return html;
         }
 

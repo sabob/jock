@@ -37,7 +37,7 @@ define(function(require) {
             });
         };
 
-        function onSave(e, origCustomer, options) {
+        that.onSave = function(e, origCustomer, options) {
             e.preventDefault();
             var valid = $("#form").validationEngine('validate');
             if (valid) {
@@ -49,18 +49,20 @@ define(function(require) {
             }
         }
 
-        function onBack(e, origCustomer, options) {
+        that.onBack = function(e, origCustomer, options) {
             e.preventDefault();
             var CustomerSearch = require("./CustomerSearch");
             viewManager.showView({view: CustomerSearch});
         }
 
         function renderTemplate(customer, container) {
+            /*
             var actions = {
                 save: onSave,
                 back: onBack
-            };
-            var html = te.render(template, {'customer': customer}, actions, {data: {container: container}});
+            };*/
+
+            var html = te.render({template: template, context: {'customer': customer}, actions: that, data: {container: container}});
             return html;
         }
 

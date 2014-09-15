@@ -4,6 +4,9 @@
 @import url("validationEngine.jquery.css"); 
 @import url("select2.css");
 @import url("select2-bootstrap.css");
+@import url("home.css");
+@import url("isotope.css");
+@import url("radios-to-slider.css");
 
 ul,li {
     margin: 0;
@@ -41,7 +44,7 @@ body {
     font-family: "Segoe UI SemiLight","Segoe UI","wf_SegoeUILight","wf_SegoeUI","Segoe UI Light","Segoe WP Light","Segoe","Segoe WP","Tahoma","Verdana","Arial","sans-serif";
     /*font-family: "Verdana","Arial","sans-serif";*/
     /*background-color: #F4ED7C;*/
-    background-color: #ECECEF;
+    /*background-color: #ECECEF;*/
     color: #000;
 
 }
@@ -73,6 +76,7 @@ h3{
 .container {
     margin: 0 auto;
     width: 1170px;
+    padding-bottom: 51px
 }
 
 .header-wrapper {

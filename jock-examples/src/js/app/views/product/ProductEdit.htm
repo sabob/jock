@@ -20,6 +20,27 @@
                     <button class="btn btn-default"  {{action click=@back}}>Back</button>
                 </div>
             </div>
+            
+             <div class="row">
+                    <div class="col-md-12">
+                        <div>
+
+                            <ul class="nav nav-tabs">
+                                {{#each tabs}}
+                                <li class="{{#if active}}active{{/if}}">
+                                    <a href="{{tpl}}" {{action click=@selectTab}}>{{label}}</a>
+                                </li>
+                                {{/each}}
+                            </ul>
+
+                            <!-- Tab panes -->
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="tabContent">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
         </form>
 
     </div>

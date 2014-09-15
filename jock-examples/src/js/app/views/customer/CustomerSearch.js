@@ -50,7 +50,7 @@ define(function(require) {
                 edit: onEdit,
                 remove: onDelete
             };
-            var html = te.render(template, {'customers': customers}, actions);
+            var html = te.render({template: template, context: {'customers': customers}, actions: actions});
             return html;
         }
 

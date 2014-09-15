@@ -1,0 +1,35 @@
+.item { width: 100px;
+       height: 100px;
+       margin: 5px;
+}
+.item.w2 { width: 50%;
+}
+
+.item {
+    background-color: blue;
+    color: #fff;
+}
+.one {
+    background-color: green;
+    color: #000;
+}
+
+.two {
+    background-color: yellow;    
+    color: #000;
+}
+
+.three {
+    background-color: red;
+}
+
+.blue {
+    background-color: blue;
+}
+#isotope {
+    height: 930px;
+    width: 930px;
+}
+.searchBox {
+    margin: 10px;
+}

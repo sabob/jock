@@ -11,6 +11,7 @@ define(function(require) {
     var ProductEdit = require("./views/product/ProductEdit");
     var CalendarEdit = require("./views/calendar/CalendarEdit");
     require("./plugins/jquery.placeholder");
+    require("./plugins/radios-to-slider");
     require("bootstrap");
     var validationSetup = require("./util/validation-setup");
     require("./plugins/fullcalendar");
