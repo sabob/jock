@@ -26,9 +26,8 @@ define(function(require) {
             var event = options.event || { data: {} };
             eventEdited = options.event;
 
-            utils.fromObject("#form", event.data);
-
-            $("select").select2();
+            $("#form").fromObject(event.data);
+            $(".select2").select2();
 
             var timeVal = event.data.time || "";
             renderTime(timeVal);

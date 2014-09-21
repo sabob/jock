@@ -1,4 +1,4 @@
-define(function(require) {
+define(function (require) {
 
     var $ = require("jquery");
     require("jock/history/history");
@@ -41,7 +41,7 @@ define(function(require) {
         var callStack = {}; // TODO put limit on how many requests the callStack can hold
         var errorHandlerStack = [];
 
-        this.setRoutes = function(map) {
+        this.setRoutes = function (map) {
             if (map == null) {
                 return;
             }
@@ -53,20 +53,20 @@ define(function(require) {
             }
         };
 
-        this.getRoutes = function() {
+        this.getRoutes = function () {
             return routesByName;
         };
-        
-        this.getRoutesByPath = function() {
+
+        this.getRoutesByPath = function () {
             return routesByPath;
         };
-        
-        this.getCurrentRoute = function() {
+
+        this.getCurrentRoute = function () {
             var page = $.jock.history.params().page;
             return page;
         };
 
-        this.getCurrentRoutePath = function() {
+        this.getCurrentRoutePath = function () {
             var page = that.getCurrentRoute();
             if (page != null) {
                 return that.getRoutes()[page];
@@ -74,7 +74,7 @@ define(function(require) {
             return null;
         };
 
-        this.init = function(options) {
+        this.init = function (options) {
             if (initialized) {
                 // If no options are specified, and view-manager has been initialized before, we can skip initialization, otherwise
                 // we continue and initialize ViewManager again.
@@ -90,11 +90,11 @@ define(function(require) {
             settings = $.extend({}, settings, options);
 
             this.setRoutes(settings.routes);
-            
+
             // Set the global hashPrefix specified
             globals.hashPrefix(options.hashPrefix);
 
-            $.jock.history.init(function(hashOptions) {
+            $.jock.history.init(function (hashOptions) {
                 //console.warn("External?", options.external);
 
                 //console.log("PROCESS HASH CHANGE OVER", processHashChange);
@@ -118,7 +118,7 @@ define(function(require) {
 
                             //notify hash changes
                             var views = that.getCurrentViews();
-                            $.each(views, function(i, view) {
+                            $.each(views, function (i, view) {
                                 $(view.options.hash).trigger("onHashChange", hashOptions);
                             });
                             processHashChange = true;
@@ -130,7 +130,7 @@ define(function(require) {
                         delete viewParams.page;
                         //console.log("hash shows new view", viewPath, " with params", viewParams);
                         //console.log("2", location.href);
-                        that.showView({view: viewPath, params: viewParams, hashChange: true, externalHashChange: hashOptions.external}).then(function(view) {
+                        that.showView({view: viewPath, params: viewParams, hashChange: true, externalHashChange: hashOptions.external}).then(function (view) {
                             settings.onHashChange(view);
                             processHashChange = true;
                         });
@@ -146,7 +146,7 @@ define(function(require) {
 
                 if (settings.defaultView) {
                     options.view = settings.defaultView;
-                    this.showView(options).then(function(view) {
+                    this.showView(options).then(function (view) {
                         settings.onHashChange(view);
                         var hashOptions = {view: view};
                         $(that).trigger("onHashChange", [hashOptions]);
@@ -155,7 +155,7 @@ define(function(require) {
             }
         };
 
-        this.showView = function(options) {
+        this.showView = function (options) {
             var view = options.view;
             if (!view) {
                 throw new Error("options.view must be specified");
@@ -166,7 +166,7 @@ define(function(require) {
             var deferredHolder = that.createDeferreds();
 
             // The timeout below allows the attached promise to be returned to the caller before running the function.
-            setTimeout(function() {
+            setTimeout(function () {
                 var target = options.target || settings.target;
                 // Make copy
                 var defaults = {
@@ -259,7 +259,7 @@ define(function(require) {
             return deferredHolder.promises;
         };
 
-        this.createDeferreds = function() {
+        this.createDeferreds = function () {
             var mainDeferred = $.Deferred();
             var attachedDeferred = $.Deferred();
             var visibleDeferred = $.Deferred();
@@ -273,16 +273,16 @@ define(function(require) {
             promises.overwrite = overwriteDeferred.promise();
 
             var deferredHolder = {
-                reject: function() {
+                reject: function () {
                     mainDeferred.reject();
                     attachedDeferred.reject();
                     visibleDeferred.reject();
                     cancelDeferred.reject();
                     overwriteDeferred.reject();
-                    $(this).trigger("global.attached.fail");
-                    $(this).trigger("global.visible.fail");
-                    $(this).trigger("global.cancel.fail");
-                    $(this).trigger("global.overwrite.fail");
+                    $(this).trigger("globalAttachedFail");
+                    $(this).trigger("globalVisibleFail");
+                    $(this).trigger("globalCancelFail");
+                    $(this).trigger("globalOverwriteFail");
                 }
             };
 
@@ -295,12 +295,12 @@ define(function(require) {
             return deferredHolder;
         };
 
-        this.resolveViewAndShow = function(view, deferredHolder, viewSettings) {
+        this.resolveViewAndShow = function (view, deferredHolder, viewSettings) {
             if (typeof view === 'string') {
                 // If view is a route, resolve to it's path. Otherwise assume view is it's path
                 view = routesByName[view] || view;
 
-                require([view], function(View) {
+                require([view], function (View) {
                     that.commonShowView(View, deferredHolder, viewSettings);
                 });
 
@@ -309,7 +309,7 @@ define(function(require) {
             }
         };
 
-        this.overwrite = function(view, deferredHolder, viewSettings) {
+        this.overwrite = function (view, deferredHolder, viewSettings) {
             if (viewSettings.overwrittenCompleted === true) {
                 //console.log("Already overwritten, returning");
                 return;
@@ -343,17 +343,18 @@ define(function(require) {
              */
         };
 
-        this.commonShowView = function(view, deferredHolder, viewSettings) {
-            
+        this.commonShowView = function (view, deferredHolder, viewSettings) {
+
             var isMainViewReplaced = viewSettings.target === settings.target;
             var triggerOptions = {
                 oldView: viewSettings.previousView,
                 newView: view,
                 isMainView: isMainViewReplaced,
-                viewSettings: viewSettings
+                viewSettings: viewSettings,
+                event: "globalShowView"
             };
 
-            $(this).trigger("global.showView", [triggerOptions]);
+            $(this).trigger("globalShowView", [triggerOptions]);
 
             if (viewSettings.overwritten === true) {
                 return this.overwrite(view, deferredHolder, viewSettings);
@@ -377,7 +378,7 @@ define(function(require) {
             that.showViewInstance(viewSettings);
         };
 
-        this.hasMovedToNewView = function(route) {
+        this.hasMovedToNewView = function (route) {
             //console.log("3", location.href);
             var currentViewName = $.jock.history.params().page;
             if (currentViewName === route) {
@@ -392,7 +393,7 @@ define(function(require) {
             return true;
         };
 
-        this.showViewInstance = function(viewSettings) {
+        this.showViewInstance = function (viewSettings) {
             if (viewSettings.overwritten === true) {
                 return this.overwrite(view, viewSettings.deferredHolder, viewSettings);
             }
@@ -402,6 +403,14 @@ define(function(require) {
             var target = viewSettings.target;
             var isMainViewReplaced = target === settings.target;
             //isMainViewReplaced=true;
+            
+            // TODO onDestroy must return a promise that determines if we continue or not, instead of calling cancel() on the container
+            var continueProcessing = handleOnDestroy(viewSettings.target, viewSettings);
+            if (!continueProcessing || viewSettings.cancelled) {
+                //return this.overwrite(view, viewSettings.deferredHolder, viewSettings);
+                this.clear(target);
+                return;
+            }
 
             var view = viewSettings.view;
 
@@ -435,7 +444,7 @@ define(function(require) {
             }
             processHashChange = true;
 
-            var container = function() {
+            var container = function () {
                 var parent = that;
                 var me = {};
 
@@ -443,13 +452,17 @@ define(function(require) {
                 me.visible = deferredHolder.promises.visible;
                 me.overwrite = deferredHolder.promises.overwrite;
 
-                me.attach = function(html, containerOptions) {
+                me.attach = function (html, containerOptions) {
 
                     // The timeout below allows the attached promise to be returned to the caller before running the function.
-                    setTimeout(function() {
+                    setTimeout(function () {
                         if (viewSettings.overwritten === true) {
                             console.warn("likely??");
                             that.overwrite(view, viewSettings.deferredHolder, viewSettings);
+                            return deferredHolder.promises.attached;
+                        }
+
+                        if (viewSettings.cancelled) {
                             return deferredHolder.promises.attached;
                         }
                         var previousView = setCurrentView(view, viewSettings);
@@ -462,7 +475,7 @@ define(function(require) {
 
                         var containerSettings = $.extend({}, containerDefaults, containerOptions);
 
-                        var onAttached = function() {
+                        var onAttached = function () {
 
                             //setTimeout(function() {
                             var isMainViewReplaced = target === settings.target;
@@ -470,11 +483,18 @@ define(function(require) {
                                 oldView: viewSettings.previousView,
                                 newView: view,
                                 isMainView: isMainViewReplaced,
-                                viewSettings: viewSettings
+                                viewSettings: viewSettings,
+                                event: "globalBeforeAttachedNotify"
                             };
-                            $(that).trigger("global.attached", [triggerOptions]);
-                            
+
+                            $(that).trigger("globalBeforeAttachedNotify", [triggerOptions]);
+
+                            triggerOptions.event = "globalAttached";
+                            $(that).trigger("globalAttached", [triggerOptions]);
                             deferredHolder.attachedDeferred.resolve({view: view, container: viewSettings.container});
+
+                            triggerOptions.event = "globalAfterAttachedNotify";
+                            $(that).trigger("globalAfterAttachedNotify", [triggerOptions]);
 
                             // In case user forgot to bind. TODO this call could be slow if DOM is large, so make autobind configurable
                             if (templateEngine.hasActions()) {
@@ -487,19 +507,23 @@ define(function(require) {
                             //});
                         };
 
-                        var onVisible = function() {
+                        var onVisible = function () {
                             //setTimeout(function() {
 
                             var triggerOptions = {
                                 oldView: viewSettings.previousView,
                                 newView: view,
                                 isMainView: isMainViewReplaced,
-                                viewSettings: viewSettings
+                                viewSettings: viewSettings,
+                                event: "globalBeforeVisibleNotify"
                             };
-                            // TODO perhaps a global.before.visible and global.after.visible???
-                            $(that).trigger("global.visible", [triggerOptions]);
+                            $(that).trigger("globalBeforeVisibleNotify", [triggerOptions]);
+                            triggerOptions.event = "globalVisible";
+                            $(that).trigger("globalVisible", [triggerOptions]);
 
                             deferredHolder.visibleDeferred.resolve({view: view, container: viewSettings.container});
+                            triggerOptions.event = "globalAfterVisibleNotify";
+                            $(that).trigger("globalAfterVisibleNotify", [triggerOptions]);
                             //});
                         };
 
@@ -529,10 +553,11 @@ define(function(require) {
                     return me.attached;
                 };
 
-                me.cancel = function() {
+                me.cancel = function () {
                     if (viewSettings.overwritten === true) {
                         return that.overwrite(view, viewSettings.deferredHolder, viewSettings);
                     }
+                    viewSettings.cancelled = true;
                     processHashChange = false;
                     $.jock.history.hash(currentHash);
                     currentHash = null;
@@ -551,19 +576,20 @@ define(function(require) {
                         oldView: currentView,
                         newView: view,
                         isMainView: isMainViewReplaced,
-                        viewSettings: viewSettings
+                        viewSettings: viewSettings,
+                        event: "globalCancel"
                     };
-                    $(that).trigger("global.cancel", [triggerOptions]);
+                    $(that).trigger("globalCancel", [triggerOptions]);
 
                     return cancelPromise;
                 };
 
                 me.tracker = {};
-                me.tracker.add = function(jqXHR, args) {
+                me.tracker.add = function (jqXHR, args) {
                     ajaxTracker.add(viewSettings.target, jqXHR, args);
                 };
 
-                me.tracker.remove = function(jqXHR) {
+                me.tracker.remove = function (jqXHR) {
                     ajaxTracker.remove(viewSettings.target, jqXHR);
                 };
 
@@ -597,13 +623,13 @@ define(function(require) {
             //return result;
         };
 
-        this.showHTML = function(options) {
+        this.showHTML = function (options) {
             this.ensureInitialized();
 
             var deferredHolder = that.createDeferreds();
 
             // The timeout below allows the attached promise to be returned to the caller before running the function.
-            setTimeout(function() {
+            setTimeout(function () {
 
                 var target = options.target || settings.target;
                 var defaults = {
@@ -641,15 +667,16 @@ define(function(require) {
 
                 callStack[target].push(1);
 
-                var onAttached = function() {
+                var onAttached = function () {
 
                     //setTimeout(function() {
 
                     var triggerOptions = {
                         oldHTML: null,
-                        newHTML: html
+                        newHTML: html,
+                        event: "globalHtmlAttached"
                     };
-                    $(this).trigger("global.html.attached", [triggerOptions]);
+                    $(this).trigger("globalHtmlAttached", [triggerOptions]);
 
                     deferredHolder.attachedDeferred.resolve({html: html});
 
@@ -661,14 +688,15 @@ define(function(require) {
                     //});
                 };
 
-                var onVisible = function() {
+                var onVisible = function () {
 
                     //setTimeout(function() {
                     var triggerOptions = {
                         oldHTML: null,
-                        newHTML: html
+                        newHTML: html,
+                        event: "globalHtmlVisible"
                     };
-                    $(this).trigger("global.html.visible", [triggerOptions]);
+                    $(this).trigger("globalHtmlVisible", [triggerOptions]);
 
                     deferredHolder.visibleDeferred.resolve({html: html});
                     //});
@@ -688,7 +716,7 @@ define(function(require) {
             return deferredHolder.promises;
         };
 
-        this.commonAttachView = function(html, viewSettings) {
+        this.commonAttachView = function (html, viewSettings) {
             var target = viewSettings.target;
             var $target = $(target);
             if ($target.length === 0) {
@@ -701,15 +729,18 @@ define(function(require) {
                     oldView: currentView,
                     newView: viewSettings.view,
                     isMainView: isMainViewReplaced,
-                    viewSettings: viewSettings
+                    viewSettings: viewSettings,
+                    event: "globalBeforeRemove"
                 };
-                $(that).trigger("global.before.attach", [triggerOptions]);
-                $(that).trigger("global.before.remove", [triggerOptions]);
+                $(that).trigger("globalBeforeRemove", [triggerOptions]);
+
+                triggerOptions.event = "globalBeforeAttached";
+                $(that).trigger("globalBeforeAttached", [triggerOptions]);
             }
             settings.attachHandler(html, viewSettings);
         };
 
-        this.attachView = function(html, viewSettings) {
+        this.attachView = function (html, viewSettings) {
             var target = viewSettings.target;
             var $target = $(target);
             var viewAttached = viewSettings.viewAttached;
@@ -720,7 +751,7 @@ define(function(require) {
             viewVisible(viewSettings);
         };
 
-        this.viewAttached = function(options) {
+        this.viewAttached = function (options) {
             if (settings.globalOnAttached != null) {
                 var origOptions = options._options;
                 settings.globalOnAttached(origOptions);
@@ -768,7 +799,7 @@ define(function(require) {
                 //console.info("really no actions")
             }
         };
-        this.viewVisible = function(viewSettings) {
+        this.viewVisible = function (viewSettings) {
 
             var target = viewSettings.target;
             var view = viewSettings.view;
@@ -803,7 +834,7 @@ define(function(require) {
             }
         };
 
-        this.commonAttachViewWithAnim = function(html, viewSettings) {
+        this.commonAttachViewWithAnim = function (html, viewSettings) {
 
             var target = viewSettings.target;
             var $target = $(target);
@@ -817,10 +848,12 @@ define(function(require) {
                     oldView: currentView,
                     newView: viewSettings.view,
                     isMainView: isMainViewReplaced,
-                    viewSettings: viewSettings
+                    viewSettings: viewSettings,
+                    event: "globalBeforeRemove"
                 };
-                $(that).trigger("global.before.attach", [triggerOptions]);
-                $(that).trigger("global.before.remove", [triggerOptions]);
+                $(that).trigger("globalBeforeRemove", [triggerOptions]);
+                triggerOptions.event = "globalBeforeAttached";
+                $(that).trigger("globalBeforeAttached", [triggerOptions]);
             }
             //$target.css({'opacity': 0});
             //$target.hide();
@@ -828,18 +861,18 @@ define(function(require) {
             settings.animateHandler(html, viewSettings);
         };
 
-        this.attachViewWithAnim = function(html, viewSettings) {
+        this.attachViewWithAnim = function (html, viewSettings) {
             var target = viewSettings.target;
             var $target = $(target);
             var viewAttached = viewSettings.viewAttached;
             var viewVisible = viewSettings.viewVisible;
-            $target.fadeOut('fast', function() {
+            $target.fadeOut('fast', function () {
 
                 $target.empty();
                 $target.html(html);
                 viewAttached(viewSettings);
 
-                $target.fadeIn({queue: false, duration: 'fast', complete: function() {
+                $target.fadeIn({queue: false, duration: 'fast', complete: function () {
                         viewVisible(viewSettings);
                     }});
 
@@ -850,13 +883,13 @@ define(function(require) {
             });
         };
 
-        this.updateHistory = function() {
+        this.updateHistory = function () {
             processHashChange = false;
             $.jock.history.update();
             processHashChange = true;
         };
 
-        this.empty = function(target) {
+        this.empty = function (target) {
             target = target || settings.target;
             var $target = $(target);
             if ($target.length === 0) {
@@ -867,7 +900,7 @@ define(function(require) {
             $target.empty();
         };
 
-        this.clear = function(target) {
+        this.clear = function (target) {
             target = target || settings.target;
             var obj = callStack[target];
             if (obj) {
@@ -879,16 +912,16 @@ define(function(require) {
             }
         };
 
-        this.hasCurrentViews = function() {
+        this.hasCurrentViews = function () {
             var isEmpty = $.isEmptyObject(currentViews);
             return !isEmpty;
         };
 
-        this.getCurrentViews = function() {
+        this.getCurrentViews = function () {
             return currentViews;
         };
 
-        this.getCurrentView = function(target) {
+        this.getCurrentView = function (target) {
             target = target || settings.target;
             var currentView = currentViews[target];
             if (currentView) {
@@ -897,7 +930,7 @@ define(function(require) {
             return null;
         };
 
-        this.ensureInitialized = function() {
+        this.ensureInitialized = function () {
             if (initialized) {
                 return;
             }
@@ -910,12 +943,38 @@ define(function(require) {
             var previousView = that.getCurrentView(target);
 
             // remove current view at the target
-            removeCurrentView(target);
+            removeCurrentView(target, viewSettings);
 
             // add new view
             var currentView = {view: newView, options: viewSettings};
             currentViews[target] = currentView;
             return previousView;
+        }
+
+        function handleOnDestroy(target, viewSettings) {
+            var continueProcessing = true;
+            $.each(currentViews, function (currentViewTarget, currentView) {
+
+                // fast path - if targets match, remove associated view
+                if (target === currentViewTarget) {
+                    var result = onDestroyCurrentView(currentView, viewSettings);
+                    if (!result) {
+                        continueProcessing = false;
+                    }
+
+                } else {
+                    // slow path, check if currentView is contained inside target
+                    var targetContainsView = $(currentViewTarget).closest(target).length > 0;
+                    if (targetContainsView) {
+                        var result = onDestroyCurrentView(currentView, viewSettings);
+                        if (!result) {
+                            continueProcessing = false;
+                        }
+                    }
+                }
+            });
+
+            return continueProcessing;
         }
         /*
          function removeCurrentView(target) {
@@ -927,39 +986,44 @@ define(function(require) {
          delete currentViews[target];
          }
          */
-        function removeCurrentView(target) {
-            $.each(currentViews, function(currentViewTarget, currentView) {
+        function removeCurrentView(target, viewSettings) {
+            $.each(currentViews, function (currentViewTarget, currentView) {
 
                 // fast path - if targets match, remove associated view
                 if (target === currentViewTarget) {
-                    onDestroyCurrentView(currentView);
+                    //onDestroyCurrentView(currentView,viewSettings );
                     delete currentViews[currentViewTarget];
 
                 } else {
                     // slow path, check if currentView is contained inside target
                     var targetContainsView = $(currentViewTarget).closest(target).length > 0;
                     if (targetContainsView) {
-                        onDestroyCurrentView(currentView);
+                        //onDestroyCurrentView(currentView, viewSettings);
                         delete currentViews[currentViewTarget];
                     }
                 }
             });
         }
 
-        function onDestroyCurrentView(currentView) {
+        // return promise instead of boolean
+        function onDestroyCurrentView(currentView, viewSettings) {
             if (currentView == null) {
-                return;
+                return true;
             }
             // TODO: we don't know whether the DOM for the overwritten view was added or not. Need to add another status to determine if it
             // is safe to call onDestroy
             if (currentView.options.overwritten) {
-                return;
+                return false;
             }
 
             if (currentView.view && currentView.view.onDestroy) {
-
-                currentView.view.onDestroy(currentView.options);
+                var continueProcessing = currentView.view.onDestroy(currentView.options);
+                if (continueProcessing == null) {
+                    return true;
+                }
+                return continueProcessing;
             }
+            return true;
         }
 
         function removeGlobalErrorHandler(target) {
@@ -993,7 +1057,7 @@ define(function(require) {
         function globalErrorHandler(message, url, lineNumber, colNumber, error) {
             for (var i = 0; i < errorHandlerStack.length; i++) {
                 var target = errorHandlerStack[i];
-                
+
                 var options = {message: message, url: url, line: lineNumber, col: colNumber, error: error, target: target};
                 targetErrorHandler(options);
             }
@@ -1010,7 +1074,7 @@ define(function(require) {
             var $target = $(options.target);
             $target.finish();
             $target.clearQueue().stop(true, true);
-            setTimeout(function() {
+            setTimeout(function () {
                 $target.css({'opacity': '1', 'display': 'block'});
             }, 10);
             return false;

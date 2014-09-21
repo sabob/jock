@@ -40,8 +40,6 @@ define(function(require) {
     };
 
     viewManager.init(options);
-    var viewName = viewManager.getCurrentRoute();
-    setInitialActiveMenu(viewName);
 
     function setupActiveMenu() {
 
@@ -49,7 +47,7 @@ define(function(require) {
             menuNames.push($(item).attr("data-menu"));
         });
 
-        $(viewManager).on("global.before.attach", function(e, options) {
+        $(viewManager).on("globalBeforeAttached", function(e, options) {
 
             // Ignore subviews
             if (!options.isMainView) {
@@ -75,8 +73,14 @@ define(function(require) {
                 }
             }
 
-            $("#navbar li.active").removeClass("active");
-            slideToActive($item);
+            var $activeMenu = $("#navbar li.active");
+            
+            if ($activeMenu.length > 0) {
+                $("#navbar li.active").removeClass("active");
+                slideToActive($item);
+            } else {
+                setInitialActiveMenu($item);
+            }
         });
 
 
@@ -113,10 +117,29 @@ define(function(require) {
             });
         });
 
-        $(viewManager).on("global.visible", function(e, options) {
+        $(viewManager).on("globalVisible", function(e, options) {
         });
-
-        $(viewManager).on("global.attached", function(e, options) {
+        
+        $(viewManager).on("globalBeforeAttachedNotify", function(e, options) {
+            //alert("before: " + options.event);
+        });
+        
+        $(viewManager).on("globalAfterAttachedNotify", function(e, options) {
+            //alert("after:" + options.event);
+            $(".select2").select2();
+        });
+        
+        $(viewManager).on("globalBeforeRemove", function(e, options) {           
+            $('body > .select2-hidden-accessible').remove();
+                $('body > .select2-drop-mask').remove();
+                $('body > .select2-drop').remove();
+                $('body > .select2-sizer').remove();
+        });
+        
+        
+        
+        $(viewManager).on("globalAttached", function(e, options) {
+            //alert("attached:" + options.event);
 
             if (!$.fn.placeholder.input || !$.fn.placeholder.textarea) {
                 $('input, textarea').placeholder();
@@ -142,8 +165,11 @@ define(function(require) {
         $("#nav-ind").css(location);
     }
     
-    function setInitialActiveMenu(viewName) {
-        var $item = $("#menu-" + viewName).parent();
+    function setInitialActiveMenu(itemOrName) {
+        var $item = itemOrName;
+        if (typeof itemOrName === "string") {
+            $item = $("#menu-" + itemOrName).parent();
+        }
         $item.addClass('active');
         var location = getActiveMenuLocation($item);
         $('#nav-ind').css(location);
@@ -152,6 +178,7 @@ define(function(require) {
     function slideToActive($li) {
         $li.addClass('active');
         var location = getActiveMenuLocation($li);
+        console.log("LOC", location)
         $('#nav-ind').animate(location, 'fast', 'linear');
     }
 

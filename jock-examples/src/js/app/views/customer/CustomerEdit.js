@@ -65,9 +65,10 @@ define(function (require) {
             return html;
         }
 
-        function onAttached(customer) {
+        function onAttached(customer) { 
             // Copy customer values to form
             $("#form").fromObject(customer);
+            //$(".select2").select2(); // This call is done in setup.js under the "global.before.attached.notify" event
 
             // Add inline validation to form
             $("#form").validationEngine();

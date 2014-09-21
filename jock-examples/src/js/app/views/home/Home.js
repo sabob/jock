@@ -20,6 +20,15 @@ define(function (require) {
 
             container.attach(template).then(onAttached);
         };
+        
+        /*
+         * Commented to shows how on Destroy could be used to cancel showing a new view
+        this.onDestroy = function (options) {
+            // Returning false means we cancel that showView call and stay on this view.
+            var continueProcessing = confirm("Cancel changes?")
+            return continueProcessing;
+        };
+        */
 
         function onAttached(options) {
             console.log("HOME attached arg", options);
