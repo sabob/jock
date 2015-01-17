@@ -2,7 +2,7 @@ define(function (require) {
     var $ = require("jquery");
     var Ractive = require("ractive");
     require('ractive-transitions-fade');
-    var Foo = require("rvc!./Foo");
+    //var Foo = require("rvc!./Foo");
     var template = require("hb!./Home.htm");
     var titlePartial = require("hb!./title.htm");
     //var Handlebars = require("Handlebars");
@@ -25,54 +25,8 @@ define(function (require) {
         this.onInit = function (container, args) {
             console.log("IN");
 
-            var MyFoo = Foo.extend({
-                
-                oninit: function () {
-                    console.log("LIFE oninit");
-                },
-                onconstruct: function () {
-                    console.log("LIFE onconstruct");
-                },
-                //el:  document.createDocumentFragment()
-                //el: 'container'
-                //twoway: false,
-                //modifyArrays: false,
-                data: {
-                    items: items,
-                    user: {firstname: "bob", lastname: "smith"}
-                },
-                add: function (val) {
-                    console.log("ADD CALLED", val);
-                    //items.push({val: 2});
-                    this.push("items", {val: 3});
-                    var user = this.get("user");
-                    console.log(user);
-                    myComp.set("name", "fool");
-                },
-                remove: function () {
-                    console.log("REMOVE CALLED");
-                    //items.push({val: 2});
-                    this.pop("items");
-                    var user = this.get("user");
-                    console.log(user);
-                }
-            });
             //console.log(fooComp);
 
-            var MyFoo2 = MyFoo.extend({
-                oninit: function () {
-                    this._super();
-                    console.log("LIFE oninit2", arguments);
-                },
-                onrender: function () {
-                    var MyComp = Ractive.extend({
-                        el: "comp",
-                        template: "<h1>HI hi {{name}}</h1>",
-                        data: {name: "bob"}
-                    });
-                    myComp = new MyComp();
-                }
-            });
 
             //Ractive.defaults.el = 'container';
 

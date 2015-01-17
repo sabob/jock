@@ -3,7 +3,7 @@ define(function (require) {
     var $ = require("jquery");
     var template = require("hb!./CustomerSearch.htm");
     var te = require("jock/template/template-engine");
-    var viewManager = require("jock/view/view-manager");
+    //var viewManager = require("jock/view/view-manager");
     var CustomerEdit = require("./CustomerEdit");
     require("domReady!");
 
@@ -37,7 +37,7 @@ define(function (require) {
         that.onEdit = function (e, customer) {
             e.preventDefault();
             //console.log("Edit", customer);
-            viewManager.showView({view: CustomerEdit, params: {id: customer.id}, args: {customer: customer}});
+            //viewManager.showView({view: CustomerEdit, params: {id: customer.id}, args: {customer: customer}});
         }
 
         that.onDelete = function (e, customer) {

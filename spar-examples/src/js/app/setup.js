@@ -5,7 +5,7 @@ define(function (require) {
     require("jock/jock");
     var spar = require("spar/spar");
     var viewManager = require("jock/view/view-manager");
-    var Home = require("./views/home/Home");
+    //var Home = require("./views/home/Home");
     var CustomerSearch = require("./views/customer/CustomerSearch");
     var CustomerEdit = require("./views/customer/CustomerEdit");
     var ProductSearch = require("./views/product/ProductSearch");
@@ -23,7 +23,7 @@ define(function (require) {
         target: "#container",
         routes: {
             home2: {path: '/home2', moduleId: Home2.id},
-            home: {path: '/', moduleId: Home2.id},
+            //home: {path: '/', moduleId: Home2.id},
             customer: {path: '/customer/:id', moduleId: 'customer/customerView'},
             notFound: {path: '*', moduleId: resolveModuleId}
         }
@@ -69,7 +69,7 @@ define(function (require) {
 
     var options = {};
     options.routes = {
-        "home": Home.id,
+        "home2": Home2.id,
         "customers": CustomerSearch.id,
         "customerEdit": CustomerEdit.id,
         "products": ProductSearch.id,
@@ -83,7 +83,7 @@ define(function (require) {
      setActiveMenu(view);
      $('#nav-ind').stop(true, true);
      };*/
-    options.defaultView = Home;
+    options.defaultView = Home2;
     options.globalOnAttached = function (options) {
     };
     //viewManager.init(options);

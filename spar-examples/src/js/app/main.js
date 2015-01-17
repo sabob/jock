@@ -1,7 +1,7 @@
 define(function(require) {
     var $ = require("jquery");
     require("app/setup");
-    var Home = require("./views/home/Home");
+    //var Home = require("./views/home/Home");
     var CustomerSearch = require("./views/customer/CustomerSearch");
     var ProductSearch = require("./views/product/ProductSearch");
     var CalendarEdit = require("./views/calendar/CalendarEdit");

@@ -195,7 +195,6 @@ define(function (require) {
                         if (currentMVC.view.unrendedComplete != null && currentMVC.view.unrendedComplete.length > 0) {
                             var ar = currentMVC.view.unrendedComplete;
 							var fns = ar.slice(0);
-							console.error("size", fns.length)
 							fns.splice( 0, fns.length ).forEach( function( fn ) {
                             //for (var i = 0; i < fns.length; i++) {
                                 //var fn = fns[i];
