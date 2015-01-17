@@ -1,0 +1,17 @@
+<div>
+    <div id="comp">
+
+    </div>
+    <h1>Hello {{name}}</h1>
+
+    {{#items :i}}
+    <button intro-outro='fade:350' on-click='add(this)'>Add item</button>
+    {{/}}
+    <button intro-outro='fade:350' on-click='remove()'>Remove item</button>
+
+
+    <input value='{{user.firstname}}'/>
+    <input value='{{user.lastname}}'/>
+
+
+</div>

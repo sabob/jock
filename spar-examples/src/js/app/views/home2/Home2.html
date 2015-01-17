@@ -1,0 +1,120 @@
+<style>
+    #address {
+        border: 1px solid #000090;
+        background-color: #f0f0ff;
+        width: 480px;
+        padding-right: 2px;
+        border-spacing: 5px;
+        border-collapse: initial;
+    }
+    #address td {
+        font-size: 10pt;
+    }
+    .field {
+        width: 99%;
+    }
+    .slimField {
+        width: 80px;
+    }
+    .wideField {
+        width: 200px;
+    }
+    #locationField {
+        height: 20px;
+        margin-bottom: 2px;
+    }
+</style>
+
+<div class='wrapper' intro-outro='fade:150'>
+    <div>
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Hello {{users.name}}</h1>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                {{#items}}
+                <button intro-outro='fade:150' on-click='add(this)'>Add item</button>
+                {{/}}
+                <button intro-outro='fade:150' on-click='remove()'>Remove item</button>
+
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-md-12">
+
+                <form role="form">
+                    <div class="form-group">
+                        <label>Firstname</label> 
+                        <input value='{{user.firstname}}'/>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Lastname</label>
+                        <input value='{{user.lastname}}'/>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Address</label>
+                        <input value='{{user.address}}' placeholder="Enter address" id="autocomplete"  on-focus="geolocate()"/>
+
+                    </div>
+                    
+                    <div class="form-group">
+                    </div>
+                    
+                    
+                </form>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+
+                <table id="address">
+                    <tr>
+                        <td class="">Street address</td>
+                        <td class="slimField">
+                            <input class="field" id="street_number" disabled="true"/>
+                        </td>
+                        <td class="wideField" colspan="2">
+                            <input class="field" id="route" disabled="true"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="">Suburb</td>
+                        <td class="wideField" colspan="3">
+                            <input class="field" id="sublocality_level_1" disabled="true"/>
+                        </td> 
+                    </tr>
+                    <tr>
+                        <td class="">City</td>
+                        <td class="wideField" colspan="3">
+                            <input class="field" id="locality" disabled="true"/>
+                        </td> 
+                    </tr>
+                    <tr>
+                        <td class="">Province</td>
+                        <td class="slimField"><input class="field"
+                                                     id="administrative_area_level_1" disabled="true"/></td>
+                        <td class="">Zip code</td>
+                        <td class="wideField">
+                            <input class="field" id="postal_code" disabled="true"/></td>
+                    </tr>
+                    <tr>
+                        <td class="">Country</td>
+                        <td class="wideField" colspan="3">
+                            <input class="field" id="country" disabled="true"/></td>
+                    </tr>
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
