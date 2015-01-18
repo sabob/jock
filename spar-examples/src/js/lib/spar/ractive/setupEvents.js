@@ -3,11 +3,7 @@ define(function (require) {
     var $ = require("jquery");
 
     function setupEvents(options) {
-        //console.error(Ractive.defaults);
-        Ractive.defaults.onconstruct = function () {
-            //console.error("OK", this);
-        };
-
+     
         // Add callback events
         options.view.off('complete');
         options.view.off('render');

@@ -4,7 +4,7 @@ define(function (require) {
 
 	function setupDefaultEvents(options) {
 		Ractive.defaults.onconstruct = function () {
-			console.error("OK", this);
+			//console.error("OK", this);
 		};
 
 		var that = {};
