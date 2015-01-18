@@ -1,0 +1,47 @@
+<div class="container">
+
+    <h1>Product Edit</h1>
+    
+    <div class="row">
+        <form id="form"  role="form">
+            <div class="row">
+                <div class="form-group col-md-3">
+
+                    <label for="name">Name</label>
+                    <input type="text" class="form-control floatlabel" id="name" name="name" placeholder="Enter name">
+                </div>
+            </div>
+
+            <input type="hidden" name="id">
+
+            <div class="row">
+                <div class="form-group col-md-3">
+                    <button type="submit" class="btn btn-primary"  {{action click=@onSave}}>Save</button>
+                    <button class="btn btn-default"  {{action click=@onBack}}>Back</button>
+                </div>
+            </div>
+            
+             <div class="row">
+                    <div class="col-md-12">
+                        <div>
+
+                            <ul class="nav nav-tabs">
+                                {{#each tabs}}
+                                <li class="{{#if active}}active{{/if}}">
+                                    <a href="{{tpl}}" {{action click=@onSelectTab}}>{{label}}</a>
+                                </li>
+                                {{/each}}
+                            </ul>
+
+                            <!-- Tab panes -->
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="tabContent">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </form>
+
+    </div>
+</div>
