@@ -51,25 +51,25 @@ define(function (require) {
 				//console.log("route loaded", routeOptions.ctrl.id);
 				that.routeLoaded(routeOptions);
 			});
-			
+
 			setupDefaultRactiveEvents(options);
 
 			router.init();
 		};
-		
+
 		function setupRoutesToPaths(routes) {
-			 for (var route in routes) {
-                if (routes.hasOwnProperty(route)) {
+			for (var route in routes) {
+				if (routes.hasOwnProperty(route)) {
 					var r = routes[route];
-                    routesByPath[r.moduleId] = r.path;
-                }
-            }
+					routesByPath[r.moduleId] = r.path;
+				}
+			}
 		}
 
 		that.getRoutes = function () {
 			return routes;
 		};
-		
+
 		that.getRoutesByPath = function () {
 			return routesByPath;
 		}
@@ -86,6 +86,9 @@ define(function (require) {
 			// We enable transitions by default for the new view
 			var transitionsEnabled = globalTransitionsEnabled;
 			if (callstack.length > 1) {
+				$.fx.off = true;
+				$(initOptions.target).stop(true, true);
+				enableAnimationsTracker.enableAnimation = false;
 
 				// If we detect the new view overwriting a previous view, we disable transitions globally
 				globalTransitionsEnabled = false;
@@ -144,10 +147,14 @@ define(function (require) {
 				options.view.transitionsEnabled = false;
 
 				options.view.render(initOptions.target).then(function () {
-					deferred.resolve(options.view);
+					$(initOptions.target).fadeIn(0, function () {
+						options.view.transitionsEnabled = true;
+
+						currentMVC.view = options.view;
+						currentMVC.ctrl = options.ctrl;
+						deferred.resolve(options.view);
+					});
 				});
-				currentMVC.view = options.view;
-				currentMVC.ctrl = options.ctrl;
 
 			} else {
 
@@ -184,82 +191,115 @@ define(function (require) {
 					console.warn(currentMVC.view._guid);
 
 					// HACK start. see https://github.com/ractivejs/ractive/issues/1015 Depending on how #1015 is fixed this hack could be removed.
-
-					if (!currentMVC.view.fragment.rendered) {
-						// View is being torn down. We add a callback fn that should be called when the unrender is complete before rendering.
-						//deferred.reject();
-						//return promise;
-						if (currentMVC.view.unrenderComplete == null) {
-							currentMVC.view.unrenderComplete = [];
-						}
-						currentMVC.view.unrenderComplete.push(function () {
-							//currentMVC.view.teardownComplete = null;
-							// Request could have been overwritten by new request. Ensure this is still the active request
-							if (!options.requestTracker.active) {
-								deferred.reject();
-								return promise;
-							}
-
-							// Insert ractive into DOM
-							options.view.render(initOptions.target).then(function () {
-								deferred.resolve(options.view);
-							}, function () {
-								console.error("rendering failed!");
-								deferred.reject();
-							});
-
-							console.log("VIEW VISIBLE");
-							currentMVC.view = options.view;
-							currentMVC.ctrl = options.ctrl;
-						});
-						return promise;
-					}
+					/*
+					 if (!currentMVC.view.fragment.rendered) {
+					 // View is being torn down. We add a callback fn that should be called when the unrender is complete before rendering.
+					 //deferred.reject();
+					 //return promise;
+					 if (currentMVC.view.unrenderComplete == null) {
+					 currentMVC.view.unrenderComplete = [];
+					 }
+					 currentMVC.view.unrenderComplete.push(function () {
+					 //currentMVC.view.teardownComplete = null;
+					 // Request could have been overwritten by new request. Ensure this is still the active request
+					 if (!options.requestTracker.active) {
+					 deferred.reject();
+					 return promise;
+					 }
+					 
+					 // Insert ractive into DOM
+					 options.view.render(initOptions.target).then(function () {
+					 deferred.resolve(options.view);
+					 }, function () {
+					 console.error("rendering failed!");
+					 deferred.reject();
+					 });
+					 
+					 console.log("VIEW VISIBLE");
+					 currentMVC.view = options.view;
+					 currentMVC.ctrl = options.ctrl;
+					 });
+					 return promise;
+					 }*/
 
 					// HACK end
 
 					//console.log("Fragment rendered", currentMVC.view.fragment.rendered);
 					//debugger;
 					//currentMVC.view.unrender().then(function (arg) {
-					currentMVC.view.unrender().then(function (arg) {
-						///currentMVC.view.detach();
-						console.error("UNRENDER COMPLETE");
 
-						if (currentMVC.view.unrenderComplete != null && currentMVC.view.unrenderComplete.length > 0) {
-							var ar = currentMVC.view.unrenderComplete;
-							var fns = ar.slice(0);
-							fns.splice(0, fns.length).forEach(function (fn) {
-								//for (var i = 0; i < fns.length; i++) {
-								//var fn = fns[i];
-								fn();
-							});
-							currentMVC.view.unrenderComplete = [];
-						}
+					$(initOptions.target).fadeOut('slow', function () {
 
-						// Request could have been overwritten by new request. Ensure this is still the active request
 						if (!options.requestTracker.active) {
 							deferred.reject();
-							return promise;
+							return;
 						}
 
-						// Insert ractive into DOM
-						console.log("DOK", options.view.fragment.rendered);
-						if (options.view.fragment.rendered) { // check to see if this view has been rendered previously
-							alert("Bleh")
-							options.view.insert(initOptions.target);
-							deferred.resolve(options.view);
-						} else {
+						currentMVC.view.transitionsEnabled = false;
+						console.error("RENDERED", currentMVC.view.fragment.rendered);
+						currentMVC.view.unrender().then(function (arg) {
+							if (!options.requestTracker.active) {
+								deferred.reject();
+								return;
+							}
+
 							options.view.render(initOptions.target).then(function () {
 								//console.log("DONE RENDER")
-								deferred.resolve(options.view);
-							});
-						}
 
-						//console.log("VIEW VISIBLE");
-						currentMVC.view = options.view;
-						currentMVC.ctrl = options.ctrl;
-					}, function () {
-						console.error("TEARDOWN ERROR");
+								currentMVC.view = options.view;
+								currentMVC.ctrl = options.ctrl;
+								currentMVC.view.transitionsEnabled = true;
+
+								$(initOptions.target).fadeIn('slow', function () {
+									deferred.resolve(options.view);
+
+								});
+							});
+						});
 					});
+
+					/*
+					 currentMVC.view.unrender().then(function (arg) {
+					 ///currentMVC.view.detach();
+					 console.error("UNRENDER COMPLETE");
+					 
+					 
+					 if (currentMVC.view.unrenderComplete != null && currentMVC.view.unrenderComplete.length > 0) {
+					 var ar = currentMVC.view.unrenderComplete;
+					 var fns = ar.slice(0);
+					 fns.splice(0, fns.length).forEach(function (fn) {
+					 //for (var i = 0; i < fns.length; i++) {
+					 //var fn = fns[i];
+					 fn();
+					 });
+					 currentMVC.view.unrenderComplete = [];
+					 }
+					 
+					 // Request could have been overwritten by new request. Ensure this is still the active request
+					 if (!options.requestTracker.active) {
+					 deferred.reject();
+					 return promise;
+					 }
+					 
+					 // Insert ractive into DOM
+					 console.log("DOK", options.view.fragment.rendered);
+					 if (options.view.fragment.rendered) { // check to see if this view has been rendered previously
+					 alert("Bleh");
+					 options.view.insert(initOptions.target);
+					 deferred.resolve(options.view);
+					 } else {
+					 options.view.render(initOptions.target).then(function () {
+					 //console.log("DONE RENDER")
+					 deferred.resolve(options.view);
+					 });
+					 }
+					 
+					 //console.log("VIEW VISIBLE");
+					 currentMVC.view = options.view;
+					 currentMVC.ctrl = options.ctrl;
+					 }, function () {
+					 console.error("TEARDOWN ERROR");
+					 });*/
 
 				}, function () {
 					// OnRemove failed or cancelled
@@ -297,12 +337,25 @@ define(function (require) {
 				//setTimeout(function() {
 				// Let's just wait a bit to see if things calmed down before enabling transitions again
 				//if (callstack.length === 0) {
-				globalTransitionsEnabled = true;
-				//}
-				//}, 1350);
+				//globalTransitionsEnabled = true;
+
+				// Delay switching on animation incase user is still clicking furiously
+				enableAnimationsTracker.enableAnimation = false;
+				enableAnimationsTracker = {enableAnimation: true};
+				enableAnimations(enableAnimationsTracker);
 			} else {
 				console.log("AT ", callstack.length);
 			}
+		}
+
+		var enableAnimationsTracker = {enableAnimation: true};
+		function enableAnimations(tracker) {
+			
+			setTimeout(function () {
+				if (tracker.enableAnimation) {
+					$.fx.off = false;
+				}
+			}, 150);
 		}
 
 		return that;
