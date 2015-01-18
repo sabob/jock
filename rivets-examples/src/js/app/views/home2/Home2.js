@@ -2,7 +2,6 @@ define(function (require) {
 	var $ = require("jquery");
 	var Ractive = require("ractive");
 	require('ractive-transitions-fade');
-	//var HomeRactive = require("rvc!./Home2");
 	var template = require("text!./Home2.html");
 	var Isotope = require("app/plugins/isotope/isotope.pkgd");
 

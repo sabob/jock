@@ -21,7 +21,7 @@ define(function (require) {
 
 		var that = {};
 
-		var globalTransitionsEnabled = true;
+		var enableAnimationsTracker = {enableAnimation: true};
 
 		var routes;
 
@@ -52,25 +52,25 @@ define(function (require) {
 				//console.log("route loaded", routeOptions.ctrl.id);
 				that.routeLoaded(routeOptions);
 			});
-			
+
 			setupDefaultRivetEvents(options);
 
 			router.init();
 		};
-		
+
 		function setupRoutesToPaths(routes) {
-			 for (var route in routes) {
-                if (routes.hasOwnProperty(route)) {
+			for (var route in routes) {
+				if (routes.hasOwnProperty(route)) {
 					var r = routes[route];
-                    routesByPath[r.moduleId] = r.path;
-                }
-            }
+					routesByPath[r.moduleId] = r.path;
+				}
+			}
 		}
 
 		that.getRoutes = function () {
 			return routes;
 		};
-		
+
 		that.getRoutesByPath = function () {
 			return routesByPath;
 		}
@@ -84,12 +84,11 @@ define(function (require) {
 			// current controller has been overwritten by new request
 			currentMVC.requestTracker.active = false;
 
-			// We enable transitions by default for the new view
-			var transitionsEnabled = globalTransitionsEnabled;
 			if (callstack.length > 1) {
 
-				// If we detect the new view overwriting a previous view, we disable transitions globally
-				globalTransitionsEnabled = false;
+				$.fx.off = true;
+				$(initOptions.target).stop(true, true);
+				enableAnimationsTracker.enableAnimation = false;
 			}
 
 			var requestTracker = {active: true};
@@ -104,8 +103,7 @@ define(function (require) {
 				ctrl: ctrl,
 				routeParams: options.params,
 				requestTracker: requestTracker,
-				spar: that,
-				transitionsEnabled: transitionsEnabled
+				spar: that
 			};
 
 			onInitHandler(onInitOptions).then(function () {
@@ -133,7 +131,6 @@ define(function (require) {
 		};
 
 		that.processRivet = function (options) {
-			//options.view.transitionsEnabled = options.transitionsEnabled;
 
 			var deferred = $.Deferred();
 			var promise = deferred.promise();
@@ -141,18 +138,15 @@ define(function (require) {
 			//setupRivetEvents(options);
 
 			if (currentMVC.ctrl == null) {
-				// No view to remove so we insert rivet view into DOM
-				//options.view.transitionsEnabled = false;
-
-				/*
-				options.view.render(initOptions.target).then(function () {
-					deferred.resolve(options.view);
-				});*/
 				$(initOptions.target).empty();
 				$(initOptions.target).html(options.template);
 				options.view = rivets.bind($(initOptions.target), options.model);
-				currentMVC.view = options.view;
-				currentMVC.ctrl = options.ctrl;
+				$(initOptions.target).fadeIn(0, function () {
+					currentMVC.view = options.view;
+					currentMVC.ctrl = options.ctrl;
+					deferred.resolve(options.view);
+				});
+
 			} else {
 
 				if (!options.requestTracker.active) {
@@ -161,79 +155,81 @@ define(function (require) {
 					return promise;
 				}
 
-				/*
-				 if (!options.requestTracker.active) {
-				 deferred.reject();
-				 return;
-				 }*/
-
-				// Disable the outtro transitions while switching views. This guards against users that quickly navigates between
-				// views and forces a new view to be rendered while the previous views is removed and it's outtro transition is still
-				// in progress. If Ractive has a feature to stop active transitions, this code can be revisited
-				//currentMVC.view.transitionsEnabled = false;
-				//currentMVC.view.transitionsEnabled = true;
-
 				var onRemoveOptions = {
 					ctrl: currentMVC.ctrl,
 					view: currentMVC.view,
 					routeParams: options.params,
 					requestTracker: currentMVC.requestTracker,
-					spar: that,
-					transitionsEnabled: currentMVC.view.transitionsEnabled
+					spar: that
 				};
 
 				onRemoveHandler(onRemoveOptions).then(function () {
 
-					console.warn(currentMVC.view);
-
-					//console.log("Fragment rendered", currentMVC.view.fragment.rendered);
-					//debugger;
-					//currentMVC.view.unrender().then(function (arg) {
-					currentMVC.view.unrender().then(function (arg) {
-						///currentMVC.view.detach();
-						console.error("UNRENDER COMPLETE");
-
-						if (currentMVC.view.unrenderComplete != null && currentMVC.view.unrenderComplete.length > 0) {
-							var ar = currentMVC.view.unrenderComplete;
-							var fns = ar.slice(0);
-							fns.splice(0, fns.length).forEach(function (fn) {
-								//for (var i = 0; i < fns.length; i++) {
-								//var fn = fns[i];
-								fn();
-							});
-							currentMVC.view.unrenderComplete = [];
-						}
-
-						// Request could have been overwritten by new request. Ensure this is still the active request
+					$(initOptions.target).fadeOut('slow', function () {
 						if (!options.requestTracker.active) {
 							deferred.reject();
-							return promise;
+							return;
 						}
+						
+						currentMVC.view.unbind();
 
-						// Insert ractive into DOM
-						console.log("DOK", options.view.fragment.rendered);
-						if (options.view.fragment.rendered) { // check to see if this view has been rendered previously
-							alert("Bleh")
-							options.view.insert(initOptions.target);
-							deferred.resolve(options.view);
-						} else {
-							options.view.render(initOptions.target).then(function () {
-								//console.log("DONE RENDER")
-								deferred.resolve(options.view);
-							});
-						}
+						$(initOptions.target).empty();
+						$(initOptions.target).html(options.template);
+						options.view = rivets.bind($(initOptions.target), options.model);
 
-						//console.log("VIEW VISIBLE");
 						currentMVC.view = options.view;
 						currentMVC.ctrl = options.ctrl;
-					}, function () {
-						console.error("TEARDOWN ERROR");
+
+						$(initOptions.target).fadeIn('slow', function () {
+							deferred.resolve(options.view);
+						});
+
 					});
+
+					/*
+					 currentMVC.view.unrender().then(function (arg) {
+					 ///currentMVC.view.detach();
+					 console.error("UNRENDER COMPLETE");
+					 
+					 if (currentMVC.view.unrenderComplete != null && currentMVC.view.unrenderComplete.length > 0) {
+					 var ar = currentMVC.view.unrenderComplete;
+					 var fns = ar.slice(0);
+					 fns.splice(0, fns.length).forEach(function (fn) {
+					 //for (var i = 0; i < fns.length; i++) {
+					 //var fn = fns[i];
+					 fn();
+					 });
+					 currentMVC.view.unrenderComplete = [];
+					 }
+					 
+					 // Request could have been overwritten by new request. Ensure this is still the active request
+					 if (!options.requestTracker.active) {
+					 deferred.reject();
+					 return promise;
+					 }
+					 
+					 // Insert ractive into DOM
+					 console.log("DOK", options.view.fragment.rendered);
+					 if (options.view.fragment.rendered) { // check to see if this view has been rendered previously
+					 alert("Bleh")
+					 options.view.insert(initOptions.target);
+					 deferred.resolve(options.view);
+					 } else {
+					 options.view.render(initOptions.target).then(function () {
+					 //console.log("DONE RENDER")
+					 deferred.resolve(options.view);
+					 });
+					 }
+					 
+					 //console.log("VIEW VISIBLE");
+					 currentMVC.view = options.view;
+					 currentMVC.ctrl = options.ctrl;
+					 }, function () {
+					 console.error("TEARDOWN ERROR");
+					 });*/
 
 				}, function () {
 					// OnRemove failed or cancelled
-					options.view.transitionsEnabled = true;
-					currentMVC.view.transitionsEnabled = true;
 					deferred.reject();
 				});
 			}
@@ -263,15 +259,24 @@ define(function (require) {
 			callstack.splice(0, 1);
 			if (callstack.length === 0) {
 				console.log("AT 0");
-				//setTimeout(function() {
-				// Let's just wait a bit to see if things calmed down before enabling transitions again
-				//if (callstack.length === 0) {
-				globalTransitionsEnabled = true;
-				//}
-				//}, 1350);
+
+				// Delay switching on animation incase user is still clicking furiously
+				enableAnimationsTracker.enableAnimation = false;
+				enableAnimationsTracker = {enableAnimation: true};
+				enableAnimations(enableAnimationsTracker);
+
 			} else {
 				console.log("AT ", callstack.length);
 			}
+		}
+
+		function enableAnimations(tracker) {
+
+			setTimeout(function () {
+				if (tracker.enableAnimation) {
+					$.fx.off = false;
+				}
+			}, 150);
 		}
 
 		return that;

@@ -8,13 +8,10 @@
         <th>Action</th>
         </thead>
         <tbody>
-            {{#each customers}}
-            <tr>
-                <td>{{name}}</td>
-                <td><a href='' on-click='onEdit()'>Edit</a> | <a href='' on-click='onDelete()'>Delete</a></td>
+            <tr <div rv-each-customer='customers'>
+                <td>{customer.name}</td>
+                <td><a href='' rv-on-click='onEdit'>Edit</a> | <a href='' rv-on-click='onDelete'>Delete</a></td>
             </tr>
-
-            {{/each}}
         </tbody>
     </table>
 

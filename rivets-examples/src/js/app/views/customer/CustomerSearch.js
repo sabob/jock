@@ -1,7 +1,7 @@
 define(function (require) {
 
 	var $ = require("jquery");
-	var template = require("rvc!./CustomerSearch");
+	var template = require("text!./CustomerSearch.html");
 	require("domReady!");
 
 	function customerSearch() {
@@ -10,7 +10,6 @@ define(function (require) {
 
 		that.onInit = function (options) {
 			var promise = $.ajax("/data/customers.json");
-			//container.tracker.add(promise);
 
 			var viewPromise = $.Deferred();
 
@@ -29,28 +28,25 @@ define(function (require) {
 			 promise.abort();
 			 });*/
 			return viewPromise;
-
 		};
 
 		function createView(data) {
-
-			var view = template.extend({
-				//data: data,
-				add: function (val) {
-					//console.log("ADD CALLED", val);
-					items.push({val: 2});
-					//this.push("items", {val: 3});
-					var user = this.get("user");
-					console.log(user);
-				},
-				remove: function () {
-					//console.log("REMOVE CALLED");
-					//items.push({val: 2});
-					this.pop("items");
-					var user = this.get("user");
-					//console.log(user);
+			var view = {
+				template: template,
+				model: {
+					customers: data,
+					onEdit: function (e, model) {
+						e.preventDefault();
+						console.log("EDIT CALLED", model.customer, model.index);
+					},
+					onDelete: function (e, obj) {
+						e.preventDefault();
+						console.log("DELETE CALLED", obj.customer, obj.index);
+						//items.pop();
+					}
 				}
-			});
+			};
+
 			return view;
 		}
 
