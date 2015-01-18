@@ -35,20 +35,14 @@ define(function (require) {
 		function createView(data) {
 
 			var view = template.extend({
-				//data: data,
-				add: function (val) {
-					//console.log("ADD CALLED", val);
-					items.push({val: 2});
-					//this.push("items", {val: 3});
-					var user = this.get("user");
-					console.log(user);
+				data: {customers: data},
+				onEdit: function (e, val) {
+					e.original.preventDefault();
+					console.log("EDIT CALLED", e, val);
 				},
-				remove: function () {
-					//console.log("REMOVE CALLED");
-					//items.push({val: 2});
-					this.pop("items");
-					var user = this.get("user");
-					//console.log(user);
+				onDelete: function (e, val) {
+					e.original.preventDefault();
+					console.log("DELETE CALLED", e, val);
 				}
 			});
 			return view;
