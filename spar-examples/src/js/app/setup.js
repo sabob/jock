@@ -6,8 +6,8 @@ define(function (require) {
     var spar = require("spar/spar");
     var viewManager = require("jock/view/view-manager");
     //var Home = require("./views/home/Home");
-    var CustomerSearch = require("./views/customer/CustomerSearch");
-    var CustomerEdit = require("./views/customer/CustomerEdit");
+    var CustomerSearch = require("app/views/customer/CustomerSearch");
+    //var CustomerEdit = require("./views/customer/CustomerEdit");
     var ProductSearch = require("./views/product/ProductSearch");
     var ProductEdit = require("./views/product/ProductEdit");
     var CalendarEdit = require("./views/calendar/CalendarEdit");
@@ -19,14 +19,17 @@ define(function (require) {
     var Home2 = require("app/views/home2/Home2");
     var router = require("spar/router");
 
+	var routes = {
+            home2: {path: 'home2', moduleId: Home2.id},
+            //home: {path: '/', moduleId: Home2.id},
+			customers: {path: 'customers', moduleId:CustomerSearch.id},
+            //customer: {path: '/customer/:id', moduleId: 'customer/customerView'},
+            notFound: {path: '*', moduleId: resolveModuleId}
+        };
+		
     spar.init({
         target: "#container",
-        routes: {
-            home2: {path: '/home2', moduleId: Home2.id},
-            //home: {path: '/', moduleId: Home2.id},
-            customer: {path: '/customer/:id', moduleId: 'customer/customerView'},
-            notFound: {path: '*', moduleId: resolveModuleId}
-        }
+        routes: routes
     });
     
     //console.log("RES", spar);
@@ -49,7 +52,6 @@ define(function (require) {
         router.go({ctrl: Home2});
     });
 
-
     function resolveModuleId() {
         var path = router.urlPath(window.location.href);
 
@@ -62,20 +64,21 @@ define(function (require) {
             //console.warn("MOO", Home2.id);
             return Home2.id;
         }
-        console.warn("MOO", path.substr(1));
         return path.substr(1);
         //return path;
     }
 
     var options = {};
+/*
     options.routes = {
-        "home2": Home2.id,
-        "customers": CustomerSearch.id,
-        "customerEdit": CustomerEdit.id,
-        "products": ProductSearch.id,
-        "productEdit": ProductEdit.id,
-        "calendarEdit": CalendarEdit.id
+        "/home2": Home2.id,
+        "/customers": CustomerSearch.id,
+		//"customerEdit": CustomerEdit.id,
+        "/products": ProductSearch.id,
+        "/productEdit": ProductEdit.id,
+        "/calendarEdit": CalendarEdit.id
     };
+	*/
     var menuNames = [];
     setupActiveMenu();
     validationSetup.setupValidation();
@@ -84,8 +87,8 @@ define(function (require) {
      $('#nav-ind').stop(true, true);
      };*/
     options.defaultView = Home2;
-    options.globalOnAttached = function (options) {
-    };
+    //options.globalOnAttached = function (options) {
+    //};
     //viewManager.init(options);
 
     function setupActiveMenu() {
@@ -93,19 +96,25 @@ define(function (require) {
         $("#navbar [data-menu]").each(function (i, item) {
             menuNames.push($(item).attr("data-menu"));
         });
-        $(viewManager).on("globalBeforeAttached", function (e, options) {
+        //$(viewManager).on("globalBeforeAttached", function (e, options) {
+		$(spar).on("render", function (e, options) {
+		});
+		
+		$(spar).on("ctrlChange", function (e, options) {
 
             // Ignore subviews
-            if (!options.isMainView) {
+            if (!options.isMainCtrl) {
                 return;
             }
-            var routesByPath = viewManager.getRoutesByPath();
-            var route = routesByPath[options.newView.id];
+
+            var routesByPath = spar.getRoutesByPath();
+            var route = routesByPath[options.newCtrl.id];
             if (route == null) {
                 return;
             }
-
+			
             var $item = $("#menu-" + route).parent();
+			//debugger;
             if ($item.length === 0) {
                 // Menu not found. Try and find menu from the list of data-menu attributes
                 for (var i = 0; i < menuNames.length; i++) {

@@ -1,63 +1,81 @@
 define(function (require) {
 
-    var $ = require("jquery");
-    var template = require("hb!./CustomerSearch.htm");
-    var te = require("jock/template/template-engine");
-    //var viewManager = require("jock/view/view-manager");
-    var CustomerEdit = require("./CustomerEdit");
-    require("domReady!");
+	var $ = require("jquery");
+	var template = require("rvc!./CustomerSearch");
+	require("domReady!");
 
-    function customerSearch() {
+	function customerSearch() {
 
-        var that = {};
+		var that = {};
 
-        that.onInit = function (container, args) {
+		that.onInit = function (options) {
+			var promise = $.ajax("/data/customers.json");
+			//container.tracker.add(promise);
 
-            var promise = $.ajax("/data/customers.json");
-            container.tracker.add(promise);
-            promise.then(function (data) {
+			var viewPromise = $.Deferred();
 
-                var html = renderTemplate(data);
-                container.attach(html).then(function () {
-                    onAttached(args);
-                });
+			promise.then(function (data) {
+				var view = createView(data);
 
-                container.visible.then(function () {
-                    onAttached(args);
-                });
-            });
+				viewPromise.resolve(view);
+			}, function () {
+				viewPromise.reject();
+			});
 
-            container.overwrite.then(function (view) {
-                console.error("Overwritten customers, aborting AJAX");
-                // Code below is not necessary since container.tracker cancels registered AJAX when request is overwritten
-                promise.abort();
-            });
-        };
+			/*
+			 container.overwrite.then(function (view) {
+			 console.error("Overwritten customers, aborting AJAX");
+			 // Code below is not necessary since container.tracker cancels registered AJAX when request is overwritten
+			 promise.abort();
+			 });*/
+			return viewPromise;
 
-        that.onEdit = function (e, customer) {
-            e.preventDefault();
-            //console.log("Edit", customer);
-            //viewManager.showView({view: CustomerEdit, params: {id: customer.id}, args: {customer: customer}});
-        }
+		};
 
-        that.onDelete = function (e, customer) {
-            e.preventDefault();
-            console.log("Delete", customer);
-        }
+		function createView(data) {
 
-        function renderTemplate(customers) {
-            var html = te.render({
-                template: template,
-                context: {'customers': customers},
-                actions: that});
-            return html;
-        }
+			var view = template.extend({
+				//data: data,
+				add: function (val) {
+					//console.log("ADD CALLED", val);
+					items.push({val: 2});
+					//this.push("items", {val: 3});
+					var user = this.get("user");
+					console.log(user);
+				},
+				remove: function () {
+					//console.log("REMOVE CALLED");
+					//items.push({val: 2});
+					this.pop("items");
+					var user = this.get("user");
+					//console.log(user);
+				}
+			});
+			return view;
+		}
 
-        function onAttached() {
+		that.onEdit = function (e, customer) {
+			e.preventDefault();
+		}
 
-        }
+		that.onDelete = function (e, customer) {
+			e.preventDefault();
+			console.log("Delete", customer);
+		}
 
-        return that;
-    }
-    return customerSearch;
+		function renderTemplate(customers) {
+			var html = te.render({
+				template: template,
+				context: {'customers': customers},
+				actions: that});
+			return html;
+		}
+
+		function onAttached() {
+
+		}
+
+		return that;
+	}
+	return customerSearch;
 });

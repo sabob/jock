@@ -19,6 +19,10 @@ define(function (require) {
 
         if (utils.isPromise(RactiveFnOrPromise)) {
             RactiveFnOrPromise.then(function (ractiveObj) {
+			
+				if (typeof ractiveObj === 'function') {
+					ractiveObj = new ractiveObj();
+				}
 
                 // Request could have been overwritten by new request. Ensure this is still the active request
                 if (!options.requestTracker.active) {
@@ -42,6 +46,12 @@ define(function (require) {
             // Assume it is a Ractive function
             // Should this scenrio be supported? How will the view receive an instance to the ractive
             //options.spar.createRactive(RactiveFnOrPromise);
+			options.view = new RactiveFnOrPromise();
+			options.spar.processRactive(options).then(function (view) {
+                deferred.resolve(view);
+            }, function () {
+                deferred.reject();
+            });
 
         } else if (utils.isRactiveObject(RactiveFnOrPromise)) {
             // Assume it is a Ractive instance

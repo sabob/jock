@@ -3,10 +3,12 @@ define(function(require) {
     require("app/setup");
     //var Home = require("./views/home/Home");
     var CustomerSearch = require("./views/customer/CustomerSearch");
+	var Home2 = require("./views/home2/Home2");
     var ProductSearch = require("./views/product/ProductSearch");
     var CalendarEdit = require("./views/calendar/CalendarEdit");
     var footer = require("hb!./views/footer/footer.htm");
     var viewManager = require("jock/view/view-manager");
+	var router = require("spar/router");
     /*
     $("#menu-home").click(function(e) {
         e.preventDefault();
@@ -18,7 +20,8 @@ define(function(require) {
 
     $("#menu-customers").click(function(e) {
         e.preventDefault();
-        viewManager.showView({view: CustomerSearch, animate: true});
+		router.go({ctrl: CustomerSearch});
+        //viewManager.showView({view: CustomerSearch, animate: true});
     });
 
 

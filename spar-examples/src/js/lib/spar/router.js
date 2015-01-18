@@ -242,7 +242,9 @@ define(function (require) {
             // The hash is everything from the first # up to the the search starting with ? if it exists
             // Example hash = '#/example/path'
             var hashIndex = relativeUri.indexOf('#');
-            if (hashIndex !== -1) {
+			var isHashEmpty = hashIndex === relativeUri.length -1;
+
+            if (hashIndex !== -1 && !isHashEmpty) {
                 var hash = relativeUri.substring(hashIndex).split('?')[0];
                 if (hash.substring(0, 2) === '#!') {
                     // Hashbang path

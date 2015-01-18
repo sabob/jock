@@ -4,26 +4,36 @@ define(function (require) {
 
     function setupEvents(options) {
         //console.error(Ractive.defaults);
-        Ractive.defaults.onrender = function () {
-            //console.error("OK", this.el);
+        Ractive.defaults.onconstruct = function () {
+            //console.error("OK", this);
         };
-
 
         // Add callback events
         options.view.off('complete');
         options.view.off('render');
+		options.view.off('unrender');
         options.view.off('teardown');
+
         options.view.on('complete', function () {
             this.transitionsEnabled = true;
             //console.log("oncomplete");
-            options.ctrl.onComplete(options);
+			if (typeof options.ctrl.onComplete == 'function') {
+				options.ctrl.onComplete(options);
+			}
             options.spar.triggerEvent("complete", options.ctrl, options);
         });
 
         options.view.on('render', function () {
             //console.log("onrender");
-            options.ctrl.onRender(options);
+			if (typeof options.ctrl.onRender == 'function') {
+				options.ctrl.onRender(options);
+			}
             options.spar.triggerEvent("render", options.ctrl, options);
+        });
+		
+		options.view.on('unrender', function () {
+            //console.error("unrender");
+            options.spar.triggerEvent("unrender", options.ctrl, options);
         });
 
         options.view.on('teardown', function () {
