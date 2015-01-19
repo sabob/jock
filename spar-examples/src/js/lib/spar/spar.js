@@ -1,10 +1,11 @@
 // Events
-//   ctrlChange
-//   viewBeforeRemove
-//   viewAfterRemove
-//   teardown
-//   render
+//   viewChange
+//   beforeRemove
+//   remove
 //   complete
+//   render
+//   unrender
+//   teardown
 
 define(function (require) {
 
@@ -40,7 +41,7 @@ define(function (require) {
 			initOptions = options;
 			routes = initOptions.routes || {};
 			routesByPath = {};
-			setupRoutesToPaths(routes);
+			setupRoutesByPaths(routes);
 			router.registerRoutes(routes);
 
 			for (var prop in routes) {
@@ -57,11 +58,11 @@ define(function (require) {
 			router.init();
 		};
 
-		function setupRoutesToPaths(routes) {
-			for (var route in routes) {
-				if (routes.hasOwnProperty(route)) {
-					var r = routes[route];
-					routesByPath[r.moduleId] = r.path;
+		function setupRoutesByPaths(routes) {
+			for (var key in routes) {
+				if (routes.hasOwnProperty(key)) {
+					var route = routes[key];
+					routesByPath[route.moduleId] = route.path;
 				}
 			}
 		}
@@ -96,7 +97,7 @@ define(function (require) {
 			var ctrl = that.createController(options.ctrl);
 			options.ctrl = ctrl;
 
-			that.triggerEvent("ctrlChange", ctrl, options);
+			that.triggerEvent("viewChange", ctrl, options);
 
 			var onInitOptions = {
 				ctrl: ctrl,
@@ -129,6 +130,33 @@ define(function (require) {
 			}
 		};
 
+		function renderRactive(options) {
+			var deferred = $.Deferred();
+			var promise = deferred.promise();
+
+			options.view.transitionsEnabled = false;
+
+			options.view.render(initOptions.target).then(function () {
+
+				options.view.transitionsEnabled = true;
+				currentMVC.view = options.view;
+				currentMVC.ctrl = options.ctrl;
+				
+				var fadeInTime = 'slow';
+
+				if (currentMVC.ctrl == null) {
+					// No view rendered yet so we make view visible immediately
+					fadeInTime = 0;
+				}
+
+				$(initOptions.target).fadeIn(fadeInTime, function () {
+					deferred.resolve(options.view);
+				});
+			});
+
+			return promise;
+		}
+
 		that.processRactive = function (options) {
 			//options.view.transitionsEnabled = options.transitionsEnabled;
 
@@ -139,26 +167,18 @@ define(function (require) {
 
 			if (currentMVC.ctrl == null) {
 				// No view to remove so we insert ractive view into DOM
-				options.view.transitionsEnabled = false;
-				
-				$(initOptions.target).empty();
-				options.view.render(initOptions.target).then(function () {
-					$(initOptions.target).fadeIn(0, function () {
-						options.view.transitionsEnabled = true;
-
-						currentMVC.view = options.view;
-						currentMVC.ctrl = options.ctrl;
-						deferred.resolve(options.view);
-					});
+				//$(initOptions.target).empty();
+				renderRactive(options).then(function () {
+					deferred.resolve(options.view);
 				});
 
 			} else {
-
+				/*
 				if (!options.requestTracker.active) {
 					// TODO now sure if this code is useful here
 					deferred.reject();
 					return promise;
-				}
+				}*/
 
 				var onRemoveOptions = {
 					ctrl: currentMVC.ctrl,
@@ -166,7 +186,7 @@ define(function (require) {
 					routeParams: options.params,
 					requestTracker: currentMVC.requestTracker,
 					spar: that
-					//transitionsEnabled: currentMVC.view.transitionsEnabled
+							//transitionsEnabled: currentMVC.view.transitionsEnabled
 				};
 
 				onRemoveHandler(onRemoveOptions).then(function () {
@@ -247,7 +267,7 @@ define(function (require) {
 		}
 
 		function enableAnimations(tracker) {
-			
+			// We wait a bit before enabling animations in case user is still thrashing UI.
 			setTimeout(function () {
 				if (tracker.enableAnimation) {
 					$.fx.off = false;
@@ -259,6 +279,5 @@ define(function (require) {
 	}
 
 	var result = spar();
-	//console.log("RES", result)
 	return result;
 });
