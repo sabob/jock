@@ -34,19 +34,25 @@ define(function (require) {
 
 	//console.log("RES", spar);
 	Ractive.defaults.debug = true;
-	
-	$(spar).on('beforeViewUnrender', function (e, options) {
-		console.log("beforeViewUnrender", options);
+
+	$(spar).on('viewBeforeUnrender', function (e, options) {
+		//console.log("viewBeforeUnrender", options);
 	});
-	
+
 	$(spar).on('viewUnrender', function (e, options) {
-		console.log("viewUnrender", options);
+		//console.log("viewUnrender", options);
+	});
+	$(spar).on('viewRender', function (e, options) {
+		//console.log("viewRender", options);
 	});
 	$(spar).on('viewInit', function (e, options) {
-		console.log("viewInit", options);
+		//console.log("viewInit", options);
+	});
+	$(spar).on('viewBeforeInit', function (e, options) {
+		//console.log("viewBeforeInit", options);
 	});
 	$(spar).on('viewComplete', function (e, options) {
-		console.log("viewComplete", options);
+		//console.log("viewComplete", options);
 	});
 
 	$(spar).on('teardown', function (e, options) {
@@ -110,9 +116,9 @@ define(function (require) {
 		//$(viewManager).on("globalBeforeAttached", function (e, options) {
 		$(spar).on("render", function (e, options) {
 		});
-		
+
 		$(spar).on("view", function (e, options) {
-			
+
 		});
 
 		$(spar).on("viewRender", function (e, options) {

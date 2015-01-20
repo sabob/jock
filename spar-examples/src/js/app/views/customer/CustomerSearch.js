@@ -6,6 +6,7 @@ define(function (require) {
 
 	function customerSearch() {
 
+	alert("GO")
 		var that = {};
 
 		that.onInit = function (options) {

@@ -1,15 +1,16 @@
 // Events order
-// beforeViewUnrender
-// viewInit
-// viewRender
-
-//   unrender
-//   viewUnrender
-//   complete
-//   render
+//    RACTIVE  -> CTRL       => GLOBAL EVENT
+//			   ->            => viewBeforeInit
+//			   -> onInit     => viewInit
+//   render    -> onRender   => viewRender
+//   complete  -> onComplete => viewComplete
+//             -> onRemove
+//                           => viewBeforeUnrender
+//   unrender  -> onUnrender => viewUnrender
 //   teardown
-// viewComplete
-// viewCancel
+//   
+//   -----
+// viewFail - should this event be supported?
 
 define(function (require) {
 
@@ -91,10 +92,10 @@ define(function (require) {
 
 			var ctrl = that.createController(options.ctrl);
 			options.ctrl = ctrl;
+			options.requestTracker = currentMVC.requestTracker;
 
 			if (currentMVC.ctrl == null) {
 				// No view rendered so skip removing the current view and just init the new view
-				that.triggerEvent("viewInit", options.ctrl, options);
 				processOnInit(options).then(function () {
 
 				}, function () {
@@ -104,11 +105,9 @@ define(function (require) {
 			} else {
 
 				processOnRemove(options).then(function () {
-					console.error("1");
 					processOnInit(options).then(function () {
 
 					}, function () {
-						console.error("2");
 						cancelCurrentRequest(options);
 					});
 				}, function (e) {
@@ -147,7 +146,7 @@ define(function (require) {
 
 				}, function (error, view) {
 					console.error(error);
-					that.triggerEvent("viewCancel", options.ctrl, options);
+					that.triggerEvent("viewFail", options.ctrl, options);
 					// render Ractive rejeced
 					deferred.reject(options.view);
 				});
@@ -160,7 +159,7 @@ define(function (require) {
 
 				}, function (error, view) {
 					console.error(error);
-					that.triggerEvent("viewCancel", options.ctrl, options);
+					that.triggerEvent("viewFail", options.ctrl, options);
 					// render Ractive rejeced
 					deferred.reject(options.view);
 				});
@@ -201,7 +200,19 @@ define(function (require) {
 				spar: that
 			};
 
-			onInitHandler(onInitOptions).then(function () {
+			that.triggerEvent("viewBeforeInit", options.ctrl, options);
+
+			onInitHandler(onInitOptions).then(function (view) {
+				options.view = view;
+				options.spar = that;
+				that.triggerEvent("viewInit", options.ctrl, options);
+
+				// Assume it is a Ractive object
+				that.processNewView(options).then(function (view) {
+					deferred.resolve();
+				}, function () {
+					deferred.reject();
+				});
 
 				onInitComplete();
 				deferred.resolve();
@@ -229,8 +240,7 @@ define(function (require) {
 
 			onRemoveHandler(onRemoveOptions).then(function () {
 
-				that.triggerEvent("beforeViewUnrender", options.ctrl, options);
-				that.triggerEvent("viewInit", options.ctrl, options);
+				that.triggerEvent("viewBeforeUnrender", options.ctrl, options);
 
 				deferred.resolve();
 

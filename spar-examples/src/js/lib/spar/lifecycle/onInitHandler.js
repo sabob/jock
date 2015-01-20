@@ -37,15 +37,8 @@ define(function (require) {
 				}
 
 				options.view = ractiveObj;
-
-				// Assume it is a Ractive object
-				options.spar.processNewView(options).then(function (view) {
-					//console.log("1");
-					deferred.resolve(view);
-				}, function () {
-					//console.error("333");
-					deferred.reject();
-				});
+				
+				deferred.resolve(options.view);
 			});
 
 		} else if ($.isFunction(RactiveFnOrPromise)) {
@@ -53,20 +46,12 @@ define(function (require) {
 			// Should this scenrio be supported? How will the view receive an instance to the ractive
 			//options.spar.createRactive(RactiveFnOrPromise);
 			options.view = new RactiveFnOrPromise();
-			options.spar.processNewView(options).then(function (view) {
-				deferred.resolve(view);
-			}, function () {
-				deferred.reject();
-			});
+			deferred.resolve(options.view);
 
 		} else if (utils.isRactiveObject(RactiveFnOrPromise)) {
 			// Assume it is a Ractive instance
 			options.view = RactiveFnOrPromise;
-			options.spar.processNewView(options).then(function (view) {
-				deferred.resolve(view);
-			}, function () {
-				deferred.reject();
-			});
+			deferred.resolve(options.view);
 
 		} else {
 			console.warn("Ignorning view since onInit did not return a valid response. onInit must return either a Ractive function or a promise that resolves to a Ractive function.");
