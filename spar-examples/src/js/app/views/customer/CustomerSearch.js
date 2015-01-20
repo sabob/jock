@@ -10,6 +10,7 @@ define(function (require) {
 
 		that.onInit = function (options) {
 			var promise = $.ajax("/data/customers.json");
+			options.ajaxTracker.add(promise);
 			//container.tracker.add(promise);
 
 			var viewPromise = $.Deferred();

@@ -12,7 +12,7 @@ app.get("/", checkAuth, function(req, res) {
 
 
 app.get('/data/customer:id.json', checkAuth, function(req, res) {
-    var sleep = 0;
+    var sleep = 1000;
     setTimeout(function() {
         res.sendfile("." + req.path);
 

@@ -1,20 +1,25 @@
-// Events
-//   viewChange
-//   beforeRemove
-//   remove
+// Events order
+// beforeViewUnrender
+// viewInit
+// viewRender
+
+//   unrender
+//   viewUnrender
 //   complete
 //   render
-//   unrender
 //   teardown
+// viewComplete
+// viewCancel
 
 define(function (require) {
 
 	var router = require("./router");
 	var $ = require("jquery");
+	var ajaxTrackerFn = require("./utils/ajax-tracker");
 	var onInitHandler = require("./lifecycle/onInitHandler");
 	var onRemoveHandler = require("./lifecycle/onRemoveHandler");
-	var setupRactiveEvents = require("./ractive/setupEvents");
-	var setupDefaultRactiveEvents = require("./ractive/setupDefaultEvents");
+	var setupViewEvents = require("./ractive/setupEvents");
+	var setupDefaultViewEvents = require("./ractive/setupDefaultEvents");
 	//var createRactive = require("./ractive/create");
 
 	function spar() {
@@ -37,6 +42,8 @@ define(function (require) {
 
 		var initOptions = null;
 
+		var ajaxTracker = ajaxTrackerFn(that);
+
 		that.init = function (options) {
 			initOptions = options;
 			routes = initOptions.routes || {};
@@ -53,19 +60,10 @@ define(function (require) {
 				that.routeLoaded(routeOptions);
 			});
 
-			setupDefaultRactiveEvents(options);
+			setupDefaultViewEvents(options);
 
 			router.init();
 		};
-
-		function setupRoutesByPaths(routes) {
-			for (var key in routes) {
-				if (routes.hasOwnProperty(key)) {
-					var route = routes[key];
-					routesByPath[route.moduleId] = route.path;
-				}
-			}
-		}
 
 		that.getRoutes = function () {
 			return routes;
@@ -73,7 +71,7 @@ define(function (require) {
 
 		that.getRoutesByPath = function () {
 			return routesByPath;
-		}
+		};
 
 		that.routeLoaded = function (options) {
 
@@ -81,38 +79,43 @@ define(function (require) {
 
 			options.target = options.target || initOptions.target;
 
-			// current controller has been overwritten by new request
-			currentMVC.requestTracker.active = false;
+			// cancel and cleanup current view request (if there is one)
+			cancelCurrentRequest(options);
 
-			// We enable transitions by default for the new view
+			// Disable transitions if view requests overwrite one another, eg when another view request is being processed still
 			if (callstack.length > 1) {
 				$.fx.off = true;
 				$(initOptions.target).stop(true, true);
 				enableAnimationsTracker.enableAnimation = false;
 			}
 
-			var requestTracker = {active: true};
-			currentMVC.requestTracker = requestTracker;
-
 			var ctrl = that.createController(options.ctrl);
 			options.ctrl = ctrl;
 
-			that.triggerEvent("viewChange", ctrl, options);
+			if (currentMVC.ctrl == null) {
+				// No view rendered so skip removing the current view and just init the new view
+				that.triggerEvent("viewInit", options.ctrl, options);
+				processOnInit(options).then(function () {
 
-			var onInitOptions = {
-				ctrl: ctrl,
-				routeParams: options.params,
-				requestTracker: requestTracker,
-				spar: that
-			};
+				}, function () {
+					//handleAbortRequest(options);
+				});
 
-			onInitHandler(onInitOptions).then(function () {
+			} else {
 
-				onInitComplete();
-			}, function () {
+				processOnRemove(options).then(function () {
+					console.error("1");
+					processOnInit(options).then(function () {
 
-				onInitComplete();
-			});
+					}, function () {
+						console.error("2");
+						cancelCurrentRequest(options);
+					});
+				}, function (e) {
+					// ctrl.onRemove cancelled
+					cancelCurrentRequest(options);
+				});
+			}
 		};
 
 		that.createController = function (Module) {
@@ -130,106 +133,39 @@ define(function (require) {
 			}
 		};
 
-		function renderRactive(options) {
+		that.processNewView = function (options) {
 			var deferred = $.Deferred();
 			var promise = deferred.promise();
 
-			options.view.transitionsEnabled = false;
-
-			options.view.render(initOptions.target).then(function () {
-
-				options.view.transitionsEnabled = true;
-				currentMVC.view = options.view;
-				currentMVC.ctrl = options.ctrl;
-				
-				var fadeInTime = 'slow';
-
-				if (currentMVC.ctrl == null) {
-					// No view rendered yet so we make view visible immediately
-					fadeInTime = 0;
-				}
-
-				$(initOptions.target).fadeIn(fadeInTime, function () {
-					deferred.resolve(options.view);
-				});
-			});
-
-			return promise;
-		}
-
-		that.processRactive = function (options) {
-			//options.view.transitionsEnabled = options.transitionsEnabled;
-
-			var deferred = $.Deferred();
-			var promise = deferred.promise();
-
-			setupRactiveEvents(options);
+			setupViewEvents(options);
 
 			if (currentMVC.ctrl == null) {
 				// No view to remove so we insert ractive view into DOM
-				//$(initOptions.target).empty();
-				renderRactive(options).then(function () {
+				that.renderRactiveWithAnimation(options).then(function () {
+					that.triggerEvent("viewComplete", options.ctrl, options);
 					deferred.resolve(options.view);
+
+				}, function (error, view) {
+					console.error(error);
+					that.triggerEvent("viewCancel", options.ctrl, options);
+					// render Ractive rejeced
+					deferred.reject(options.view);
 				});
 
 			} else {
-				/*
-				if (!options.requestTracker.active) {
-					// TODO now sure if this code is useful here
-					deferred.reject();
-					return promise;
-				}*/
 
-				var onRemoveOptions = {
-					ctrl: currentMVC.ctrl,
-					view: currentMVC.view,
-					routeParams: options.params,
-					requestTracker: currentMVC.requestTracker,
-					spar: that
-							//transitionsEnabled: currentMVC.view.transitionsEnabled
-				};
+				that.renderRactiveWithAnimation(options).then(function () {
+					that.triggerEvent("viewComplete", options.ctrl, options);
+					deferred.resolve(options.view);
 
-				onRemoveHandler(onRemoveOptions).then(function () {
-					console.log("Fragment rendered", currentMVC.view.fragment.rendered);
-
-					$(initOptions.target).fadeOut('slow', function () {
-
-						if (!options.requestTracker.active) {
-							deferred.reject();
-							return;
-						}
-
-						currentMVC.view.transitionsEnabled = false;
-						console.error("RENDERED", currentMVC.view.fragment.rendered);
-						currentMVC.view.unrender().then(function () {
-							if (!options.requestTracker.active) {
-								deferred.reject();
-								return;
-							}
-
-							options.view.transitionsEnabled = false;
-							options.view.render(initOptions.target).then(function () {
-								//console.log("DONE RENDER")
-
-								currentMVC.view = options.view;
-								currentMVC.ctrl = options.ctrl;
-								currentMVC.view.transitionsEnabled = true;
-
-								$(initOptions.target).fadeIn('slow', function () {
-									deferred.resolve(options.view);
-
-								});
-							});
-						});
-					});
-
-				}, function () {
-					// OnRemove failed or cancelled
-					options.view.transitionsEnabled = true;
-					currentMVC.view.transitionsEnabled = true;
-					deferred.reject();
+				}, function (error, view) {
+					console.error(error);
+					that.triggerEvent("viewCancel", options.ctrl, options);
+					// render Ractive rejeced
+					deferred.reject(options.view);
 				});
 			}
+
 			// Request could have been overwritten by new request. Ensure this is still the active request
 			if (!options.requestTracker.active) {
 				deferred.reject();
@@ -252,6 +188,159 @@ define(function (require) {
 			$(that).trigger(eventName, [triggerOptions]);
 		};
 
+		function processOnInit(options) {
+			var deferred = $.Deferred();
+			var promise = deferred.promise();
+
+			var onInitOptions = {
+				ctrl: options.ctrl,
+				routeParams: options.params,
+				requestTracker: currentMVC.requestTracker,
+				ajaxTracker: ajaxTracker,
+				target: options.target,
+				spar: that
+			};
+
+			onInitHandler(onInitOptions).then(function () {
+
+				onInitComplete();
+				deferred.resolve();
+			}, function () {
+
+				onInitComplete();
+				deferred.reject();
+			});
+
+			return promise;
+		}
+
+		function processOnRemove(options) {
+			var deferred = $.Deferred();
+			var promise = deferred.promise();
+
+			var onRemoveOptions = {
+				ctrl: currentMVC.ctrl,
+				view: currentMVC.view,
+				routeParams: options.params,
+				requestTracker: currentMVC.requestTracker,
+				target: options.target,
+				spar: that
+			};
+
+			onRemoveHandler(onRemoveOptions).then(function () {
+
+				that.triggerEvent("beforeViewUnrender", options.ctrl, options);
+				that.triggerEvent("viewInit", options.ctrl, options);
+
+				deferred.resolve();
+
+			}, function () {
+				// ctrl.onRemove failed or cancelled
+				//options.view.transitionsEnabled = true;
+
+				if (currentMVC.view != null) {
+					currentMVC.view.transitionsEnabled = true;
+				}
+				deferred.reject();
+			});
+
+			return promise;
+		}
+
+		that.renderRactiveWithAnimation = function (options) {
+			var deferred = $.Deferred();
+			var promise = deferred.promise();
+
+			var outroAnimationDuration = 100;
+			var intoAnimationDuration = 'fast';
+			if (currentMVC.ctrl == null) {
+				intoAnimationDuration = 0;
+				outroAnimationDuration = 0;
+			}
+
+			$(initOptions.target).fadeOut(outroAnimationDuration, function () {
+
+				if (!options.requestTracker.active) {
+					deferred.reject();
+					return;
+				}
+
+				that.unrenderRactive(options).then(function () {
+
+					that.renderRactive(options).then(function () {
+
+						$(initOptions.target).fadeIn(intoAnimationDuration, function () {
+							deferred.resolve(options.view);
+						});
+
+					}, function (error, view) {
+						// render Ractive rejeced
+						deferred.reject(error, options.view);
+					});
+
+				}, function (error, view) {
+					deferred.reject(error, view);
+				});
+			});
+
+			return promise;
+		};
+
+		that.renderRactive = function (options) {
+			var deferred = $.Deferred();
+			var promise = deferred.promise();
+
+			options.view.transitionsEnabled = false;
+
+			options.view.render(initOptions.target).then(function () {
+
+				currentMVC.view = options.view;
+				currentMVC.ctrl = options.ctrl;
+				currentMVC.view.transitionsEnabled = true;
+
+				that.triggerEvent("viewRender", options.ctrl, options);
+
+				deferred.resolve(options.view);
+
+			}, function (error) {
+				deferred.reject(error, options.view);
+			});
+
+			return promise;
+		};
+
+		that.unrenderRactive = function (options) {
+			var deferred = $.Deferred();
+			var promise = deferred.promise();
+
+			if (currentMVC.view == null) {
+				// No view to unrender
+				deferred.resolve();
+
+			} else {
+
+				currentMVC.view.transitionsEnabled = false;
+				currentMVC.view.unrender().then(function () {
+
+					that.triggerEvent("viewUnrender", options.ctrl, options);
+
+					if (!options.requestTracker.active) {
+						deferred.reject(currentMVC.view);
+						return;
+					}
+
+					deferred.resolve(currentMVC.view);
+
+				}, function () {
+
+					deferred.reject(currentMVC.view);
+
+				});
+			}
+
+			return promise;
+		};
+
 		function onInitComplete() {
 			callstack.splice(0, 1);
 			if (callstack.length === 0) {
@@ -272,7 +361,30 @@ define(function (require) {
 				if (tracker.enableAnimation) {
 					$.fx.off = false;
 				}
-			}, 150);
+			}, 350);
+		}
+
+		function setupRoutesByPaths(routes) {
+			for (var key in routes) {
+				if (routes.hasOwnProperty(key)) {
+					var route = routes[key];
+					routesByPath[route.moduleId] = route.path;
+				}
+			}
+		}
+
+		function cancelCurrentRequest(options) {
+
+			// current controller has been overwritten by new request
+			currentMVC.requestTracker.active = false;
+
+			// Create a requestTracker for the new view
+			var requestTracker = {active: true};
+			currentMVC.requestTracker = requestTracker;
+
+			//console.error("aborted requests", options.target);
+			ajaxTracker.abort(options.target);
+			ajaxTracker.clear(options.target);
 		}
 
 		return that;
