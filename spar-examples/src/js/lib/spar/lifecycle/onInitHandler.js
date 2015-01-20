@@ -24,6 +24,7 @@ define(function (require) {
 		}
 
 		if (utils.isPromise(RactiveFnOrPromise)) {
+
 			RactiveFnOrPromise.then(function (ractiveObj) {
 
 				if (typeof ractiveObj === 'function') {
@@ -39,6 +40,11 @@ define(function (require) {
 				options.view = ractiveObj;
 				
 				deferred.resolve(options.view);
+
+			}, function() {
+				// if the Ctrl.onInit() call rejected promise
+				deferred.reject();
+				
 			});
 
 		} else if ($.isFunction(RactiveFnOrPromise)) {

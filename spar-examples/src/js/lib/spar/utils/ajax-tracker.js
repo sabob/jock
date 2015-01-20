@@ -44,7 +44,7 @@ define(function(require) {
             globalPromise._id = idCounter++;
 
             addListeners(target, globalPromise, jqXHR, globalPromiseArgs);
-            console.log("DONE registering", globalPromise._id);
+            //console.log("DONE registering", globalPromise._id);
 
             promiseCounter++;
 
@@ -104,19 +104,19 @@ define(function(require) {
         function addListeners(target, globalPromiseParam, promiseParam, globalPromiseArgs) {
 
             promiseParam.then(function(data, status, jqXHR) {
-                console.log("local promise then:", arguments);
+                //console.log("local promise then:", arguments);
                 $(spar).trigger("ajax.success", [data, status, jqXHR, globalPromiseArgs]);
 
             }, function(jqXHR, textStatus, errorThrown) {
-                console.log("local promise error:", arguments);
+                //console.log("local promise error:", arguments);
                 $(spar).trigger("ajax.error", [jqXHR, textStatus, errorThrown, globalPromiseArgs]);
             });
 
             promiseParam.always(function(dataOrjqXHR, textStatus, jqXHROrerrorThrown) {
-                console.log("local promise always:", arguments);
+                //console.log("local promise always:", arguments);
                 $(spar).trigger("ajax.complete", [dataOrjqXHR, textStatus, jqXHROrerrorThrown, globalPromiseArgs]);
                 var removed = that.remove(target, promiseParam);
-                console.log("Removed?", removed);
+                //console.log("Removed?", removed);
             });
 
             globalPromiseParam.then(function() {
@@ -127,7 +127,7 @@ define(function(require) {
                     globalPromise = null;
                     globalPromiseArgs = {};
                 } else {
-                    console.log("globalPromise ignore then");
+                    //console.log("globalPromise ignore then");
                 }
 
             }, function(error) {
@@ -136,11 +136,11 @@ define(function(require) {
                     $(spar).trigger("ajax.stop", [error, globalPromiseArgs]);
                     globalPromise = null;
                     globalPromiseArgs = {};
-                    console.log("globalPromise ERROR", globalPromiseParam);
-                    console.log(arguments);
+                    //console.log("globalPromise ERROR", globalPromiseParam);
+                    //console.log(arguments);
 
                 } else {
-                    console.log("globalPromise ignore error");
+                    //console.log("globalPromise ignore error");
                     return;
                 }
             });
@@ -148,12 +148,12 @@ define(function(require) {
             globalPromiseParam.always(function() {
 
                 if (globalPromise == null || globalPromise == globalPromiseParam) {
-                    console.log("globalPromise ALWAYS", arguments);
-                    console.log("Promises size1:", utils.objectLength(jqXHRMap));
-                    console.log("Promises size2:", promiseCounter);
+                    //console.log("globalPromise ALWAYS", arguments);
+                    //console.log("Promises size1:", utils.objectLength(jqXHRMap));
+                    //console.log("Promises size2:", promiseCounter);
 
                 } else {
-                    console.log("globalPromise ignore always");
+                    //console.log("globalPromise ignore always");
                     return;
                 }
             });

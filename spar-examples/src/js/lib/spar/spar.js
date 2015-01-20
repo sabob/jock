@@ -75,7 +75,6 @@ define(function (require) {
 		};
 
 		that.routeLoaded = function (options) {
-
 			callstack.push(1);
 
 			options.target = options.target || initOptions.target;
@@ -207,16 +206,19 @@ define(function (require) {
 				options.spar = that;
 				that.triggerEvent("viewInit", options.ctrl, options);
 
-				// Assume it is a Ractive object
 				that.processNewView(options).then(function (view) {
+
+					onInitComplete();
 					deferred.resolve();
+
 				}, function () {
+					// processNewView rejected
+					onInitComplete();
 					deferred.reject();
 				});
 
-				onInitComplete();
-				deferred.resolve();
 			}, function () {
+				// onInitHandler rejected
 
 				onInitComplete();
 				deferred.reject();
@@ -262,16 +264,16 @@ define(function (require) {
 			var promise = deferred.promise();
 
 			var outroAnimationDuration = 100;
-			var intoAnimationDuration = 'fast';
+			var introAnimationDuration = 'fast';
 			if (currentMVC.ctrl == null) {
-				intoAnimationDuration = 0;
+				introAnimationDuration = 0;
 				outroAnimationDuration = 0;
 			}
 
 			$(initOptions.target).fadeOut(outroAnimationDuration, function () {
 
 				if (!options.requestTracker.active) {
-					deferred.reject();
+					deferred.reject("request overwritten by new request");
 					return;
 				}
 
@@ -279,7 +281,7 @@ define(function (require) {
 
 					that.renderRactive(options).then(function () {
 
-						$(initOptions.target).fadeIn(intoAnimationDuration, function () {
+						$(initOptions.target).fadeIn(introAnimationDuration, function () {
 							deferred.resolve(options.view);
 						});
 

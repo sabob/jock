@@ -5,7 +5,6 @@ define(function (require) {
 	require("jock/jock");
 	var spar = require("spar/spar");
 	var viewManager = require("jock/view/view-manager");
-	//var Home = require("./views/home/Home");
 	var CustomerSearch = require("app/views/customer/CustomerSearch");
 	//var CustomerEdit = require("./views/customer/CustomerEdit");
 	var ProductSearch = require("./views/product/ProductSearch");
@@ -16,14 +15,12 @@ define(function (require) {
 	require("bootstrap");
 	var validationSetup = require("./util/validation-setup");
 	require("./plugins/fullcalendar");
-	var Home2 = require("app/views/home2/Home2");
+	var Home = require("app/views/home/Home");
 	var router = require("spar/router");
 
 	var routes = {
-		home2: {path: 'home2', moduleId: Home2.id},
-		//home: {path: '/', moduleId: Home2.id},
+		home: {path: 'home', moduleId: Home.id},
 		customers: {path: 'customers', moduleId: CustomerSearch.id},
-		//customer: {path: '/customer/:id', moduleId: 'customer/customerView'},
 		notFound: {path: '*', moduleId: resolveModuleId}
 	};
 
@@ -66,7 +63,7 @@ define(function (require) {
 	});
 	$("#menu-home").on('click', function (e) {
 		e.preventDefault();
-		router.go({ctrl: Home2});
+		router.go({ctrl: Home});
 	});
 
 	function resolveModuleId() {
@@ -78,24 +75,13 @@ define(function (require) {
 		//console.log("PATH", path);
 		if (path.indexOf("/index.html") >= 0) {
 			// if no path found in hash, use default module, home2 in this example. This code could move to router.js??
-			//console.warn("MOO", Home2.id);
-			return Home2.id;
+			return Home.id;
 		}
 		return path.substr(1);
 		//return path;
 	}
 
 	var options = {};
-	/*
-	 options.routes = {
-	 "/home2": Home2.id,
-	 "/customers": CustomerSearch.id,
-	 //"customerEdit": CustomerEdit.id,
-	 "/products": ProductSearch.id,
-	 "/productEdit": ProductEdit.id,
-	 "/calendarEdit": CalendarEdit.id
-	 };
-	 */
 	var menuNames = [];
 	setupActiveMenu();
 	validationSetup.setupValidation();
@@ -103,7 +89,7 @@ define(function (require) {
 	 setActiveMenu(view);
 	 $('#nav-ind').stop(true, true);
 	 };*/
-	options.defaultView = Home2;
+	options.defaultView = Home;
 	//options.globalOnAttached = function (options) {
 	//};
 	//viewManager.init(options);
