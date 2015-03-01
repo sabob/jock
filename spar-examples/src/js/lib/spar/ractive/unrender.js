@@ -2,16 +2,16 @@ define(function (require) {
 
 	var $ = require("jquery");
 
-	function render(options) {
+	function unrender(options) {
 
 		var deferred = $.Deferred();
 		var promise = deferred.promise();
+		
+		options.mvc.view.transitionsEnabled = false;
+		//options.view.transitionsEnabled = false;
 
-		options.view.transitionsEnabled = false;
-
-		options.view.render(options.target).then(function () {
-
-			options.view.transitionsEnabled = true;
+		options.mvc.view.unrender().then(function () {
+		//options.view.unrender(options.target).then(function () {
 			
 			deferred.resolve(options.view);
 
@@ -21,5 +21,5 @@ define(function (require) {
 
 		return promise;
 	}
-	return render;
+	return unrender;
 });

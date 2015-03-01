@@ -3,6 +3,27 @@ define(function (require) {
 	var $ = require("jquery");
 
 	function setupEvents(options) {
+		// Guard against if view is not a ractive instance
+		if (!options.view.off) {
+			return;
+		}
+
+		/*
+		var triggerOptions = {
+			routeParams: options.routeParams,
+			args: options.args,
+			view: options.view,
+			ctrl: options.ctrl,
+			ajaxTracker: options.ajaxTracker,
+			mvc: options.mvc
+		};
+
+		var viewOptions = {
+			routeParams: options.routeParams,
+			args: options.args,
+			view: options.view,
+			ajaxTracker: options.ajaxTracker
+		};*/
 
 		// Add callback events
 		options.view.off('complete');
@@ -13,31 +34,35 @@ define(function (require) {
 		options.view.on('complete', function () {
 			// switch on transitions that was disabled in Spar during rendering of the view.
 			this.transitionsEnabled = true;
-			//console.log("oncomplete");
+			/*
 			if (typeof options.ctrl.onComplete == 'function') {
-				options.ctrl.onComplete(options);
-			}
-			options.spar.triggerEvent("complete", options.ctrl, options);
+				options.ctrl.onComplete(viewOptions);
+			}*/
+			//options.spar.triggerEvent("complete", triggerOptions);
 		});
 
 		options.view.on('render', function () {
 			//console.log("onrender");
+			/*
 			if (typeof options.ctrl.onRender == 'function') {
-				options.ctrl.onRender(options);
-			}
-			options.spar.triggerEvent("render", options.ctrl, options);
+				options.ctrl.onRender(viewOptions);
+			}*/
+			//options.spar.triggerEvent("render", triggerOptions);
 		});
 
 		options.view.on('unrender', function () {
+			/*
+		}
 			if (typeof options.ctrl.onUnrender == 'function') {
-				options.ctrl.onUnrender(options);
+				options.ctrl.onUnrender(viewOptions);
 			}
-			options.spar.triggerEvent("unrender", options.ctrl, options);
+			options.spar.triggerEvent("unrender", triggerOptions);
+			*/
 		});
 
 		options.view.on('teardown', function () {
 			//console.log("onteardown");
-			options.spar.triggerEvent("teardown", options.ctrl, options);
+			//options.spar.triggerEvent("teardown", triggerOptions);
 		});
 
 		var that = {};

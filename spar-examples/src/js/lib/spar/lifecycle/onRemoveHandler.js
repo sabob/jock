@@ -13,8 +13,14 @@ define(function (require) {
 			return promise;
 		}
 
-		var onRemoveOptions = {routeParams: options.routeParams, view: options.view};
-		var booleanOrPromise = options.ctrl.onRemove(onRemoveOptions);
+		var viewOptions = {
+			routeParams: options.routeParams,
+			args: options.args,
+			view: options.view,
+			ajaxTracker: options.ajaxTracker
+		};
+
+		var booleanOrPromise = options.ctrl.onRemove(viewOptions);
 
 		if (booleanOrPromise == null || booleanOrPromise == true) {
 			deferred.resolve();
@@ -22,7 +28,7 @@ define(function (require) {
 		}
 
 		if (booleanOrPromise == false) {
-			deferred.reject();
+			deferred.reject("controller " + + "onRemove returned false");
 			return promise;
 		}
 
@@ -30,8 +36,8 @@ define(function (require) {
 			booleanOrPromise.then(function (bool) {
 
 				// Request could have been overwritten by new request. Ensure this is still the active request
-				if (!options.requestTracker.active) {
-					deferred.reject();
+				if (!options.mvc.requestTracker.active) {
+					deferred.reject("Request overwritten by another view request");
 					return promise;
 				}
 
@@ -47,7 +53,7 @@ define(function (require) {
 			});
 
 		} else {
-			console.warn("Ignorning new view since onRemove did not return a valid response. onRemove must return either true/false or a promise that resolves to true/false.");
+			console.warn("Ignoring new view since onRemove did not return a valid response. onRemove must return either true/false or a promise that resolves to true/false.");
 			deferred.reject();
 		}
 		return promise;
